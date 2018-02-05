@@ -1,5 +1,6 @@
 blog
 _site
 src
+test_site/*
 
 node_modules
