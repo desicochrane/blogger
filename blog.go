@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"os"
 	"sync"
+	"bufio"
 )
 
 type BlogConfig struct {
@@ -44,7 +45,7 @@ func (blog *Blog) LoadPosts() error {
 	fileInfos, err := ioutil.ReadDir(filepath.Join(blog.Config.SrcDir, "_posts"))
 
 	if err != nil {
-		panic(err)
+		return nil
 	}
 
 	for _, fileInfo := range fileInfos {
@@ -62,18 +63,23 @@ func (blog *Blog) LoadPosts() error {
 
 // -----------------------------------------------------------------------------
 func (blog Blog) BuildPosts() error {
+	if len(blog.Posts) == 0 {
+		return nil
+	}
+
 	if err := os.RemoveAll(filepath.Join(blog.Config.SiteDir, "posts")); err != nil {
 		return err
 	}
 
-	t := template.New("posts.gohtml")
-	layoutPath := filepath.Join(blog.Config.SrcDir, "_layouts", "posts.gohtml")
-	t, err := t.ParseFiles(layoutPath)
-	if err != nil {
-		return err
-	}
-
 	for _, post := range blog.Posts {
+		layout := fmt.Sprintf("%s.gohtml", post.Layout())
+		t := template.New(layout)
+		layoutPath := filepath.Join(blog.Config.SrcDir, "_layouts", layout)
+		t, err := t.ParseFiles(layoutPath)
+		if err != nil {
+			return err
+		}
+
 		go func() {
 			destPath := filepath.Join(blog.Config.SiteDir, "posts", post.DestPath)
 
@@ -110,13 +116,23 @@ func (blog Blog) BuildPosts() error {
 
 // -----------------------------------------------------------------------------
 type Post struct {
-	Filename string
-	DestPath string
-	Date     time.Time
-	Content  template.HTML
+	FrontMatter map[string]string
+	Filename    string
+	DestPath    string
+	Date        time.Time
+	Content     template.HTML
+}
+
+func (post Post) Layout() string {
+	if l, exists := post.FrontMatter["layout"]; exists {
+		return l
+	}
+
+	return "default"
 }
 
 var postRegex = regexp.MustCompile(`^(\d{4}-\d{2}-\d{2})-(.+).md`)
+var frontMatterRegex = regexp.MustCompile(`^([a-zA-Z0-9]+): (.+[^\s])`)
 
 func (blog *Blog) LoadPost(filename string) error {
 
@@ -133,13 +149,51 @@ func (blog *Blog) LoadPost(filename string) error {
 
 	destPath := fmt.Sprintf("%s/%s.html", date.Format("2006/01/02"), matches[1])
 
-	md, err := ioutil.ReadFile(
-		filepath.Join(blog.Config.SrcDir, "_posts", filename))
+	f, err := os.Open(filepath.Join(blog.Config.SrcDir, "_posts", filename))
 	if err != nil {
 		return err
 	}
+	defer f.Close()
+
+	var md []byte
+	fm := make(map[string]string)
+	reader := bufio.NewReader(f)
+	state := "0"
+
+	for {
+		line, err := reader.ReadBytes('\n')
+		if err != nil {
+			break
+		}
+
+		switch state {
+		case "0":
+			if string(line) == "---\n" {
+				state = "f"
+				continue
+			} else {
+				state = "p"
+				md = append(md, line...)
+			}
+		case "f":
+			if string(line) == "---\n" {
+				state = "p"
+				continue
+			} else {
+				if ! frontMatterRegex.Match(line) {
+					return fmt.Errorf("invalid front matter '%s'", string(line))
+				}
+
+				matches := frontMatterRegex.FindSubmatch(line)[1:]
+				fm[string(matches[0])] = string(matches[1])
+			}
+		case "p":
+			md = append(md, line...)
+		}
+	}
 
 	blog.Posts = append(blog.Posts, Post{
+		FrontMatter: fm,
 		Filename: filename,
 		Date:     date,
 		DestPath: destPath,
