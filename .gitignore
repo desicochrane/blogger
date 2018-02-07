@@ -1,6 +1,8 @@
 blogger
-_site
+blog
+mix-manifest.json
 src
 test_site/*
 
 node_modules
+fonts

@@ -45,6 +45,10 @@ func TestBlog_LoadPosts(t *testing.T) {
 		t.Fatalf("%s != %s", "posts", result)
 	}
 
+	if result := post.Title(); result != "Example Post" {
+		t.Fatalf("%s != %s", "Example Post", result)
+	}
+
 	expectedContent := "<h1>This is a post</h1>\n\n"
 	expectedContent += "<p>Hello there</p>\n"
 

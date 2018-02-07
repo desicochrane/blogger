@@ -10,6 +10,7 @@ import (
 	"os"
 	"sync"
 	"bufio"
+	"strings"
 )
 
 type BlogConfig struct {
@@ -80,7 +81,7 @@ func (blog Blog) BuildPosts() error {
 			return err
 		}
 
-		go func() {
+		go func(post Post) {
 			destPath := filepath.Join(blog.Config.SiteDir, "posts", post.DestPath)
 
 			dir, _ := filepath.Split(destPath)
@@ -102,7 +103,7 @@ func (blog Blog) BuildPosts() error {
 			}
 
 			blog.BuildErrors <- nil
-		}()
+		}(post)
 	}
 
 	for i := 0; i < len(blog.Posts); i++ {
@@ -116,6 +117,7 @@ func (blog Blog) BuildPosts() error {
 
 // -----------------------------------------------------------------------------
 type Post struct {
+	FilenameName string
 	FrontMatter map[string]string
 	Filename    string
 	DestPath    string
@@ -129,6 +131,16 @@ func (post Post) Layout() string {
 	}
 
 	return "default"
+}
+
+func (post Post) Title() string {
+	if l, exists := post.FrontMatter["title"]; exists {
+		return l
+	}
+
+	title := post.FilenameName
+
+	return title
 }
 
 var postRegex = regexp.MustCompile(`^(\d{4}-\d{2}-\d{2})-(.+).md`)
@@ -148,7 +160,7 @@ func (blog *Blog) LoadPost(filename string) error {
 	}
 
 	destPath := fmt.Sprintf("%s/%s.html", date.Format("2006/01/02"), matches[1])
-
+	filenameName := strings.Join(strings.Split(matches[1], "-"), " ")
 	f, err := os.Open(filepath.Join(blog.Config.SrcDir, "_posts", filename))
 	if err != nil {
 		return err
@@ -193,6 +205,7 @@ func (blog *Blog) LoadPost(filename string) error {
 	}
 
 	blog.Posts = append(blog.Posts, Post{
+		FilenameName: properTitle(filenameName),
 		FrontMatter: fm,
 		Filename: filename,
 		Date:     date,
@@ -202,3 +215,18 @@ func (blog *Blog) LoadPost(filename string) error {
 
 	return nil
 }
+
+func properTitle(input string) string {
+	words := strings.Fields(input)
+	smallwords := " a an on the to "
+
+	for index, word := range words {
+		if strings.Contains(smallwords, " "+word+" ") {
+			words[index] = word
+		} else {
+			words[index] = strings.Title(word)
+		}
+	}
+	return strings.Join(words, " ")
+}
+

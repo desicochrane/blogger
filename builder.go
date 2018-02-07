@@ -5,9 +5,11 @@ import (
 	"path/filepath"
 	"fmt"
 	"io"
+	"html/template"
+	"time"
 )
 
-func Build() error {
+func Build(blog Blog) error {
 	// 1. empty the site directory
 	fmt.Printf("Emptying site dir %s\n", config.SiteDir)
 	if err := os.RemoveAll(config.SiteDir); err != nil {
@@ -39,7 +41,9 @@ func Build() error {
 
 		fmt.Printf("Seeing file %s\n", info.Name())
 		switch filepath.Ext(path) {
-		case ".html":
+		case ".gohtml":
+			buildGoHtml(path, blog)
+		default:
 			buildHtml(path)
 		}
 
@@ -47,6 +51,47 @@ func Build() error {
 	})
 
 	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func buildGoHtml(path string, blog Blog) error {
+	dir, name := filepath.Split(path)
+
+	t := template.New(name).Funcs(template.FuncMap{
+		"fdate": func(date time.Time, layout string) string {
+			return date.Format(layout)
+		},
+	})
+	t, err := t.ParseFiles(path)
+	if err != nil {
+		return err
+	}
+
+	destPath := filepath.Join(
+		config.SiteDir,
+		path[len(config.SrcDir):len(path)-len(".gohtml")]+".html",
+	)
+
+	// make the destination directory in case it does not exist
+	if _, err := os.Stat(dir); err != nil {
+		fmt.Printf("creating dir %s\n", destPath)
+		if err := os.MkdirAll(dir, 0755); err != nil {
+			return err
+		}
+	}
+
+	// create the dest file
+	fmt.Printf("creating dest file %s\n", destPath)
+	dest, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	if err = t.Execute(dest, blog); err != nil {
 		return err
 	}
 
