@@ -1,0 +1,65 @@
+@import "../../node_modules/katex/dist/katex.css";
+
+@font-face {
+  font-family: cmunrm;
+  src: url('/fonts/cmunrm.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: umono;
+  src: url('/fonts/UbuntuMono-Regular.ttf') format('truetype');
+}
+
+html, body {
+  font-family: cmunrm, serif;
+  line-height: 1.5;
+  font-size: 18px;
+}
+
+.katex {
+  font-size: 0.95em;
+}
+
+.chroma {
+  margin: 0 40px;
+  border-radius: 2px;
+  background: #2E2E2E;
+  line-height: 30px;
+  font-size: 17px;
+  padding: 20px;
+  font-family: umono;
+
+  .ln {
+    color: #8E8885;
+    padding: 0 20px 0px 10px;
+  }
+
+  .kd, .k {
+    color: #E9AB16;
+  }
+
+  .nx {
+    color: #87CFDC;
+  }
+
+  .mi {
+    color: #B4DC96;
+  }
+
+  .p {
+    color: #AFA894;
+  }
+
+  .o {
+    color: #2A9981;
+  }
+
+  .kt {
+    color: #F84B2B;
+  }
+}
+
+.container {
+  width: 900px;
+  margin: 0 auto;
+}

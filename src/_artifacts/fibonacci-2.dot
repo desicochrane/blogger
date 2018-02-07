@@ -1,0 +1,16 @@
+digraph {
+ node [fontname="CMU Serif Roman"]
+
+ "fib5" [label="F(5)"]
+ "fib4" [label="F(4)"]
+ "fib3" [label="F(3)"]
+ "fib2" [label="F(2)"]
+ "fib1" [label="F(1)"]
+ "fib0" [label="F(0)"]
+
+ "fib5" -> {"fib4", "fib3"}
+ {rank=same fib5 -> fib4 -> fib3 -> fib2 -> fib1 -> fib0 [style=invis]}
+ "fib4" -> {"fib3", "fib2"}
+ "fib3" -> {"fib2", "fib1"}
+ "fib2" -> {"fib1", "fib0"}
+}
