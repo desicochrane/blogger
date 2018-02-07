@@ -20,7 +20,7 @@ type BlogConfig struct {
 
 var config = BlogConfig{
 	SrcDir:  "src",
-	SiteDir: "_site",
+	SiteDir: "docs",
 }
 
 // -----------------------------------------------------------------------------

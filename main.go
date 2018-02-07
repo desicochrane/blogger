@@ -21,7 +21,7 @@ func main() {
 		panic(err)
 	}
 
-	http.Handle("/", http.FileServer(http.Dir("_site")))
+	http.Handle("/", http.FileServer(http.Dir(config.SiteDir)))
 
 	fmt.Printf("Serving on port %s\n", ":1212")
 	http.ListenAndServe(":1212", nil)
