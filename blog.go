@@ -144,7 +144,6 @@ func (post Post) Title() string {
 }
 
 var postRegex = regexp.MustCompile(`^(\d{4}-\d{2}-\d{2})-(.+).md`)
-var frontMatterRegex = regexp.MustCompile(`^([a-zA-Z0-9]+): (.+[^\s])`)
 
 func (blog *Blog) LoadPost(filename string) error {
 
