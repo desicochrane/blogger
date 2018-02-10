@@ -1,5 +1,6 @@
 ---
 title: The Fibonacci Problem
+date: 10-Feb-2018
 ---
 
 # The Fibonacci Problem

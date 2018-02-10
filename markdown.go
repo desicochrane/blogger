@@ -6,6 +6,7 @@ import (
 	"github.com/Depado/bfchroma"
 	"github.com/alecthomas/chroma/formatters/html"
 )
+
 func Render(md []byte) template.HTML {
 	return template.HTML(blackfriday.Run(
 		md,

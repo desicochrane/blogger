@@ -1,231 +1,203 @@
 package main
 
 import (
-	"html/template"
-	"time"
-	"regexp"
 	"fmt"
+	"html/template"
+	"io"
 	"io/ioutil"
-	"path/filepath"
+	"net/url"
 	"os"
-	"sync"
-	"bufio"
-	"strings"
+	"path/filepath"
+	"time"
 )
-
-type BlogConfig struct {
-	SrcDir  string
-	SiteDir string
-}
-
-var config = BlogConfig{
-	SrcDir:  "src",
-	SiteDir: "docs",
-}
 
 // -----------------------------------------------------------------------------
 type Blog struct {
-	Config      BlogConfig
-	Posts       []Post
-	BuildErrors chan error
-	BuildLocks  map[string]sync.Mutex
+	Config BlogConfig
+	Posts  []Document
 }
 
 func NewBlog(config BlogConfig) Blog {
+	if err := os.RemoveAll(config.SiteDir); err != nil {
+		panic(err)
+	}
+
+	if err := os.MkdirAll(config.SiteDir, 0755); err != nil {
+		panic(err)
+	}
+
 	return Blog{
-		Config:      config,
-		BuildErrors: make(chan error),
+		Config: config,
+		Posts:  make([]Document, 0),
 	}
 }
 
-func (blog Blog) PostSrcDir() string {
-	return filepath.Join(blog.Config.SrcDir, "_posts")
-}
-
-func (blog *Blog) LoadPosts() error {
-	fileInfos, err := ioutil.ReadDir(filepath.Join(blog.Config.SrcDir, "_posts"))
-
+func (blog *Blog) LoadPosts(srcDir string) error {
+	srcDir = filepath.Join(blog.Config.SrcDir, srcDir)
+	fileInfos, err := ioutil.ReadDir(srcDir)
 	if err != nil {
-		return nil
+		return err
 	}
 
-	for _, fileInfo := range fileInfos {
-		if fileInfo.IsDir() {
+	for _, info := range fileInfos {
+		if info.IsDir() {
 			continue
 		}
 
-		if err := blog.LoadPost(fileInfo.Name()); err != nil {
+		doc, err := blog.LoadDocument(filepath.Join(srcDir, info.Name()))
+		if err != nil {
 			return err
 		}
+
+		if doc.FrontMatter.Layout == "" {
+			doc.FrontMatter.Layout = "default"
+		}
+
+		blog.Posts = append(blog.Posts, doc)
 	}
 
 	return nil
 }
 
-// -----------------------------------------------------------------------------
-func (blog Blog) BuildPosts() error {
-	if len(blog.Posts) == 0 {
-		return nil
-	}
+type TemplateData struct {
+	Blog Blog
+	Doc  Document
+}
 
-	if err := os.RemoveAll(filepath.Join(blog.Config.SiteDir, "posts")); err != nil {
-		return err
-	}
-
-	for _, post := range blog.Posts {
-		layout := fmt.Sprintf("%s.gohtml", post.Layout())
-		t := template.New(layout)
-		layoutPath := filepath.Join(blog.Config.SrcDir, "_layouts", layout)
-		t, err := t.ParseFiles(layoutPath)
-		if err != nil {
-			return err
+func (blog Blog) Build() error {
+	err := filepath.Walk(blog.Config.SrcDir, func(path string, info os.FileInfo, err error) error {
+		if info.Name()[0] == '_' {
+			fmt.Printf("Skipping private directory %s\n", info.Name())
+			return filepath.SkipDir
 		}
 
-		go func(post Post) {
-			destPath := filepath.Join(blog.Config.SiteDir, "posts", post.DestPath)
-
-			dir, _ := filepath.Split(destPath)
-			if err := os.MkdirAll(dir, 0755); err != nil {
-				blog.BuildErrors <- err
-				return
+		if info.IsDir() {
+			if info.Name() == "posts" {
+				return filepath.SkipDir
 			}
+			return nil
+		}
 
-			dest, err := os.Create(destPath)
+		if !info.Mode().IsRegular() {
+			fmt.Printf("Seeing irregular %s\n", info.Name())
+			return nil
+		}
+
+		fmt.Printf("Seeing file %s\n", info.Name())
+		switch filepath.Ext(path) {
+		case ".gohtml", ".md", ".html":
+			doc, err := blog.LoadDocument(path)
 			if err != nil {
-				blog.BuildErrors <- err
-				return
-			}
-			defer dest.Close()
-
-			if err = t.Execute(dest, post); err != nil {
-				blog.BuildErrors <- err
-				return
+				return err
 			}
 
-			blog.BuildErrors <- nil
-		}(post)
-	}
-
-	for i := 0; i < len(blog.Posts); i++ {
-		if err := <-blog.BuildErrors; err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
-// -----------------------------------------------------------------------------
-type Post struct {
-	FilenameName string
-	FrontMatter map[string]string
-	Filename    string
-	DestPath    string
-	Date        time.Time
-	Content     template.HTML
-}
-
-func (post Post) Layout() string {
-	if l, exists := post.FrontMatter["layout"]; exists {
-		return l
-	}
-
-	return "default"
-}
-
-func (post Post) Title() string {
-	if l, exists := post.FrontMatter["title"]; exists {
-		return l
-	}
-
-	title := post.FilenameName
-
-	return title
-}
-
-var postRegex = regexp.MustCompile(`^(\d{4}-\d{2}-\d{2})-(.+).md`)
-
-func (blog *Blog) LoadPost(filename string) error {
-
-	if ! postRegex.MatchString(filename) {
-		return fmt.Errorf("invalid post filename '%s'", filename)
-	}
-
-	matches := postRegex.FindStringSubmatch(filename)[1:]
-
-	date, err := time.Parse("2006-01-02", matches[0])
-	if err != nil {
-		return fmt.Errorf("invalid post date '%s'", matches[0])
-	}
-
-	destPath := fmt.Sprintf("%s/%s.html", date.Format("2006/01/02"), matches[1])
-	filenameName := strings.Join(strings.Split(matches[1], "-"), " ")
-	f, err := os.Open(filepath.Join(blog.Config.SrcDir, "_posts", filename))
-	if err != nil {
-		return err
-	}
-	defer f.Close()
-
-	var md []byte
-	fm := make(map[string]string)
-	reader := bufio.NewReader(f)
-	state := "0"
-
-	for {
-		line, err := reader.ReadBytes('\n')
-		if err != nil {
-			break
+			if err := blog.BuildDocument(doc); err != nil {
+				return err
+			}
+		default:
+			if err := blog.Copy(path); err != nil {
+				return err
+			}
 		}
 
-		switch state {
-		case "0":
-			if string(line) == "---\n" {
-				state = "f"
-				continue
-			} else {
-				state = "p"
-				md = append(md, line...)
-			}
-		case "f":
-			if string(line) == "---\n" {
-				state = "p"
-				continue
-			} else {
-				if ! frontMatterRegex.Match(line) {
-					return fmt.Errorf("invalid front matter '%s'", string(line))
-				}
-
-				matches := frontMatterRegex.FindSubmatch(line)[1:]
-				fm[string(matches[0])] = string(matches[1])
-			}
-		case "p":
-			md = append(md, line...)
-		}
-	}
-
-	blog.Posts = append(blog.Posts, Post{
-		FilenameName: properTitle(filenameName),
-		FrontMatter: fm,
-		Filename: filename,
-		Date:     date,
-		DestPath: destPath,
-		Content:  Render(md),
+		return nil
 	})
 
-	return nil
+	return err
 }
 
-func properTitle(input string) string {
-	words := strings.Fields(input)
-	smallwords := " a an on the to "
+func (blog Blog) Copy(path string) error {
+	src, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer src.Close()
 
-	for index, word := range words {
-		if strings.Contains(smallwords, " "+word+" ") {
-			words[index] = word
-		} else {
-			words[index] = strings.Title(word)
+	destPath := filepath.Join(
+		config.SiteDir, path[len(config.SrcDir):],
+	)
+
+	// make the destination directory in case it does not exist
+	destDir, _ := filepath.Split(destPath)
+	if _, err := os.Stat(destDir); err != nil {
+		if err := os.MkdirAll(destDir, 0755); err != nil {
+			return err
 		}
 	}
-	return strings.Join(words, " ")
+
+	dest, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	if _, err = io.Copy(dest, src); err != nil {
+		return err
+	}
+
+	return dest.Sync()
 }
 
+var templateFuncMap = template.FuncMap{
+	"absurl": func(path string) string {
+		u, err := url.Parse(config.BaseURL)
+		if err != nil {
+			panic(err)
+		}
+		u.Path = filepath.Join(u.Path, path)
+		return u.String()
+	},
+	"fdate": func(date time.Time, layout string) string {
+		return date.Format(layout)
+	},
+}
+
+func (blog Blog) BuildDocument(doc Document) error {
+	destPath := filepath.Join(
+		config.SiteDir,
+		doc.Path[:len(doc.Path)-len(doc.Ext)]+".html",
+	)
+
+	destDir, _ := filepath.Split(destPath)
+
+	// make the destination directory in case it does not exist
+	if _, err := os.Stat(destDir); err != nil {
+		if err := os.MkdirAll(destDir, 0755); err != nil {
+			return err
+		}
+	}
+
+	// create the dest file
+	dest, err := os.Create(destPath)
+	if err != nil {
+		return err
+	}
+	defer dest.Close()
+
+	if doc.FrontMatter.Layout != "" {
+		layoutName := doc.FrontMatter.Layout + ".gohtml"
+		layoutPath := filepath.Join(blog.Config.SrcDir, "_layouts", layoutName)
+
+		t, err := template.New(layoutName).Funcs(templateFuncMap).ParseFiles(layoutPath)
+		if err != nil {
+			return err
+		}
+
+		if err := t.Execute(dest, TemplateData{blog, doc}); err != nil {
+			return err
+		}
+	} else {
+
+		_, name := filepath.Split(doc.Path)
+		t, err := template.New(name).Funcs(templateFuncMap).ParseFiles(filepath.Join(blog.Config.SrcDir, doc.Path))
+		if err != nil {
+			return err
+		}
+
+		if err := t.Execute(dest, TemplateData{Blog: blog}); err != nil {
+			return err
+		}
+	}
+
+	return dest.Sync()
+}

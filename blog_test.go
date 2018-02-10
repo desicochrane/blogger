@@ -2,93 +2,53 @@ package main
 
 import (
 	"testing"
-	"html/template"
-	"os"
-	"io/ioutil"
-	"path/filepath"
 )
 
-var testConfig = BlogConfig{
-	SrcDir:  "test_src",
-	SiteDir: "test_site",
-}
-
-// -----------------------------------------------------------------------------
 func TestBlog_LoadPosts(t *testing.T) {
-	blog := NewBlog(testConfig)
+	blog := NewBlog(BlogConfig{
+		BaseURL: "https://des.io/blog",
+		SrcDir:  "test_src",
+		SiteDir: "test_docs",
+	})
 
-	err := blog.LoadPosts()
-	if err != nil {
-		t.Fatal(err)
+	blog.LoadPosts("posts")
+
+	expected := map[string][]string{
+		"/posts/2018-02-01-example-post.md": {
+			"This is my lovely post",
+			"2018-02-01",
+			"post",
+			"<h1>Lovely post</h1>\n",
+			"https://des.io/blog/posts/2018-02-01-example-post.html",
+		},
 	}
 
-	if len(blog.Posts) != 1 {
-		t.Fatalf("expected len posts to be 1, saw %d", len(blog.Posts))
-	}
+	for i := 0; i < len(expected); i++ {
+		doc := blog.Posts[i]
 
-	post := blog.Posts[0]
+		e, found := expected[doc.Path]
+		if !found {
+			t.Fatalf("slug not found %s", doc.Path)
+		}
 
-	filename := "2018-02-01-example-post.md"
-	if post.Filename != filename {
-		t.Fatalf("%s != %s", filename, post.Filename)
-	}
+		if e[0] != doc.FrontMatter.Title {
+			t.Fatalf("%s != %s", e[0], doc.FrontMatter.Title)
+		}
 
-	if result := post.Date.Format("02-Jan-2006"); result != "01-Feb-2018" {
-		t.Fatalf("%s != %s", "01-Feb-2018", result)
-	}
+		if r := doc.FrontMatter.Date.Format("2006-01-02"); e[1] != r {
+			t.Fatalf("%s != %s", e[1], r)
+		}
 
-	if result := post.DestPath; result != "2018/02/01/example-post.html" {
-		t.Fatalf("%s != %s", "2018/02/01/example-post.html", result)
-	}
+		if r := doc.FrontMatter.Layout; e[2] != r {
+			t.Fatalf("%s != %s", e[2], r)
+		}
 
-	if result := post.Layout(); result != "posts" {
-		t.Fatalf("%s != %s", "posts", result)
-	}
+		if r := string(doc.Content); e[3] != r {
+			t.Fatalf("%s != %s", e[3], r)
+		}
 
-	if result := post.Title(); result != "Example Post" {
-		t.Fatalf("%s != %s", "Example Post", result)
-	}
-
-	expectedContent := "<h1>This is a post</h1>\n\n"
-	expectedContent += "<p>Hello there</p>\n"
-
-	if result := post.Content; result != template.HTML(expectedContent) {
-		t.Fatalf("%q != %q", expectedContent, result)
-	}
-}
-
-// -----------------------------------------------------------------------------
-func TestBlog_BuildPosts(t *testing.T) {
-	os.RemoveAll(testConfig.SiteDir)
-	os.MkdirAll(testConfig.SiteDir, 0755)
-
-	blog := NewBlog(testConfig)
-
-	blog.LoadPosts()
-	if err := blog.BuildPosts(); err != nil {
-		t.Fatal(err)
-	}
-
-
-	output, err := ioutil.ReadFile(
-		filepath.Join(blog.Config.SiteDir, "posts/2018/02/01/example-post.html"))
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	expected := "<!doctype html>" + "\n"
-	expected += "<html lang=\"en\">" + "\n"
-	expected += "<head>" + "\n"
-	expected += "  <meta charset=\"UTF-8\">" + "\n"
-	expected += "  <title>Posts</title>" + "\n"
-	expected += "</head>" + "\n"
-	expected += "<body>" + "\n"
-	expected += "<h1>This is a post</h1>" + "\n\n"
-	expected += "<p>Hello there</p>" + "\n\n"
-	expected += "</body>" + "\n"
-	expected += "</html>" + "\n"
-
-	if result := output; string(result) != expected {
-		t.Fatalf("\n%q\n!=\n%q\n", expected, string(result))
+		if r := doc.URL; e[4] != r {
+			t.Fatalf("%s != %s", e[4], r)
+		}
 	}
 }

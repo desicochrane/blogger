@@ -5,17 +5,15 @@
   <title>Blog</title>
   <style>
   </style>
-  <link rel="stylesheet" href="css/blog.css">
+  <link rel="stylesheet" href="{{ absurl "css/blog.css" }}">
 </head>
 <body>
 <div class="container">
   <h1>des.io</h1>
 
-  <p>This is some fancy computer font</p>
-
-{{ range .Posts }}
-  <li><a href="posts/{{ .DestPath }}">
-  {{ fdate .Date "Jan 2, 2006" }} - {{ .Title }}
+{{ range .Blog.Posts }}
+  <li><a href="{{ absurl .URL }}">
+  {{ fdate .FrontMatter.Date "02-Jan-2006"}} - {{ .FrontMatter.Title }}
   </a></li>
 {{ end }}
 

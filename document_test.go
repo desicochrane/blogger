@@ -2,45 +2,35 @@ package main
 
 import (
 	"testing"
-	"strings"
 )
 
-var eol = "\n"
-
-func TestReadDocument(t *testing.T) {
-	frontMatter := `---
-Title: This is my lovely post 
-date: 2018-02-02
-layout: post
----
-`
-
-	content := `# Lovely post
-
-Let \(b_{baby}(n)\) and \(b_{adult}(n)\) denote the number of 
-baby and adult bunnies:
-
-$$ F(n) = b_{adult}(n) + b_{baby}(n) $$
-`
-
-	doc, err := ReadDocument(strings.NewReader(frontMatter + content))
+func TestLoadDocument(t *testing.T) {
+	blog := NewBlog(BlogConfig{
+		SrcDir:  "test_src",
+		SiteDir: "test_docs",
+	})
+	doc, err := blog.LoadDocument("test_src/posts/2018-02-01-example-post.md")
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	samples := [][]string{
-		{"title", "This is my lovely post"},
-		{"date", "2018-02-02"},
-		{"layout", "post"},
+	if doc.Path != "/posts/2018-02-01-example-post.md" {
+		t.Fatalf("%s != %s", "/posts/2018-02-01-example-post.md", doc.Path)
 	}
 
-	for _, e := range samples {
-		if doc.FrontMatter[e[0]] != e[1] {
-			t.Fatalf("%s != %s", doc.FrontMatter[e[0]], e[1])
-		}
+	if doc.FrontMatter.Title != "This is my lovely post" {
+		t.Fatalf("%s != %s", "This is my lovely post", doc.FrontMatter.Title)
 	}
 
-	if string(doc.Content) != content {
-		t.Fatalf("\n%q\n!=\n%q", content, string(doc.Content))
+	if doc.FrontMatter.Date.Format("02-Jan-2006") != "01-Feb-2018" {
+		t.Fatalf("%s != %s", "01-Feb-2018", doc.FrontMatter.Date.Format("02-Jan-2006"))
+	}
+
+	if doc.FrontMatter.Layout != "post" {
+		t.Fatalf("%s != %s", "post", doc.FrontMatter.Layout)
+	}
+
+	if string(doc.Content) != "<h1>Lovely post</h1>\n" {
+		t.Fatalf("%q != %q", "<h1>Lovely post</h1>\n", string(doc.Content))
 	}
 }

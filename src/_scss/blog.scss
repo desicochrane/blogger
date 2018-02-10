@@ -2,12 +2,17 @@
 
 @font-face {
   font-family: cmunrm;
-  src: url('/fonts/cmunrm.ttf') format('truetype');
+  src: url('../fonts/cmunrm.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: umono;
-  src: url('/fonts/UbuntuMono-Regular.ttf') format('truetype');
+  font-family: Roboto;
+  src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: "Source Code Pro";
+  src: url('../fonts/SourceCodePro-Regular.ttf') format('truetype');
 }
 
 html, body {
@@ -27,7 +32,7 @@ html, body {
   line-height: 30px;
   font-size: 17px;
   padding: 20px;
-  font-family: umono;
+  font-family: "Source Code Pro" monospace;
 
   .ln {
     color: #8E8885;

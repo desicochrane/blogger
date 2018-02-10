@@ -1,84 +1,147 @@
 package main
 
 import (
-	"io"
-	"regexp"
-	"fmt"
 	"bufio"
 	"errors"
+	"fmt"
+	"html/template"
+	"io"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strings"
+	"time"
 )
 
-type Document struct {
-	FrontMatter map[string]string
-	Content     []byte
-}
-
-var frontMatterDelimRegex = regexp.MustCompile(`^---\s*$`)
-var frontMatterRegex = regexp.MustCompile(`^([a-zA-Z0-9]+): (.+[^\s])`)
+var (
+	frontMatterDelimRegex = regexp.MustCompile(`^---\s*$`)
+	frontMatterRegex      = regexp.MustCompile(`^([a-zA-Z0-9]+): (.+[^\s])`)
+)
 
 const (
-	Parse0 = iota
-	Parse1
-	Parse2
-	Parse3
-	Parse4
-	Parse5
+	DocStart = iota
+	DocFMStart
+	DocFMKeyVal
+	DocFMEnd
+	DocContent
+	DocEnd
 )
 
-func ReadDocument(r io.Reader) (Document, error) {
-	reader := bufio.NewReader(r)
+type FrontMatter struct {
+	Title  string
+	Date   time.Time
+	Layout string
+	Vars   map[string]string
+}
 
-	doc := Document{
-		FrontMatter: make(map[string]string),
-		Content:     make([]byte, 0),
+func (fm *FrontMatter) set(key string, value string) error {
+	switch strings.ToLower(key) {
+	case "title":
+		fm.Title = value
+	case "layout":
+		fm.Layout = value
+	case "date":
+		date, err := time.Parse("02-Jan-2006", value)
+		if err != nil {
+			return err
+		}
+		fm.Date = date
+	default:
+		fm.Vars[key] = value
 	}
 
-	state := Parse0
-	for state != Parse5 {
+	return nil
+}
+
+type Document struct {
+	URL         string
+	Path        string
+	Ext         string
+	FrontMatter FrontMatter
+	Content     template.HTML
+}
+
+func (blog Blog) LoadDocument(path string) (Document, error) {
+	fmt.Println(path)
+	f, err := os.Open(path)
+	if err != nil {
+		return Document{}, err
+	}
+	defer f.Close()
+
+	ext := filepath.Ext(path)
+	fm, content, err := parseDocContent(f, ext)
+	if err != nil {
+		return Document{}, err
+	}
+
+	return Document{
+		URL:         path[len(blog.Config.SrcDir):len(path)-len(ext)] + ".html",
+		Path:        path[len(blog.Config.SrcDir):],
+		Ext:         ext,
+		FrontMatter: fm,
+		Content:     content,
+	}, nil
+}
+
+func parseDocContent(r io.Reader, ext string) (fm FrontMatter, content template.HTML, err error) {
+	reader := bufio.NewReader(r)
+
+	rawContent := make([]byte, 0)
+
+	state := DocStart
+	for state != DocEnd {
 		input, err := reader.ReadBytes('\n')
 		if len(input) == 0 && err != nil {
 			input = nil
 		}
 
 		switch state {
-		case Parse0:
+		case DocStart:
 			if frontMatterDelimRegex.Match(input) {
-				state = Parse1
+				state = DocFMStart
 			} else if input != nil {
-				state = Parse4
+				state = DocContent
 			} else {
-				return Document{}, errors.New("empty document")
+				return FrontMatter{}, "", errors.New("empty document")
 			}
-		case Parse1, Parse2:
+		case DocFMStart, DocFMKeyVal:
 			if frontMatterRegex.Match(input) {
-				state = Parse2
+				state = DocFMKeyVal
 			} else if frontMatterDelimRegex.Match(input) {
-				state = Parse3
+				state = DocFMEnd
 			} else {
-				return Document{}, fmt.Errorf("invalid front matter '%s'", input)
+				return FrontMatter{}, "", fmt.Errorf("invalid front matter '%s'", input)
 			}
-		case Parse3:
+		case DocFMEnd:
 			if input != nil {
-				state = Parse4
+				state = DocContent
 			} else {
-				return Document{}, errors.New("empty document")
+				return FrontMatter{}, "", errors.New("empty document")
 			}
-		case Parse4:
+		case DocContent:
 			if input == nil {
-				state = Parse5
+				state = DocEnd
 			}
 		default:
 			panic(fmt.Sprintf("invalid state %d", state))
 		}
 
-		if state == Parse2 {
+		if state == DocFMKeyVal {
 			matches := frontMatterRegex.FindSubmatch(input)[1:]
-			doc.FrontMatter[strings.ToLower(string(matches[0]))] = string(matches[1])
-		} else if state == Parse4 {
-			doc.Content = append(doc.Content, input...)
+			if err := fm.set(string(matches[0]), string(matches[1])); err != nil {
+				return FrontMatter{}, "", err
+			}
+		} else if state == DocContent {
+			rawContent = append(rawContent, input...)
 		}
 	}
 
-	return doc, nil
+	if ext == ".md" {
+		content = Render(rawContent)
+	} else {
+		content = template.HTML(rawContent)
+	}
+
+	return fm, content, nil
 }
