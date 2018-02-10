@@ -81,7 +81,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_katex_dist_contrib_auto_render___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_katex_dist_contrib_auto_render__);
 
 
-console.log("working!");
+console.log("working!?!");
 
 __WEBPACK_IMPORTED_MODULE_0_katex_dist_contrib_auto_render___default()(document.body);
 

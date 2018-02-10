@@ -41,7 +41,7 @@ func main() {
 		config.BaseURL = baseURL
 	}
 
-	build()
+	build(*env)
 
 	if *serve {
 		http.Handle("/", http.FileServer(http.Dir(config.SiteDir)))
@@ -50,10 +50,17 @@ func main() {
 	}
 }
 
-func build() {
+func build(env string) {
 	blog := NewBlog(config)
+
 	if err := blog.LoadPosts("posts"); err != nil {
 		panic(err)
+	}
+
+	if strings.ToUpper(env) == "DEV" {
+		if err := blog.LoadPosts("_drafts"); err != nil {
+			panic(err)
+		}
 	}
 
 	for _, doc := range blog.Posts {
