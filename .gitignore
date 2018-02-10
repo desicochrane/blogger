@@ -4,5 +4,5 @@ mix-manifest.json
 test_site/*
 
 node_modules
-fonts
 .env
+/fonts
