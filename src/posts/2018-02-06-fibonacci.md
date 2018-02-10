@@ -65,18 +65,13 @@ func Fib(n int) int {
 }
 ```
 
-\\[ \\begin{aligned}
-F(12) &= F(11) + F(10) \\\\
-F(11) &= F(10) + F(9)  \\\\
-F(10) &= F(9) + F(8)  \\\\
-F(9)  &= F(8) + F(7)  \\\\
-F(8)  &= F(7) + F(6)  \\\\
-F(7)  &= F(6) + F(5)  \\\\
-F(6)  &= F(5) + F(4)  \\\\
-F(5)  &= F(4) + F(3)  \\\\
-F(4)  &= F(3) + F(2)  \\\\
-F(3)  &= F(2) + F(1)  \\\\
-F(2)  &= F(1) + F(0)  \\\\
-F(1)  &= 1  \\\\
-F(0)  &= 0  \\\\
-\\end{aligned} \\]
+Naively:
+(todo)
+
+![fib-naive](../img/fibonacci-naive.dot.png)
+
+Cleverly:
+(todo)
+
+![fib-naive](../img/fibonacci-2.dot.png)
+

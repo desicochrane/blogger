@@ -1,4 +1,5 @@
 graph {
+ rankdir=LR
  node [fontname="CMU Serif Roman"]
 
  "x" [label="F(5)"]
