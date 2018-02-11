@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog</title>
+  <link rel="stylesheet" href="https://desicochrane.github.io/blogger/css/blog.css">
+
+</head>
+<body>
+<div class="header">
+  <div class="container">
+    <a href="https://desicochrane.github.io/blogger">des.io</a>
+  </div>
+</div>
+
+<div class="content">
+  <div class="container">
+    <h1>The Fibonacci Problem (Part I)</h1>
+
+<p>Over 800 years ago Leonardo of Pisa, commonly known as <em>Fibonacci</em>, asked the following question:</p>
+
+<blockquote>
+<p>Suppose there are a newly born pair of bunnies, one male, one female. Bunnies are able to mate at the age of one month so that at the end of its second month a female can produce another pair of bunnies. Bunnies never die, and a mating pair always produces one new pair (one male, one female) every month from the second month on. How many pairs will there be in one year?</p>
+</blockquote>
+
+<p>How to express this mathematically. Let&rsquo;s denote the number of rabbits in a given month \(n\) as \(F(n)\), then our problem is to find \(F(12)\).</p>
+
+<p>We can see the total number of bunnies in any given month will equal the sum of number of adult bunnies and baby bunnies in that month:</p>
+
+<p>$$ F(n) = b_{adult}(n) + b_{baby}(n) $$</p>
+
+<p>So for example, \(b_{new}(n)\) denote the total pairs of <em>baby</em> bunnies in month \(n\), and \(b_{old}(n)\) denote the total pairs of <em>adult</em> bunnies in month \(n\).
+To keep track of bunnies, let \(new\) denote new bunnies in a given month and \(old\) denote bunnies we saw in from previous months:</p>
+
+<p>Observe that the number of adult bunnies in a given month will equal all the adult bunnies from the previous month <strong>plus</strong> all the baby bunnies from the previous month that are now fully grown:</p>
+
+<p>\[ \begin{aligned}
+b_{adult}(n) &amp;= b_{adult}(n-1) + b_{baby}(n-1) \\
+              &amp;= F(n-1)
+\end{aligned} \]</p>
+
+<p>Notice that apart from the initial conditions in the first month, the number of new bunnies in a given month must equal the number of adult bunnies in the previous month:</p>
+
+<p>\[ \begin{aligned}
+b_{baby}(n) &amp;= b_{adult}(n-1) \\
+             &amp;= F(n-2)
+\end{aligned} \]</p>
+
+<p>So now we can defer to equation 1 to express \( F \) in terms of itself:</p>
+
+<p>\[ \begin{aligned}
+F(n) &amp;= b_{adult}(n) + b_{baby}(n) \\
+              &amp;= F(n-1) + F(n-2)
+\end{aligned} \]</p>
+
+<p>Now we have a recursive definition to describe how the sequence behaves.
+We know that we start in month 1 with 1 pair of bunnies total, and can say that in month zero there are no bunnies:</p>
+
+<p>\[ \begin{aligned}
+F(0) &amp;= 0 \\
+F(1) &amp;= 1 \\
+F(n) &amp;= F(n-1) + F(n-2) \\
+\end{aligned} \]</p>
+
+<p>And we arrive at the famous fibonacci sequence, which is a sequence where every number is equal to the sum of the previous 2 numbers in the sequence and the first two numbers are given as 0 and 1. Because our sequence starts at month zero, We can manually iterate over the first 13 numbers in the sequence to solve get the number of bunnies in month 12 and solve Fibonacci&rsquo;s problem:</p>
+
+<p>\[ F := 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 \]</p>
+
+<p>\[ F(12) = 144 \]</p>
+
+  </div>
+</div>
+
+<div class="footer">
+  <div class="container">
+    <a href="https://github.com/desicochrane">github</a>
+  </div>
+</div>
+
+<script src="https://desicochrane.github.io/blogger/js/blog.js"></script>
+</body>
+</html>
