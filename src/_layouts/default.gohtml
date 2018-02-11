@@ -7,13 +7,24 @@
 
 </head>
 <body>
-<div class="header" style="width:900px; margin: 0 auto;">
-  <a href="{{ absurl "/" }}">des.io</a>
+<div class="header">
+  <div class="container">
+    <a href="{{ absurl "/" }}">des.io</a>
+  </div>
 </div>
-<div style="width:900px; margin: 0 auto;">
-{{.Doc.Content}}
-</div>
-<script src="{{ absurl "js/blog.js" }}"></script>
 
+<div class="content">
+  <div class="container">
+    {{.Doc.Content}}
+  </div>
+</div>
+
+<div class="footer">
+  <div class="container">
+    <a href="https://github.com/desicochrane">github</a>
+  </div>
+</div>
+
+<script src="{{ absurl "js/blog.js" }}"></script>
 </body>
 </html>

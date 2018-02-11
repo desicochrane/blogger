@@ -17,57 +17,116 @@
 
 html, body {
   font-family: cmunrm, serif;
-  line-height: 1.5;
+  line-height: 1.8;
   font-size: 18px;
+  padding: 0;
+  margin: 0;
+}
+
+blockquote {
+  border-left: 4px solid #FFA505;
+  margin: 30px 0 30px 5px;
+  padding-left: 30px;
+}
+
+.katex-display {
+  margin: 30px;
 }
 
 .katex {
-  font-size: 0.95em;
+  font-size: 1em;
+}
+
+code {
+  font-family: "Source Code Pro", monospace;
+  font-size: 0.9em;
 }
 
 .chroma {
-  margin: 0 40px;
+  margin: 40px 10px;
   border-radius: 2px;
-  background: #2E2E2E;
-  line-height: 30px;
-  font-size: 17px;
-  padding: 20px;
-  font-family: "Source Code Pro" monospace;
+  background: #f9f9f9;
+  line-height: 22px;
+  font-size: 14px;
+  padding: 30px;
+  font-family: "Source Code Pro", monospace;
 
   .ln {
-    color: #8E8885;
+    color: #534f4e;
     padding: 0 20px 0px 10px;
   }
 
   .kd, .k {
-    color: #E9AB16;
+    color: #AB0D8F;
   }
 
-  .nx {
-    color: #87CFDC;
+  .nx, .nb {
+    color: #1A1BA8;
   }
 
   .mi {
-    color: #B4DC96;
+    color: #1B01D2;
   }
 
   .p {
-    color: #AFA894;
+    color: #333;
+  }
+
+  .c1 {
+    color: #6A737C;
   }
 
   .o {
-    color: #2A9981;
+    color: #984500;
   }
 
   .kt {
     color: #F84B2B;
   }
-  .s2 {
-    color: #F3EEB8;
+
+  .s, .s2 {
+    color: #C61816;
   }
 }
 
 .container {
   width: 900px;
   margin: 0 auto;
+}
+
+$table-margin: 1.667em 0 1em;
+$table-cell-padding: 0.333em;
+$table-border: 0.5px solid #000;
+table {
+  border-collapse: collapse;
+  counter-increment: table;
+  margin: $table-margin;
+  width: 100%;
+}
+
+th,
+td {
+  border: $table-border;
+  padding: $table-cell-padding;
+  text-align: center;
+}
+
+.container {
+  width: 900px;
+  margin: 0 auto;
+}
+
+.content {
+  padding-bottom: 150px;
+}
+
+.footer {
+  background: #2E2E2E;
+  font-size: 14px;
+  padding: 50px 0 100px;
+  color: #acacac;
+
+  a {
+    color: #acacac;
+  }
 }

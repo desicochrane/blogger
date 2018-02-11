@@ -11,12 +11,14 @@
 <div class="container">
   <h1>des.io</h1>
 
-{{ range .Blog.Posts }}
-  <li><a href="{{ absurl .URL }}">
-  {{ fdate .FrontMatter.Date "02-Jan-2006"}} - {{ .FrontMatter.Title }}
-  </a></li>
-{{ end }}
-
+  {{if len .Blog.Posts }}<h3>Posts:</h3>{{end}}
+  {{ range .Blog.Posts }}
+  <li>
+    <a href="{{ absurl .URL }}">
+      {{ fdate .FrontMatter.Date "02-Jan-2006"}} - {{ .FrontMatter.Title }}
+    </a>
+  </li>
+  {{ end }}
 </div>
 <script src="js/blog.js"></script>
 </body>
