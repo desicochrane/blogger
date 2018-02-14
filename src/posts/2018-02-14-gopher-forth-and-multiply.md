@@ -8,6 +8,9 @@ Suppose you are tasked with implementing multiplication for two non-negative int
 
 \\[ M(a,n) = a \times n  \text{ where } a,n \in \\{0,1,2,...\\} \\] 
 
+(todo: explain simple case where multiplying by powers of 2 as a starting point)
+(todo: discuss legal operations)
+
 At risk of perpetuating [multiplication as repeated addition](https://www.maa.org/external_archive/devlin/devlin_06_08.html) we can use the fact that repeated addition for the natural numbers yields the same result as multiplication. Then we can express multiplication as recursive addition, by first defining the base case for \\(n = 0\\) and then for the arbitrary case where \\(n > 0\\):
 
 \\[
