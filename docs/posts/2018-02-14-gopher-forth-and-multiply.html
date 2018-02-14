@@ -163,7 +163,105 @@ M(a,4) &= (4-1)a+a \\
 </span><span class="c1"></span></pre>
 <p>We can modify our function to perform an additional check for the case where \(n\) is odd and doing any additional calculation for that case.</p>
 
-<p>To figure out what extra work is needed, we can observe that for the case where \(n\) is odd our bitwise.</p>
+<p>To figure out what extra work is needed, we can observe that for the case where \(n\) is odd our bitwise operation effectively ignores the last bit, thus:</p>
+
+<p>\[
+n \gg 1 =
+\begin{cases}
+  \frac{n}{2} &amp; \text{if } n \text{ is even} \\
+  \frac{n-1}{2} &amp; \text{if } n \text{ is odd}
+\end{cases} \]</p>
+
+<p>So we can calculate the error  in the case where \(n\) is odd as:</p>
+
+<p>\[ \begin{aligned}
+\text{error} &amp;= \text{correct} - \text{result} \\
+              &amp;= M(a,n) - M(a+a,n \gg 1) \\
+              &amp;= M(a,n) - M(2a,\frac{n-1}{2}) \\
+              &amp;= an - 2a\big(\frac{n-1}{2}\big) \\
+              &amp;= an - a(n-1) \\
+              &amp;= an - an+a \\
+              &amp;= a
+\end{aligned} \]</p>
+
+<p>So we can see that all we need to do to adjust our algorith is to add the error \(a\) in the case where \(n\) is negative. We can determine if \(n\) is negative by checking if its least significant bit is a \(1\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.</p>
+<pre class="chroma"><span class="c1">// multiply.go
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="nx">result</span> <span class="o">:=</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">a</span> <span class="c1">// account for error of &#34;a&#34; for case where &#34;n&#34; is odd
+</span><span class="c1"></span>  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+</pre>
+<p>On my mac I get the following results: (todo: split into two tables with captions OR use bar chart)</p>
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>\(a\)</th>
+<th>\(n\)</th>
+<th>performance</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>native</code></td>
+<td>2</td>
+<td>16</td>
+<td>2.80 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply0</code></td>
+<td>2</td>
+<td>16</td>
+<td>53.7 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply1</code></td>
+<td>2</td>
+<td>16</td>
+<td>15.1 ns/op</td>
+</tr>
+
+<tr>
+<td><code>native</code></td>
+<td>19,998</td>
+<td>12,234</td>
+<td>2.46 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply0</code></td>
+<td>19,998</td>
+<td>12,234</td>
+<td>4,143 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply1</code></td>
+<td>19,998</td>
+<td>12,234</td>
+<td>46.3 ns/op</td>
+</tr>
+</tbody>
+</table>
+<p>Which is almost 2 orders of magnitude better than our first naive algorithm in the case where our inputs are even a little large! However we are still not even close to matching the native multiplication implementation in the language.</p>
 
   </div>
 </div>

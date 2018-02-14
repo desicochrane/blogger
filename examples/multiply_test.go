@@ -38,6 +38,10 @@ func BenchmarkMultiply1_small(b *testing.B) {
 	benchmarkMultiply(b, 2, 16, Multiply1)
 }
 
+func BenchmarkMultiply1_large(b *testing.B) {
+	benchmarkMultiply(b, 19998, 12234, Multiply1)
+}
+
 func benchmarkMultiply(b *testing.B, a int, n int, multiply Multiply) {
 	for i := 0; i < b.N; i++ {
 		multiply(a, n)

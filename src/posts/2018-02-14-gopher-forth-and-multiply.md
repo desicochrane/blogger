@@ -132,7 +132,64 @@ fmt.PrintLn(Multiply1(2,28)) // 32
 
 We can modify our function to perform an additional check for the case where \\(n\\) is odd and doing any additional calculation for that case.
 
-To figure out what extra work is needed, we can observe that for the case where \\(n\\) is odd our bitwise.
+To figure out what extra work is needed, we can observe that for the case where \\(n\\) is odd our bitwise operation effectively ignores the last bit, thus:
+
+\\[
+n \gg 1 = 
+\\begin{cases}
+  \frac{n}{2} & \\text{if } n \text{ is even} \\\\
+  \frac{n-1}{2} & \\text{if } n \text{ is odd}
+\\end{cases} \\]
+
+So we can calculate the error  in the case where \\(n\\) is odd as:
+
+\\[ \\begin{aligned}
+\\text{error} &= \text{correct} - \\text{result} \\\\
+              &= M(a,n) - M(a+a,n \gg 1) \\\\
+              &= M(a,n) - M(2a,\frac{n-1}{2}) \\\\
+              &= an - 2a\big(\frac{n-1}{2}\big) \\\\
+              &= an - a(n-1) \\\\
+              &= an - an+a \\\\
+              &= a
+\\end{aligned} \\]
+
+So we can see that all we need to do to adjust our algorith is to add the error \\(a\\) in the case where \\(n\\) is negative. We can determine if \\(n\\) is negative by checking if its least significant bit is a \\(1\\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.
+
+```go
+// multiply.go
+
+func Multiply1(a int, n int) int {
+  if n < 0 || a < 0 {
+    panic("operand < 0")
+  }
+
+  if n == 1 {
+    return a
+  }
+
+  result := Multiply1(a<<1, n>>1)
+
+  if n&0x1 == 1 {
+    return result + a // account for error of "a" for case where "n" is odd
+  }
+
+  return result
+}
+```
+
+On my mac I get the following results: (todo: split into two tables with captions OR use bar chart)
+
+| Method      | \\(a\\)  | \\(n\\)  | performance |
+|-------------|----------|----------|-------------|
+| `native`    | 2        | 16       | 2.80 ns/op  |
+| `multiply0` | 2        | 16       | 53.7 ns/op  |
+| `multiply1` | 2        | 16       | 15.1 ns/op  |
+| `native`    | 19,998   | 12,234   | 2.46 ns/op  |
+| `multiply0` | 19,998   | 12,234   | 4,143 ns/op  |
+| `multiply1` | 19,998   | 12,234   | 46.3 ns/op  |
+
+Which is almost 2 orders of magnitude better than our first naive algorithm in the case where our inputs are even a little large! However we are still not even close to matching the native multiplication implementation in the language.
+
 
 
 

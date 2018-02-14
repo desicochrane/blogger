@@ -31,5 +31,11 @@ func Multiply1(a int, n int) int {
 		return a
 	}
 
-	return Multiply1(a<<1, n>>1)
+	result := Multiply1(a<<1, n>>1)
+
+	if n&0x1 == 1 { // check if the last bit i
+		return result + a
+	}
+
+	return result
 }
