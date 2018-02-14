@@ -94,7 +94,7 @@ M(a,4) &= (4-1)a+a \\
        &= ((((1-1)a+a)+a)+a)+a \\
        &= (((0+a)+a)+a)+a \\
        &= ((a+a)+a)+a \\
-       &= (a+a)+(a+a) \\text{ (associative law of addition)} \\ 
+       &= (a+a)+(a+a) \text{ (associative law of addition)} \\ 
        &= 2(a+a) \\
 \end{aligned} \]
 </div>
