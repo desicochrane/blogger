@@ -13,7 +13,9 @@ How to express this mathematically. Let's denote the number of rabbits in a give
 
 We can see the total number of bunnies in any given month will equal the sum of number of adult bunnies and baby bunnies in that month:
 
-$$ F(n) = b\_{adult}(n) + b\_{baby}(n) $$
+<div class="katex">
+$$ F(n) = b_{adults}(n) + b_{baby}(n) $$
+</div>
 
 So for example, \\(b\_{new}(n)\\) denote the total pairs of *baby* bunnies in month \\(n\\), and \\(b\_{old}(n)\\) denote the total pairs of *adult* bunnies in month \\(n\\).
 To keep track of bunnies, let \\(new\\) denote new bunnies in a given month and \\(old\\) denote bunnies we saw in from previous months:

@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Blog</title>
-  <link rel="stylesheet" href="https://desicochrane.github.io/blogger/css/blog.css">
+  <link rel="stylesheet" href="/blogger/css/blog.css">
 
 </head>
 <body>
 <div class="header">
   <div class="container">
-    <a href="https://desicochrane.github.io/blogger">des.io</a>
+    <a href="/blogger">des.io</a>
   </div>
 </div>
 
@@ -27,7 +27,9 @@
 
 <p>We can see the total number of bunnies in any given month will equal the sum of number of adult bunnies and baby bunnies in that month:</p>
 
-<p>$$ F(n) = b_{adult}(n) + b_{baby}(n) $$</p>
+<div class="katex">
+$$ F(n) = b_{adults}(n) + b_{baby}(n) $$
+</div>
 
 <p>So for example, \(b_{new}(n)\) denote the total pairs of <em>baby</em> bunnies in month \(n\), and \(b_{old}(n)\) denote the total pairs of <em>adult</em> bunnies in month \(n\).
 To keep track of bunnies, let \(new\) denote new bunnies in a given month and \(old\) denote bunnies we saw in from previous months:</p>
@@ -77,6 +79,6 @@ F(n) &amp;= F(n-1) + F(n-2) \\
   </div>
 </div>
 
-<script src="https://desicochrane.github.io/blogger/js/blog.js"></script>
+<script src="/blogger/js/blog.js"></script>
 </body>
 </html>

@@ -19,7 +19,7 @@ func TestBlog_LoadPosts(t *testing.T) {
 			"2018-02-01",
 			"post",
 			"<h1>Lovely post</h1>\n",
-			"https://des.io/blog/posts/2018-02-01-example-post.html",
+			"/posts/2018-02-01-example-post.html",
 		},
 	}
 

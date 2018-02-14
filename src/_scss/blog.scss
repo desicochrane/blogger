@@ -100,7 +100,7 @@ $table-border: 0.5px solid #000;
 table {
   border-collapse: collapse;
   counter-increment: table;
-  margin: $table-margin;
+  margin: 10px auto 30px;
   width: 100%;
 }
 
@@ -118,6 +118,10 @@ td {
 
 .content {
   padding-bottom: 150px;
+}
+
+.header {
+  padding-top: 10px;
 }
 
 .footer {

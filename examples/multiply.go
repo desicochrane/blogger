@@ -21,3 +21,15 @@ func Multiply0(a int, n int) int {
 
 	return Multiply0(a, n-1) + a
 }
+
+func Multiply1(a int, n int) int {
+	if n < 0 || a < 0 {
+		panic("operand < 0")
+	}
+
+	if n == 1 {
+		return a
+	}
+
+	return Multiply1(a<<1, n>>1)
+}

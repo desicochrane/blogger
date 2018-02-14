@@ -1087,7 +1087,7 @@ code {
 table {
   border-collapse: collapse;
   counter-increment: table;
-  margin: 1.667em 0 1em;
+  margin: 10px auto 30px;
   width: 100%;
 }
 
@@ -1105,6 +1105,10 @@ td {
 
 .content {
   padding-bottom: 150px;
+}
+
+.header {
+  padding-top: 10px;
 }
 
 .footer {
