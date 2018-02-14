@@ -94,14 +94,10 @@ M(a,4) &= (4-1)a+a \\
        &= ((((1-1)a+a)+a)+a)+a \\
        &= (((0+a)+a)+a)+a \\
        &= ((a+a)+a)+a \\
+       &= (a+a)+(a+a) (associative law of addition) \\ 
+       &= 2(a+a) \\
 \end{aligned} \]
 </div>
-
-Here we can see the number of addition operations is 4. We can do better by making use of the associative law:
-
-$$ a + (b + c) = (a+b)+c \text{  (associative law of addition) }$$
-
-$$ \therefore M(a,4) = ((a+a)+a)+a = (a+a)+(a+a) $$
 
 This means that we only need to compute \\(a+a\\) once and then reuse it. We can generalize this as:
 
