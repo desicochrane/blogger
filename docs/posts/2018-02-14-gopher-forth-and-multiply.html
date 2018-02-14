@@ -21,6 +21,9 @@
 
 <p>\[ M(a,n) = a \times n  \text{ where } a,n \in \{0,1,2,&hellip;\} \]</p>
 
+<p>(todo: explain simple case where multiplying by powers of 2 as a starting point)
+(todo: discuss legal operations)</p>
+
 <p>At risk of perpetuating <a href="https://www.maa.org/external_archive/devlin/devlin_06_08.html">multiplication as repeated addition</a> we can use the fact that repeated addition for the natural numbers yields the same result as multiplication. Then we can express multiplication as recursive addition, by first defining the base case for \(n = 0\) and then for the arbitrary case where \(n &gt; 0\):</p>
 
 <p>\[
@@ -38,7 +41,7 @@ M(a,n) =
 
 <p>\[ \begin{aligned}
 M(a,n+1) &amp;= ((n+1)-1)a + a \\
-         &amp;= ((n+0)a + a \\
+         &amp;= ((n-0)a + a \\
 \end{aligned} \]</p>
 <pre class="chroma"><span class="c1">// multiply.go
 </span><span class="c1"></span>
@@ -201,8 +204,10 @@ n \gg 1 =
   <span class="nx">result</span> <span class="o">:=</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
 
   <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">a</span> <span class="c1">// account for error of &#34;a&#34; for case where &#34;n&#34; is odd
-</span><span class="c1"></span>  <span class="p">}</span>
+    <span class="c1">// account for error of &#34;a&#34; 
+</span><span class="c1"></span>    <span class="c1">// for case where &#34;n&#34; is odd
+</span><span class="c1"></span>    <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">a</span> 
+  <span class="p">}</span>
 
   <span class="k">return</span> <span class="nx">result</span>
 <span class="p">}</span>

@@ -33,7 +33,7 @@ func Multiply1(a int, n int) int {
 
 	result := Multiply1(a<<1, n>>1)
 
-	if n&0x1 == 1 { // check if the last bit i
+	if n&0x1 == 1 {
 		return result + a
 	}
 

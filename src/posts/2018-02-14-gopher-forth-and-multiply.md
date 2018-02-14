@@ -28,7 +28,7 @@ Which although might seem obviously correct, we can prove it via induction:
 
 \\[ \\begin{aligned}
 M(a,n+1) &= ((n+1)-1)a + a \\\\
-         &= ((n+0)a + a \\\\
+         &= ((n-0)a + a \\\\
 \\end{aligned} \\]
 
 ```go
@@ -174,7 +174,9 @@ func Multiply1(a int, n int) int {
   result := Multiply1(a<<1, n>>1)
 
   if n&0x1 == 1 {
-    return result + a // account for error of "a" for case where "n" is odd
+    // account for error of "a" 
+    // for case where "n" is odd
+    return result + a 
   }
 
   return result
