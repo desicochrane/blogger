@@ -103,7 +103,7 @@ This means that we only need to compute \\(a+a\\) once and then reuse it. We can
 
 $$ M(a,n) = M(a+a, \frac{n}{2}) $$
 
-Notice that calculating\\(a+a\\)) and \\(\\frac{n}{2}\\) are as simple as a bitwise shift to the left and right respectively if \\(n\\) is an even number. In fact in the case where \\(n\\) is a power of two, that repeatedly dividing in half would eventually reduce the second argument to \\(1\\) which we could use as our inductive base case and we could construct the recursive algorithm as:
+Notice that calculating \\(a+a\\)) and \\(\\frac{n}{2}\\) are as simple as a bitwise shift to the left and right respectively if \\(n\\) is an even number. In fact in the case where \\(n\\) is a power of two, that repeatedly dividing in half would eventually reduce the second argument to \\(1\\) which we could use as our inductive base case and we could construct the recursive algorithm as:
 
 ```go
 // multiply.go

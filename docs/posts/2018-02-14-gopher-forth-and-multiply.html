@@ -131,7 +131,7 @@ M(a,4) &= (4-1)a+a \\
        &= ((((1-1)a+a)+a)+a)+a \\
        &= (((0+a)+a)+a)+a \\
        &= ((a+a)+a)+a \\
-       &= (a+a)+(a+a) \\text{ (associative law of addition)} \\ 
+       &= (a+a)+(a+a) \text{ (associative law of addition)} \\ 
        &= 2(a+a) \\
 \end{aligned} \]
 </div>
@@ -140,7 +140,7 @@ M(a,4) &= (4-1)a+a \\
 
 <p>$$ M(a,n) = M(a+a, \frac{n}{2}) $$</p>
 
-<p>Notice that calculating\(a+a\)) and \(\frac{n}{2}\) are as simple as a bitwise shift to the left and right respectively if \(n\) is an even number. In fact in the case where \(n\) is a power of two, that repeatedly dividing in half would eventually reduce the second argument to \(1\) which we could use as our inductive base case and we could construct the recursive algorithm as:</p>
+<p>Notice that calculating \(a+a\)) and \(\frac{n}{2}\) are as simple as a bitwise shift to the left and right respectively if \(n\) is an even number. In fact in the case where \(n\) is a power of two, that repeatedly dividing in half would eventually reduce the second argument to \(1\) which we could use as our inductive base case and we could construct the recursive algorithm as:</p>
 <pre class="chroma"><span class="c1">// multiply.go
 </span><span class="c1"></span>
 <span class="kd">func</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
