@@ -126,6 +126,7 @@ This is a big improvement in terms of operations, because in each successive ite
 
 However our algorithm assumes that we can divide \\(n\\) by a factor of two cleanly at every iteration, that is we assume that \\(n\\)) is a power of 2. If we invoked our new method with \\(n=28\\) for example we will get an incorrect result:
 
+(todo: "// Run this program in the Go Playground." link)
 ```go
 fmt.PrintLn(Multiply1(2,28)) // 32
 ```

@@ -159,6 +159,8 @@ M(a,4) &= (4-1)a+a \\
 <p>This is a big improvement in terms of operations, because in each successive iteration \(n\) decreased by a factor of 2 and we are only performing constant time operations in our function we have gone from a worst case scenario of \(O(n)\) to \(O(\log{n})\).</p>
 
 <p>However our algorithm assumes that we can divide \(n\) by a factor of two cleanly at every iteration, that is we assume that \(n\)) is a power of 2. If we invoked our new method with \(n=28\) for example we will get an incorrect result:</p>
+
+<p>(todo: &ldquo;// Run this program in the Go Playground.&rdquo; link)</p>
 <pre class="chroma"><span class="nx">fmt</span><span class="p">.</span><span class="nx">PrintLn</span><span class="p">(</span><span class="nx">Multiply1</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">)</span><span class="p">)</span> <span class="c1">// 32
 </span><span class="c1"></span></pre>
 <p>We can modify our function to perform an additional check for the case where \(n\) is odd and doing any additional calculation for that case.</p>

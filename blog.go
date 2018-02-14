@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"sort"
 	"time"
 )
 
@@ -55,6 +56,10 @@ func (blog *Blog) LoadPosts(srcDir string) error {
 
 		blog.Posts = append(blog.Posts, doc)
 	}
+
+	sort.Slice(blog.Posts, func(i, j int) bool {
+		return blog.Posts[i].FrontMatter.Date.After(blog.Posts[j].FrontMatter.Date)
+	})
 
 	return nil
 }

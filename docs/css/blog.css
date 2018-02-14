@@ -1047,6 +1047,10 @@ code {
   padding: 0 20px 0px 10px;
 }
 
+.chroma .kd {
+  font-weight: 700;
+}
+
 .chroma .kd, .chroma .k {
   color: #AB0D8F;
 }
