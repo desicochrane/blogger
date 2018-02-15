@@ -185,7 +185,9 @@ n \gg 1 =
               &amp;= a
 \end{aligned} \]</p>
 
-<p>So we can see that all we need to do to adjust our algorith is to add the error \(a\) in the case where \(n\) is negative. We can determine if \(n\) is negative by checking if its least significant bit is a \(1\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.</p>
+<p>So we can see that all we need to do to adjust our algorithm is to add the error \(a\) in the case where \(n\) is negative. We can determine if \(n\) is negative by checking if its least significant bit is a \(1\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.</p>
+
+<p>Can see that by right bit-wise shift, it will eventually hit zero, which will be our new base case. (otherwise zero wouldn&rsquo;t have worked (todo add failing test))</p>
 <pre class="chroma"><span class="c1">// multiply.go
 </span><span class="c1"></span>
 <span class="kd">func</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
@@ -193,8 +195,8 @@ n \gg 1 =
     <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
   <span class="p">}</span>
 
-  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">a</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">0</span>
   <span class="p">}</span>
 
   <span class="nx">result</span> <span class="o">:=</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
@@ -208,6 +210,79 @@ n \gg 1 =
   <span class="k">return</span> <span class="nx">result</span>
 <span class="p">}</span>
 </pre>
+<p>So what is actually happening?</p>
+
+<p><code>010110</code></p>
+
+<p><code>001011</code></p>
+
+<p><code>000101</code></p>
+
+<p><code>000010</code></p>
+
+<p><code>000001</code></p>
+
+<p><code>000000</code></p>
+
+<p>The only time our function adds anything to the result is when it adds the error factor of \(a\), and it only does so when the last bit is a one. Also every time we shift, our \(a\) grows by a factor of two. So then what our algorithm effectively does is to double \(a\) every shift and sum all the cases where the bit is one. A way to visualize this is by first representing \(a\) in binary, and putting into a table as rows:</p>
+
+<p>(todo: observe the last digit of \(a\) as function \(\text{FinalDigit}\) of iteration ((k\) corresponds to:)</p>
+
+<p>$$ \text{FinalDigit}(28, k) = 0,1,0,0,0,1 $$</p>
+
+<p>(todo: go through algorithm by hand for case)</p>
+
+<table>
+<thead>
+<tr>
+<th>\(2^kn\)</th>
+<th>\(\text{FinalDigit}(a, k)\)</th>
+<th>\(\text{col}_{1} \times \text{col}_{2}\)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>28</td>
+<td>1</td>
+<td>28</td>
+</tr>
+
+<tr>
+<td>56</td>
+<td>0</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>112</td>
+<td>0</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>224</td>
+<td>0</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>448</td>
+<td>1</td>
+<td>448</td>
+</tr>
+</tbody>
+</table>
+<p>$$ \sum(\text{col}_{3}) = 28 + 448 = 476 = 17 \times 28 $$</p>
+
+<p>This turns out to be a quick and easy way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.</p>
+
 <p>On my mac I get the following results: (todo: split into two tables with captions OR use bar chart)</p>
 
 <table>

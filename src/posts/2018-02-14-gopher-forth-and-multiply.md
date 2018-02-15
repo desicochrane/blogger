@@ -153,7 +153,10 @@ So we can calculate the error  in the case where \\(n\\) is odd as:
               &= a
 \\end{aligned} \\]
 
-So we can see that all we need to do to adjust our algorith is to add the error \\(a\\) in the case where \\(n\\) is negative. We can determine if \\(n\\) is negative by checking if its least significant bit is a \\(1\\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.
+So we can see that all we need to do to adjust our algorithm is to add the error \\(a\\) in the case where \\(n\\) is negative. We can determine if \\(n\\) is negative by checking if its least significant bit is a \\(1\\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.
+
+Can see that by right bit-wise shift, it will eventually hit zero, which will be our new base case. (otherwise zero wouldn't have worked (todo add failing test))
+
 
 ```go
 // multiply.go
@@ -163,8 +166,8 @@ func Multiply1(a int, n int) int {
     panic("operand < 0")
   }
 
-  if n == 1 {
-    return a
+  if n == 0 {
+    return 0
   }
 
   result := Multiply1(a<<1, n>>1)
@@ -178,6 +181,42 @@ func Multiply1(a int, n int) int {
   return result
 }
 ```
+
+So what is actually happening?
+
+`010110`
+
+`001011`
+
+`000101`
+
+`000010`
+
+`000001`
+
+`000000`
+
+The only time our function adds anything to the result is when it adds the error factor of \\(a\\), and it only does so when the last bit is a one. Also every time we shift, our \\(a\\) grows by a factor of two. So then what our algorithm effectively does is to double \\(a\\) every shift and sum all the cases where the bit is one. A way to visualize this is by first representing \\(a\\) in binary, and putting into a table as rows:
+
+(todo: observe the last digit of \\(a\\) as function \\(\\text{FinalDigit}\\) of iteration \((k\\) corresponds to:)
+
+$$ \\text{FinalDigit}(28, k) = 0,1,0,0,0,1 $$
+
+(todo: go through algorithm by hand for case)
+
+| \\(2^kn\\) | \\(\\text{FinalDigit}(a, k)\\) | \\(\\text{col}\_{1} \times \\text{col}\_{2}\\) |
+|---------- |----------------------------------|----------------|
+|   1       | 0                                | 0              |
+|  28       | 1                                | 28             |
+|  56       | 0                                | 0              |
+| 112       | 0                                | 0              |
+| 224       | 0                                | 0              |
+| 448       | 1                                | 448            |
+
+$$ \sum(\\text{col}\_{3}) = 28 + 448 = 476 = 17 \times 28 $$
+
+This turns out to be a quick and easy way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.
+
 
 On my mac I get the following results: (todo: split into two tables with captions OR use bar chart)
 
