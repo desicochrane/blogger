@@ -196,7 +196,7 @@ So what is actually happening?
 
 `000000`
 
-The only time our function adds anything to the result is when it adds the error factor of \\(a\\), and it only does so when the last bit is a one. Also every time we shift, our \\(a\\) grows by a factor of two. So then what our algorithm effectively does is to double \\(a\\) every shift and sum all the cases where the bit is one. A way to visualize this is by first representing \\(a\\) in binary, and putting into a table as rows:
+The only time our function adds anything to the result is when it adds the error factor of \\(a\\), and it only does so when the last bit of \\(n\\) is a one. Also every time we shift, our \\(a\\) grows by a factor of two. So then what our algorithm effectively does is to double \\(a\\) every shift and sum all the cases where the bit is one. A way to visualize this is by first representing \\(a\\) in binary, and putting into a table as rows:
 
 (todo: observe the last digit of \\(a\\) as function \\(\\text{FinalDigit}\\) of iteration \((k\\) corresponds to:)
 
@@ -206,16 +206,15 @@ $$ \\text{FinalDigit}(28, k) = 0,1,0,0,0,1 $$
 
 (todo: discuss that the number of operations depends on the "population count" of the n)
 
-| \\(2^kn\\) | \\(\\text{FinalDigit}(a, k)\\) | \\(\\text{col}\_{1} \times \\text{col}\_{2}\\) |
+| \\(2^ka\\) | \\(\\text{FinalDigit}(n, k)\\) | \\(\\text{col}\_{1} \times \\text{col}\_{2}\\) |
 |---------- |----------------------------------|----------------|
-|   1       | 0                                | 0              |
-|  28       | 1                                | 28             |
-|  56       | 0                                | 0              |
-| 112       | 0                                | 0              |
-| 224       | 0                                | 0              |
-| 448       | 1                                | 448            |
+|  17       | 0                                | 0              |
+|  34       | 0                                | 0              |
+|  68       | 1                                | 68             |
+| 136       | 1                                | 136            |
+| 272       | 1                                | 272            |
 
-$$ \sum(\\text{col}\_{3}) = 28 + 448 = 476 = 17 \times 28 $$
+$$ 17 \times 28 = \sum \\text{col}\_{3} = 68 + 136 + 272= 476  $$
 
 This turns out to be a quick and easy way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.
 
