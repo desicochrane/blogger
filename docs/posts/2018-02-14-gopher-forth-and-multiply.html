@@ -226,9 +226,9 @@ n \gg 1 =
 
 <p>The only time our function adds anything to the result is when it adds the error factor of \(a\), and it only does so when the last bit of \(n\) is a one. Also every time we shift, our \(a\) grows by a factor of two. So then what our algorithm effectively does is to double \(a\) every shift and sum all the cases where the bit is one. A way to visualize this is by first representing \(a\) in binary, and putting into a table as rows:</p>
 
-<p>(todo: observe the last digit of \(a\) as function \(\text{FinalDigit}\) of iteration ((k\) corresponds to:)</p>
+<p>(todo: observe the last digit of \(a\) as function \(\text{lsb}\) of iteration ((k\) corresponds to:)</p>
 
-<p>$$ \text{FinalDigit}(28, k) = 0,1,0,0,0,1 $$</p>
+<p>$$ \text{lsb}(28, k) = 0,1,0,0,0,1 $$</p>
 
 <p>(todo: go through algorithm by hand for case, show that it is faster because it is doing less additions and then discuss that it is really just an &ldquo;addition chain&rdquo; and discuss optimal addition chains, and relate to multiplication chains for exponentiation etc.)</p>
 
@@ -238,7 +238,7 @@ n \gg 1 =
 <thead>
 <tr>
 <th>\(2^ka\)</th>
-<th>\(\text{FinalDigit}(n, k)\)</th>
+<th>\(\text{lsb}(n, k)\)</th>
 <th>\(\text{col}_{1} \times \text{col}_{2}\)</th>
 </tr>
 </thead>

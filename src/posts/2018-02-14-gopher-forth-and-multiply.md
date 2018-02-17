@@ -198,15 +198,15 @@ So what is actually happening?
 
 The only time our function adds anything to the result is when it adds the error factor of \\(a\\), and it only does so when the last bit of \\(n\\) is a one. Also every time we shift, our \\(a\\) grows by a factor of two. So then what our algorithm effectively does is to double \\(a\\) every shift and sum all the cases where the bit is one. A way to visualize this is by first representing \\(a\\) in binary, and putting into a table as rows:
 
-(todo: observe the last digit of \\(a\\) as function \\(\\text{FinalDigit}\\) of iteration \((k\\) corresponds to:)
+(todo: observe the last digit of \\(a\\) as function \\(\\text{lsb}\\) of iteration \((k\\) corresponds to:)
 
-$$ \\text{FinalDigit}(28, k) = 0,1,0,0,0,1 $$
+$$ \\text{lsb}(28, k) = 0,1,0,0,0,1 $$
 
 (todo: go through algorithm by hand for case, show that it is faster because it is doing less additions and then discuss that it is really just an "addition chain" and discuss optimal addition chains, and relate to multiplication chains for exponentiation etc.)
 
 (todo: discuss that the number of operations depends on the "population count" of the n)
 
-| \\(2^ka\\) | \\(\\text{FinalDigit}(n, k)\\) | \\(\\text{col}\_{1} \times \\text{col}\_{2}\\) |
+| \\(2^ka\\) | \\(\\text{lsb}(n, k)\\) | \\(\\text{col}\_{1} \times \\text{col}\_{2}\\) |
 |---------- |----------------------------------|----------------|
 |  17       | 0                                | 0              |
 |  34       | 0                                | 0              |
