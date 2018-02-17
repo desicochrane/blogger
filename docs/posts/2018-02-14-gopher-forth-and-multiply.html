@@ -187,7 +187,7 @@ n \gg 1 =
 
 <p>So we can see that all we need to do to adjust our algorithm is to add the error \(a\) in the case where \(n\) is negative. We can determine if \(n\) is negative by checking if its least significant bit is a \(1\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.</p>
 
-<p>Can see that by right bit-wise shift, it will eventually hit zero, which will be our new base case. (otherwise zero wouldn&rsquo;t have worked (todo add failing test))</p>
+<p>Can see that by right bit-wise shift, it will eventually hit zero, which will be our new base case. (otherwise zero would not have worked (todo add failing test))</p>
 <pre class="chroma"><span class="c1">// multiply.go
 </span><span class="c1"></span>
 <span class="kd">func</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
@@ -230,7 +230,9 @@ n \gg 1 =
 
 <p>$$ \text{FinalDigit}(28, k) = 0,1,0,0,0,1 $$</p>
 
-<p>(todo: go through algorithm by hand for case)</p>
+<p>(todo: go through algorithm by hand for case, show that it is faster because it is doing less additions and then discuss that it is really just an &ldquo;addition chain&rdquo; and discuss optimal addition chains, and relate to multiplication chains for exponentiation etc.)</p>
+
+<p>(todo: discuss that the number of operations depends on the &ldquo;population count&rdquo; of the n)</p>
 
 <table>
 <thead>
@@ -340,6 +342,300 @@ n \gg 1 =
 </tbody>
 </table>
 <p>Which is almost 2 orders of magnitude better than our first naive algorithm in the case where our inputs are even a little large! However we are still not even close to matching the native multiplication implementation in the language.</p>
+
+<p>Also note that the number of operations are not the only factor, we are also doing a lot of function calls. We can move this in the right direction step by step by first refactoring our code to be tail recursive.</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply2</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">0</span>
+  <span class="p">}</span>
+
+  <span class="kd">var</span> <span class="kt">error</span> <span class="kt">int</span>
+  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="kt">error</span> <span class="p">=</span> <span class="nx">a</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="kt">error</span> <span class="p">=</span> <span class="mi">0</span>
+  <span class="p">}</span>
+  
+  <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+  <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+  <span class="k">return</span> <span class="kt">error</span> <span class="o">+</span> <span class="nx">Multiply2</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+<p>Now it is in a deferred recursive state, we want to try to move it into a strict tail recurisive state. the benefit of tail recursion it that it easy to visualize what is happening with the plug and chug strategy. To understand how to move from this deferred tail recursion to strict tail recursion, we can &ldquo;plug and chug&rdquo; with an example to see how it behaves when \(a = 17\) and \(n = 28\):</p>
+
+<p>\[ \begin{aligned}
+M(17,28) &amp;= 0 + M(34,14) \\
+         &amp;= 0 + 0 + M(68,7) \\
+         &amp;= 0 + 0 + 68 + M(136,3) \\
+         &amp;= 0 + 0 + 68 + 136 + M(272,1) \\
+         &amp;= 0 + 0 + 68 + 136 + 272 + M(544,0) \\
+         &amp;= 0 + 0 + 68 + 136 + 272 + 0 \\
+         &amp;= 0 + 0 + 68 + 136 + 272 \\
+         &amp;= 0 + 0 + 68 + 408 \\
+         &amp;= 0 + 0 + 476 \\
+         &amp;= 0 + 476 \\
+         &amp;= 476 \\
+\end{aligned} \]</p>
+
+<p>To make this strictly tail recursive then it seems like we need to pass forward the amounts being summed as an additional accumulator argument somehow to get a behaviour that is more like this:</p>
+
+<p>\[ \begin{aligned}
+M(17,28) &amp;= M^\prime(0, 17, 28) \\
+         &amp;= 0 + M(0, 34,14) \\
+         &amp;= 0 + 0 + M(0, 68,7) \\
+         &amp;= 0 + 0 + 68 + M(68, 136,3) \\
+         &amp;= 0 + 0 + 68 + 136 + M(272,1) \\
+         &amp;= 0 + 0 + 68 + 136 + 272 + M(544,0) \\
+         &amp;= 0 + 0 + 68 + 136 + 272 + 0 \\
+         &amp;= 0 + 0 + 68 + 136 + 272 \\
+         &amp;= 0 + 0 + 68 + 408 \\
+         &amp;= 0 + 0 + 476 \\
+         &amp;= 0 + 476 \\
+         &amp;= 476 \\
+\end{aligned} \]</p>
+
+<p>(todo: optimisation for 0!)
+(todo: demonstrate the the invariant is held for each iteration)
+The code that achieves that looks like:</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply3</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="nx">a</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">Multiply3Acc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">Multiply3Acc</span><span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">result</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
+  <span class="p">}</span>
+  
+  <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span>
+  <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span>
+  <span class="k">return</span> <span class="nx">Multiply3Acc</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+<p>Now we can change the strict recursive tail call into a while true loop directly:</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply4</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">Multiply4Acc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">Multiply4Acc</span><span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">result</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
+    <span class="p">}</span>
+
+    <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+    <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+<h3>Small input \(a=2, n=16\):</h3>
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>strategy</th>
+<th>performance</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>native</code></td>
+<td>-</td>
+<td>2.80 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply0</code></td>
+<td>add/subtract recursive</td>
+<td>55.3 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply1</code></td>
+<td>double/half recursive</td>
+<td>17.0 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply2</code></td>
+<td>double/half deferred tail-recursive</td>
+<td>20.9 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply3</code></td>
+<td>double/half strict tail-recursive (accum)</td>
+<td>20.0 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply4</code></td>
+<td>double/half while loop (accum)</td>
+<td>8.83 ns/op</td>
+</tr>
+</tbody>
+</table>
+
+<h3>Larger input \(a=19998, n=12234\):</h3>
+
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>strategy</th>
+<th>performance</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td><code>native</code></td>
+<td>-</td>
+<td>2.80 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply0</code></td>
+<td>add/subtract recursive</td>
+<td>5,3444 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply1</code></td>
+<td>double/half recursive</td>
+<td>47.9 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply2</code></td>
+<td>double/half deferred tail-recursive</td>
+<td>53.0 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply3</code></td>
+<td>double/half strict tail-recursive (accum)</td>
+<td>53.1 ns/op</td>
+</tr>
+
+<tr>
+<td><code>multiply4</code></td>
+<td>double/half while loop (accum)</td>
+<td>16.7 ns/op</td>
+</tr>
+</tbody>
+</table>
+<p>One stand out optimization is that it seems we are needlessly doubling a in the case where n has become zero after right shifting. We can remove this by changing our base case to ((n=1\) and checking early if n is zero, though now that our base case is odd, we have to first.</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply5Acc</span><span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">0</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">result</span>
+    <span class="p">}</span>
+
+    <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+    <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+<p>Also, another immediate optimization is we could check initially whether \(n\) is greater than \(a\), then if so we can switch them, then our algorithm will run in \(O(\log{\text{min}(a,n)})\).</p>
+
+<p>our final:</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply6</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="nx">a</span> <span class="p">{</span>
+    <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="mi">0</span>
+  <span class="p">}</span>
+
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
+
+      <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">result</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+    <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+<table>
+<thead>
+<tr>
+<th>\(a\)</th>
+<th>\(n\)</th>
+<th><code>native</code></th>
+<th><code>Multiply</code></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>2</td>
+<td>16</td>
+<td>2.92 ns/op</td>
+<td>5.92 ns/op</td>
+</tr>
+
+<tr>
+<td>19998</td>
+<td>12234</td>
+<td>2.90 ns/op</td>
+<td>19.3 ns/op</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>12234</td>
+<td>2.90 ns/op</td>
+<td>6.22 ns/op</td>
+</tr>
+</tbody>
+</table>
+<p>(todo: benchmark with power of two, and one minus power of two)
+(todo: how big can it handle?)
+(todo: consistent benchmarks )</p>
 
   </div>
 </div>

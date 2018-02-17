@@ -75,3 +75,11 @@ Cleverly:
 
 ![fib-naive](../img/fibonacci-2.dot.png)
 
+https://www.geeksforgeeks.org/gcd-and-fibonacci-numbers/
+
+Starting with 5, every second Fibonacci number is the length of the hypotenuse of a right triangle with integer sides, or in other words, the largest number in a Pythagorean triple. The length of the longer leg of this triangle is equal to the sum of the three sides of the preceding triangle in this series of triangles, and the shorter leg is equal to the difference between the preceding bypassed Fibonacci number and the shorter leg of the preceding triangle.
+
+https://www.geeksforgeeks.org/cassinis-identity/
+https://www.geeksforgeeks.org/program-check-plus-perfect-number/
+
+fibonaccia as a vector operation, then efficient by https://en.wikipedia.org/wiki/Exponentiation_by_squaring.
