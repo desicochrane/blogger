@@ -15,22 +15,29 @@
 
 <div class="content">
   <div class="container">
-    <h1>Gopher Forth and Multiply</h1>
+    <h1>Gopher Forth and Binary Multiply</h1>
 
-<p>Suppose you are tasked with implementing multiplication for two non-negative integers, that is:</p>
+<h3>The problem</h3>
 
-<p>\[ M(a,n) = a \times n  \text{ where } a,n \in \{0,1,2,&hellip;\} \]</p>
+<p>Suppose we are tasked with implementing the function <code>Multiply</code> that takes as input two positive integers \(a\), \(n\) and outputs their product, that is:</p>
 
-<p>(todo: explain simple case where multiplying by powers of 2 as a starting point)
-(todo: discuss legal operations)</p>
+<p>$$ \text{Multiply} : (a,n) \to a \times n \text{ where } a,n \in \{1,2,3,\ldots \} $$</p>
+
+<p>To makes things fun, we are not allowed to use the native product operator <code>*</code>, however bitwise operations, addition and subtraction are allowed.</p>
+
+<blockquote>
+<p>For the remainder of this article we assume \(a\) and \(n\) to be strictly positive integers.</p>
+</blockquote>
+
+<h3>Multiplication as repeated addition</h3>
 
 <p>At risk of perpetuating <a href="https://www.maa.org/external_archive/devlin/devlin_06_08.html">multiplication as repeated addition</a> we can use the fact that repeated addition for the natural numbers yields the same result as multiplication. Then we can express multiplication as recursive addition, by first defining the base case for \(n = 0\) and then for the arbitrary case where \(n &gt; 0\):</p>
 
 <p>\[
 M(a,n) =
 \begin{cases}
-  0          &amp; \text{if } n = 0 \\
-  (n-1)a + a &amp; \text{if } n &gt; 0
+  a          &amp; \text{if } n = 1 \\
+  (n-1)a + a &amp; \text{if } n &gt; 1
 \end{cases} \]</p>
 
 <p>Which although might seem obviously correct, we can prove it via induction:</p>
@@ -57,70 +64,82 @@ M(a,n+1) &amp;= ((n+1)-1)a + a \\
   <span class="k">return</span> <span class="nx">Multiply0</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nx">a</span>
 <span class="p">}</span>
 </pre>
-<p>To get an idea of how well we might be doing, we can benchmark our implementation and compare it to the native mulitplication operator:</p>
+<h3>Benchmarking</h3>
+
+<p>To get a feeling of how well our solution performs we can use golang&rsquo;s benchmarking tool to compare our solution with the native product operator:</p>
 <pre class="chroma"><span class="c1">// multiply.go
-</span><span class="c1"></span>
+</span><span class="c1"></span><span class="kn">package</span> <span class="nx">multiply</span>
+
 <span class="kd">type</span> <span class="nx">Multiply</span> <span class="kd">func</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span>
 
-<span class="kd">func</span> <span class="nx">MultiplyNative</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
-  <span class="p">}</span>
-
+<span class="c1">// the native operate to compare our solutions against 
+</span><span class="c1"></span><span class="kd">func</span> <span class="nx">MultiplyNative</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="k">return</span> <span class="nx">a</span> <span class="o">*</span> <span class="nx">n</span>
 <span class="p">}</span>
-</pre>
-<p>Now we can create generic test to benchmark for small and large operands:</p>
-<pre class="chroma"><span class="c1">// multiply_test.go
-</span><span class="c1"></span>
-<span class="kd">func</span> <span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">multiply</span> <span class="nx">Multiply</span><span class="p">)</span> <span class="p">{</span>
+</pre><pre class="chroma"><span class="c1">// multiply_test.go
+</span><span class="c1"></span><span class="kn">package</span> <span class="nx">multiply</span>
+
+<span class="c1">// helper function (lowercase first letter) to 
+</span><span class="c1"></span><span class="c1">// benchmark any implementation of &#34;Multiply&#34;
+</span><span class="c1"></span><span class="kd">func</span> <span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">multiply</span> <span class="nx">Multiply</span><span class="p">)</span> <span class="p">{</span>
   <span class="k">for</span> <span class="nx">i</span> <span class="o">:=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="p">&lt;</span> <span class="nx">b</span><span class="p">.</span><span class="nx">N</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span> <span class="p">{</span>
     <span class="nx">multiply</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
   <span class="p">}</span>
 <span class="p">}</span>
+
+<span class="c1">// actual benchmark-test for the native product operator
+</span><span class="c1"></span><span class="kd">func</span> <span class="nx">BenchmarkMultiplyNative</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">MultiplyNative</span><span class="p">)</span>
+<span class="p">}</span>
 </pre>
-<p>On my mac I get the following results:</p>
+<h3>Shifting to double and halve</h3>
 
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>\(a\)</th>
-<th>\(n\)</th>
-<th>performance</th>
-</tr>
-</thead>
+<p>As a starting point we can use the fact that a performing a bitwise left-shift on a number \(k\) times is the same as multiplying by it by two \(k\) times. That is:</p>
 
-<tbody>
-<tr>
-<td><code>native</code></td>
-<td>2</td>
-<td>16</td>
-<td>2.80 ns/op</td>
-</tr>
+<p>$$ a \times 2^k \equiv a \ll k \text{ where } k \in \{0,1,2,\ldots\} $$</p>
 
-<tr>
-<td><code>multiply0</code></td>
-<td>2</td>
-<td>16</td>
-<td>9.00 ns/op</td>
-</tr>
+<p>Then for the special case where \(n\) is a natural power of 2 we can shift \(a\) to the left \(\log_2{n}\) times to arrive at a correct solution:</p>
 
-<tr>
-<td><code>native</code></td>
-<td>19,998</td>
-<td>12,234</td>
-<td>2.46 ns/op</td>
-</tr>
+<p>$$ \text{Multiply} : (a,n) \to a \ll log_2{n} \text{ where } n \in \{2^0,2^1,2^2,\ldots \} $$</p>
 
-<tr>
-<td><code>multiply0</code></td>
-<td>19,998</td>
-<td>12,234</td>
-<td>4,143 ns/op</td>
-</tr>
-</tbody>
-</table>
+<p>However this requires performing a logarithm operation to compute \(\log_2{n}\), which is not an operation we are allowed to use in our solution. To avoid logarithms we can turn to the properties of exponents and express our function recursively:</p>
+
+<p>\[ \begin{aligned}
+\text{Multiply}(a, 2^k) &amp;= a \times 2^k \\
+                         &amp;= a \times (2^1 \times 2^{k-1}) \\
+                         &amp;= (a \times 2^1) \times 2^{k-1} \\
+                         &amp;= \text{Multiply}(a \times 2^1, 2^{k-1}) \\
+                         &amp;= \text{Multiply}(a \times 2^2, 2^{k-2}) \\
+                         &amp;= \text{Multiply}(a \times 2^3, 2^{k-3}) \\
+                         &amp; \ldots \\
+                         &amp;= \text{Multiply}(a \times 2^k, 2^0)
+\end{aligned} \]</p>
+
+<p>Recursively applying the above result means we are doubling \(a\) and halving \(n\) at each recursive call until eventually reaching the trivial case where \(n=2^0 = 1\). Since doubling and halving can be computed by left and right shifts we get the following recursive function definition:</p>
+
+<p>\[
+\text{Multiply}(a,n) =
+\begin{cases}
+  a                             &amp; \text{if } n = 1 \\
+  \text{Multiply}(a\ll1,n\gg1) &amp; \text{if } n &gt; 1 \\
+\end{cases}
+\text{ where } n \in \{2^0,2^1,2^2,\ldots\}
+\]</p>
+
+<p>Implementing this in golang, we get:</p>
+<pre class="chroma"><span class="c1">// multiply.go
+</span><span class="c1"></span><span class="kn">package</span> <span class="nx">multiply</span>
+
+<span class="kd">func</span> <span class="nx">MultiplyV1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">MultiplyV1</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+<h3>Accounting for our error</h3>
+
 <p>Observe the number of operations for our naive first implementation for the large numbers. So let&rsquo;s turn back to our symbolic representation of the problem to see how it behaves for case \(n = 4\):</p>
 
 <div katex>

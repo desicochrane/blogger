@@ -1,23 +1,26 @@
 ---
 title: Gopher Forth and Multiply
-date: 14-Feb-2018
+date: 18-Feb-2018
 ---
 # Gopher Forth and Binary Multiply
 
-Suppose you are tasked with implementing multiplication for two non-negative integers, that is:
+### The problem
+Suppose we are tasked with implementing the function `Multiply` that takes as input two positive integers \\(a\\), \\(n\\) and outputs their product, that is:
 
-\\[ M(a,n) = a \times n  \text{ where } a,n \in \\{0,1,2,...\\} \\] 
+$$ \\text{Multiply} : (a,n) \to a \times n \text{ where } a,n \in \\{1,2,3,\\ldots \\} $$
 
-(todo: explain simple case where multiplying by powers of 2 as a starting point)
-(todo: discuss legal operations)
+To makes things fun, we are not allowed to use the native product operator `*`, however bitwise operations, addition and subtraction are allowed.
 
+> For the remainder of this article we assume \\(a\\) and \\(n\\) to be strictly positive integers.
+
+### Multiplication as repeated addition
 At risk of perpetuating [multiplication as repeated addition](https://www.maa.org/external_archive/devlin/devlin_06_08.html) we can use the fact that repeated addition for the natural numbers yields the same result as multiplication. Then we can express multiplication as recursive addition, by first defining the base case for \\(n = 0\\) and then for the arbitrary case where \\(n > 0\\):
 
 \\[
 M(a,n) = 
 \\begin{cases}
-  0          & \\text{if } n = 0 \\\\
-  (n-1)a + a & \\text{if } n > 0
+  a          & \\text{if } n = 1 \\\\
+  (n-1)a + a & \\text{if } n > 1
 \\end{cases} \\]
 
 Which although might seem obviously correct, we can prove it via induction:
@@ -47,42 +50,90 @@ func Multiply0(a int, n int) int {
 }
 ```  
 
-To get an idea of how well we might be doing, we can benchmark our implementation and compare it to the native mulitplication operator:
+### Benchmarking
+To get a feeling of how well our solution performs we can use golang's benchmarking tool to compare our solution with the native product operator:
 
 ```go
 // multiply.go
+package multiply
 
 type Multiply func(a int, n int) int
 
+// the native operate to compare our solutions against 
 func MultiplyNative(a int, n int) int {
-  if n < 0 || a < 0 {
-    panic("operand < 0")
-  }
-
   return a * n
 }
 ```
 
-Now we can create generic test to benchmark for small and large operands:
-
 ```go
 // multiply_test.go
+package multiply
 
+// helper function (lowercase first letter) to 
+// benchmark any implementation of "Multiply"
 func benchmarkMultiply(b *testing.B, a int, n int, multiply Multiply) {
   for i := 0; i < b.N; i++ {
     multiply(a, n)
   }
 }
+
+// actual benchmark-test for the native product operator
+func BenchmarkMultiplyNative(b *testing.B) {
+  benchmarkMultiply(b, 17, 28, MultiplyNative)
+}
 ```
 
-On my mac I get the following results:
 
-| Method      | \\(a\\)  | \\(n\\)  | performance |
-|-------------|----------|----------|-------------|
-| `native`    | 2        | 16       | 2.80 ns/op  |
-| `multiply0` | 2        | 16       | 9.00 ns/op  |
-| `native`    | 19,998   | 12,234   | 2.46 ns/op  |
-| `multiply0` | 19,998   | 12,234   | 4,143 ns/op  |
+### Shifting to double and halve
+As a starting point we can use the fact that a performing a bitwise left-shift on a number \\(k\\) times is the same as multiplying by it by two \\(k\\) times. That is:
+
+$$ a \times 2^k \equiv a \ll k \text{ where } k \in \\{0,1,2,\\ldots\\} $$
+
+Then for the special case where \\(n\\) is a natural power of 2 we can shift \\(a\\) to the left \\(\log_2{n}\\) times to arrive at a correct solution:
+
+$$ \\text{Multiply} : (a,n) \to a \ll log_2{n} \text{ where } n \in \\{2^0,2^1,2^2,\\ldots \\} $$
+
+However this requires performing a logarithm operation to compute \\(\log_2{n}\\), which is not an operation we are allowed to use in our solution. To avoid logarithms we can turn to the properties of exponents and express our function recursively:
+
+\\[ \\begin{aligned}
+\\text{Multiply}(a, 2^k) &= a \times 2^k \\\\
+                         &= a \times (2^1 \times 2^{k-1}) \\\\
+                         &= (a \times 2^1) \times 2^{k-1} \\\\
+                         &= \\text{Multiply}(a \times 2^1, 2^{k-1}) \\\\
+                         &= \\text{Multiply}(a \times 2^2, 2^{k-2}) \\\\
+                         &= \\text{Multiply}(a \times 2^3, 2^{k-3}) \\\\
+                         & \ldots \\\\
+                         &= \\text{Multiply}(a \times 2^k, 2^0)
+\\end{aligned} \\]
+
+Recursively applying the above result means we are doubling \\(a\\) and halving \\(n\\) at each recursive call until eventually reaching the trivial case where \\(n=2^0 = 1\\). Since doubling and halving can be computed by left and right shifts we get the following recursive function definition:
+
+\\[
+\\text{Multiply}(a,n) =
+\\begin{cases}
+  a                             & \\text{if } n = 1 \\\\
+  \\text{Multiply}(a\ll1,n\gg1) & \\text{if } n > 1 \\\\
+\\end{cases}
+\text{ where } n \in \\{2^0,2^1,2^2,\\ldots\\}
+\\]
+
+
+Implementing this in golang, we get:
+
+```go
+// multiply.go
+package multiply
+
+func MultiplyV1(a int, n int) int {
+  if n == 1 {
+    return a
+  }
+
+  return MultiplyV1(a<<1, n>>1)
+}
+```
+
+### Accounting for our error
 
 Observe the number of operations for our naive first implementation for the large numbers. So let's turn back to our symbolic representation of the problem to see how it behaves for case \\(n = 4\\):
 
