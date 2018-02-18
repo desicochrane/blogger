@@ -2,7 +2,7 @@
 title: Gopher Forth and Multiply
 date: 14-Feb-2018
 ---
-# Gopher Forth and Multiply
+# Gopher Forth and Binary Multiply
 
 Suppose you are tasked with implementing multiplication for two non-negative integers, that is:
 
