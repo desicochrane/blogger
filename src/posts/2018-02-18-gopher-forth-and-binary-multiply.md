@@ -119,11 +119,7 @@ By repeating this process \\(m\\) times we can observe the recursive pattern:
 
 Notice that eventually we will reach the point where \\(m=k\\) whereby:
 
-\\[ \\begin{aligned}
- \\text{Multiply}(a \times 2^k, 2^{k-k}) &= \\text{Multiply}(a \times 2^k, 2^0) & \\\\
-                                         &= \\text{Multiply}(a \times 2^k, 1)  & (x^0 = 1) \\\\
-                                         &= a \times 2^k                       & (\text{multiplicative identity})
-\\end{aligned} \\]
+\\[ \\text{Multiply}(a \times 2^k, 2^{k-k}) = \\text{Multiply}(a \times 2^k, 1) = a \times 2^k \\]
 
 Thus we can see if we recursively double \\(a\\) and halve \\(n\\) we will eventually reach the case where \\(n=2^0 = 1\\), which we will use as our base case.
  
