@@ -102,16 +102,30 @@ However this requires performing a logarithm operation to compute \\(\log_2{n}\\
 
 \\[ \\begin{aligned}
 \\text{Multiply}(a, 2^k) &= a \times 2^k \\\\
-                         &= a \times (2^1 \times 2^{k-1}) \\\\
-                         &= (a \times 2^1) \times 2^{k-1} \\\\
-                         &= \\text{Multiply}(a \times 2^1, 2^{k-1}) \\\\
-                         &= \\text{Multiply}(a \times 2^2, 2^{k-2}) \\\\
-                         &= \\text{Multiply}(a \times 2^3, 2^{k-3}) \\\\
-                         & \ldots \\\\
-                         &= \\text{Multiply}(a \times 2^k, 2^0)
+                         &= a \times (2^1 \times 2^{k-1})            &(x^y \times x^z = x^{y+z}) \\\\
+                         &= (a \times 2^1) \times 2^{k-1}            &(\text{associative law of multiplication}) \\\\
+                         &= \\text{Multiply}(a \times 2^1, 2^{k-1})  &(\text{definition of Multiply}) \\\\
 \\end{aligned} \\]
 
-Recursively applying the above result means we are doubling \\(a\\) and halving \\(n\\) at each recursive call until eventually reaching the trivial case where \\(n=2^0 = 1\\). Since doubling and halving can be computed by left and right shifts we get the following recursive function definition:
+By repeating this process \\(m\\) times we can observe the recursive pattern:
+
+\\[ \\begin{aligned}
+\\text{Multiply}(a, 2^k) &= \\text{Multiply}(a \times 2^1, 2^{k-1}) \\\\
+                         &= \\text{Multiply}(a \times 2^2, 2^{k-2}) \\\\
+                         & \ldots \\\\
+                         &= \\text{Multiply}(a \times 2^m, 2^{k-m})
+\\end{aligned} \\]
+
+Notice that eventually we will reach the point where \\(m=k\\) whereby:
+
+\\[ \\begin{aligned}
+ \\text{Multiply}(a \times 2^k, 2^{k-k}) &= \\text{Multiply}(a \times 2^k, 1) & \\\\
+                                         &= a \times 2^k                      & (\text{multiplicative identity})
+\\end{aligned} \\]
+
+Thus we can see if we recursively double \\(a\\) and halve \\(n\\) we will eventually reach the case where \\(n=2^0 = 1\\), which we will use as our base case.
+ 
+Since doubling can be computed by a left shift and and halving an even number can be computed by a right shift (and since \\(n=2^k\\) is an even number) we can define the following recursive function:
 
 \\[
 \\text{Multiply}(a,n) =
@@ -123,7 +137,7 @@ Recursively applying the above result means we are doubling \\(a\\) and halving 
 \\]
 
 
-Implementing this in golang, we get:
+In golang this is as simple as:
 
 ```go
 // multiply.go
