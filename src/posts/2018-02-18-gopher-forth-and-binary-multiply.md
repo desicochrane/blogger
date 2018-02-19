@@ -51,8 +51,6 @@ To get a feeling of how well our solution performs we can use golang's benchmark
 ```go
 // multiply.go
 
-// ...
-
 // the native operate to compare our solutions against 
 func NativeProduct(a int, n int) int {
   return a * n
@@ -130,8 +128,6 @@ Implementing this in golang, we get:
 
 ```go
 // multiply.go
-
-// ...
 
 func RecursiveDoubleHalf(a int, n int) int {
   if n == 1 {

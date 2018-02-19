@@ -60,8 +60,6 @@
 <p>To get a feeling of how well our solution performs we can use golang&rsquo;s benchmarking tool to compare our solution with the native product operator:</p>
 <pre class="chroma"><span class="c1">// multiply.go
 </span><span class="c1"></span>
-<span class="c1">// ...
-</span><span class="c1"></span>
 <span class="c1">// the native operate to compare our solutions against 
 </span><span class="c1"></span><span class="kd">func</span> <span class="nx">NativeProduct</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="k">return</span> <span class="nx">a</span> <span class="o">*</span> <span class="nx">n</span>
@@ -150,8 +148,6 @@
 
 <p>Implementing this in golang, we get:</p>
 <pre class="chroma"><span class="c1">// multiply.go
-</span><span class="c1"></span>
-<span class="c1">// ...
 </span><span class="c1"></span>
 <span class="kd">func</span> <span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
