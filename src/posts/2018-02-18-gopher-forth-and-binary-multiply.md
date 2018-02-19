@@ -33,8 +33,6 @@ When we translate this to golang we get:
 ```go
 // multiply.go
 
-type Multiply func(a int, n int) int
-
 func RepeatedAddition(a int, n int) int {
   product := 0
   for i := 1; i <= n; i++ {
