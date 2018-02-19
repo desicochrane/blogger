@@ -135,6 +135,7 @@
 <p>\[ \begin{aligned}
 \text{Multiply}(a, 2^k) &amp;= \text{Multiply}(a \times 2^1, 2^{k-1}) \\
                          &amp;= \text{Multiply}(a \times 2^2, 2^{k-2}) \\
+                         &amp;= \text{Multiply}(a \times 2^3, 2^{k-3}) \\
                          &amp; \ldots \\
                          &amp;= \text{Multiply}(a \times 2^m, 2^{k-m})
 \end{aligned} \]</p>
@@ -142,8 +143,9 @@
 <p>Notice that eventually we will reach the point where \(m=k\) whereby:</p>
 
 <p>\[ \begin{aligned}
- \text{Multiply}(a \times 2^k, 2^{k-k}) &amp;= \text{Multiply}(a \times 2^k, 1) &amp; \\
-                                         &amp;= a \times 2^k                      &amp; (\text{multiplicative identity})
+ \text{Multiply}(a \times 2^k, 2^{k-k}) &amp;= \text{Multiply}(a \times 2^k, 2^0) &amp; \\
+                                         &amp;= \text{Multiply}(a \times 2^k, 1)  &amp; (x^0 = 1) \\
+                                         &amp;= a \times 2^k                       &amp; (\text{multiplicative identity})
 \end{aligned} \]</p>
 
 <p>Thus we can see if we recursively double \(a\) and halve \(n\) we will eventually reach the case where \(n=2^0 = 1\), which we will use as our base case.</p>
