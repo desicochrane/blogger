@@ -7,7 +7,7 @@ date: 18-Feb-2018
 ### The problem
 Suppose we are tasked with implementing a function `Multiply` which takes two positive integers \\(a\\), \\(n\\) and outputs their product:
 
-$$ \\text{Multiply} : (a,n) \to a \times n \text{ where } a,n \in \\{1,2,3,\\ldots \\} $$
+$$ \\text{Multiply}(a,n) = a \times n \text{ where } a,n \in \\{1,2,3,\\ldots \\} $$
 
 We are not allowed to use the native product operator `*` in our solution, however bitwise operations, addition and subtraction are permitted. 
 
@@ -69,11 +69,11 @@ func benchmarkMultiply(b *testing.B, a int, n int, multiply Multiply) {
 }
 
 func BenchmarkNativeProduct(b *testing.B) {
-	benchmarkMultiply(b, 17, 28, NativeProduct)
+  benchmarkMultiply(b, 17, 28, NativeProduct)
 }
 
 func BenchmarkRepeatedAddition(b *testing.B) {
-	benchmarkMultiply(b, 17, 28, RepeatedAddition)
+  benchmarkMultiply(b, 17, 28, RepeatedAddition)
 }
 ```
 

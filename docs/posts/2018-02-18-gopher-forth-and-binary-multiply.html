@@ -21,7 +21,7 @@
 
 <p>Suppose we are tasked with implementing a function <code>Multiply</code> which takes two positive integers \(a\), \(n\) and outputs their product:</p>
 
-<p>$$ \text{Multiply} : (a,n) \to a \times n \text{ where } a,n \in \{1,2,3,\ldots \} $$</p>
+<p>$$ \text{Multiply}(a,n) = a \times n \text{ where } a,n \in \{1,2,3,\ldots \} $$</p>
 
 <p>We are not allowed to use the native product operator <code>*</code> in our solution, however bitwise operations, addition and subtraction are permitted.</p>
 
@@ -75,11 +75,11 @@
 <span class="p">}</span>
 
 <span class="kd">func</span> <span class="nx">BenchmarkNativeProduct</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">NativeProduct</span><span class="p">)</span>
+  <span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">NativeProduct</span><span class="p">)</span>
 <span class="p">}</span>
 
 <span class="kd">func</span> <span class="nx">BenchmarkRepeatedAddition</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
-	<span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">RepeatedAddition</span><span class="p">)</span>
+  <span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">RepeatedAddition</span><span class="p">)</span>
 <span class="p">}</span>
 </pre>
 <p>I ran this on my mac for various inputs for \( (a,n) \) and I get:</p>
