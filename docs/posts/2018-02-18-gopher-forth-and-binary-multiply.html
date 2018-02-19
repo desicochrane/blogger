@@ -43,7 +43,8 @@
 
 <p>When we translate this to golang we get:</p>
 <pre class="chroma"><span class="c1">// multiply.go
-</span><span class="c1"></span><span class="kn">package</span> <span class="nx">multiply</span>
+</span><span class="c1"></span>
+<span class="kd">type</span> <span class="nx">Multiply</span> <span class="kd">func</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span>
 
 <span class="kd">func</span> <span class="nx">RepeatedAddition</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="nx">product</span> <span class="o">:=</span> <span class="mi">0</span>
@@ -58,8 +59,7 @@
 
 <p>To get a feeling of how well our solution performs we can use golang&rsquo;s benchmarking tool to compare our solution with the native product operator:</p>
 <pre class="chroma"><span class="c1">// multiply.go
-</span><span class="c1"></span><span class="kn">package</span> <span class="nx">multiply</span>
-
+</span><span class="c1"></span>
 <span class="c1">// ...
 </span><span class="c1"></span>
 <span class="c1">// the native operate to compare our solutions against 
@@ -77,13 +77,11 @@
   <span class="p">}</span>
 <span class="p">}</span>
 
-<span class="c1">// NativeProduct
-</span><span class="c1"></span><span class="kd">func</span> <span class="nx">BenchmarkNativeProduct</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">func</span> <span class="nx">BenchmarkNativeProduct</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
 	<span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">NativeProduct</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="c1">// RepeatedAddition
-</span><span class="c1"></span><span class="kd">func</span> <span class="nx">BenchmarkRepeatedAddition</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
+<span class="kd">func</span> <span class="nx">BenchmarkRepeatedAddition</span><span class="p">(</span><span class="nx">b</span> <span class="o">*</span><span class="nx">testing</span><span class="p">.</span><span class="nx">B</span><span class="p">)</span> <span class="p">{</span>
 	<span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">RepeatedAddition</span><span class="p">)</span>
 <span class="p">}</span>
 </pre>
@@ -152,522 +150,46 @@
 
 <p>Implementing this in golang, we get:</p>
 <pre class="chroma"><span class="c1">// multiply.go
-</span><span class="c1"></span><span class="kn">package</span> <span class="nx">multiply</span>
-
-<span class="kd">func</span> <span class="nx">MultiplyV1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+</span><span class="c1"></span>
+<span class="c1">// ...
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nx">a</span>
   <span class="p">}</span>
 
-  <span class="k">return</span> <span class="nx">MultiplyV1</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
+  <span class="k">return</span> <span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
 <span class="p">}</span>
 </pre>
 <h3>Accounting for our error</h3>
 
-<p>Observe the number of operations for our naive first implementation for the large numbers. So let&rsquo;s turn back to our symbolic representation of the problem to see how it behaves for case \(n = 4\):</p>
+<blockquote>
+<p>todo</p>
+</blockquote>
 
-<div katex>
-\[ \begin{aligned}
-M(a,4) &= (4-1)a+a \\
-       &= ((3-1)a+a)+a \\
-       &= (((2-1)a+a)+a)+a \\
-       &= ((((1-1)a+a)+a)+a)+a \\
-       &= (((0+a)+a)+a)+a \\
-       &= ((a+a)+a)+a \\
-       &= (a+a)+(a+a) \text{ (associative law of addition)} \\ 
-       &= 2(a+a) \\
-\end{aligned} \]
-</div>
+<h3>Understanding what&rsquo;s happening</h3>
 
-<p>This means that we only need to compute \(a+a\) once and then reuse it. We can generalize this as:</p>
+<blockquote>
+<p>todo</p>
+</blockquote>
 
-<p>$$ M(a,n) = M(a+a, \frac{n}{2}) $$</p>
+<h3>Tail recursion</h3>
 
-<p>Notice that calculating \(a+a\)) and \(\frac{n}{2}\) are as simple as a bitwise shift to the left and right respectively if \(n\) is an even number. In fact in the case where \(n\) is a power of two, that repeatedly dividing in half would eventually reduce the second argument to \(1\) which we could use as our inductive base case and we could construct the recursive algorithm as:</p>
-<pre class="chroma"><span class="c1">// multiply.go
-</span><span class="c1"></span>
-<span class="kd">func</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
-  <span class="p">}</span>
+<blockquote>
+<p>todo</p>
+</blockquote>
 
-  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">a</span>
-  <span class="p">}</span>
+<h3>Fine Tuning</h3>
 
-  <span class="k">return</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
-<span class="p">}</span>
-</pre>
-<p>This is a big improvement in terms of operations, because in each successive iteration \(n\) decreased by a factor of 2 and we are only performing constant time operations in our function we have gone from a worst case scenario of \(O(n)\) to \(O(\log{n})\).</p>
+<blockquote>
+<p>todo</p>
+</blockquote>
 
-<p>However our algorithm assumes that we can divide \(n\) by a factor of two cleanly at every iteration, that is we assume that \(n\)) is a power of 2. If we invoked our new method with \(n=28\) for example we will get an incorrect result:</p>
+<h3>Summary</h3>
 
-<p>(todo: &ldquo;// Run this program in the Go Playground.&rdquo; link)</p>
-<pre class="chroma"><span class="nx">fmt</span><span class="p">.</span><span class="nx">PrintLn</span><span class="p">(</span><span class="nx">Multiply1</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">28</span><span class="p">)</span><span class="p">)</span> <span class="c1">// 32
-</span><span class="c1"></span></pre>
-<p>We can modify our function to perform an additional check for the case where \(n\) is odd and doing any additional calculation for that case.</p>
-
-<p>To figure out what extra work is needed, we can observe that for the case where \(n\) is odd our bitwise operation effectively ignores the last bit, thus:</p>
-
-<p>\[
-n \gg 1 =
-\begin{cases}
-  \frac{n}{2} &amp; \text{if } n \text{ is even} \\
-  \frac{n-1}{2} &amp; \text{if } n \text{ is odd}
-\end{cases} \]</p>
-
-<p>So we can calculate the error  in the case where \(n\) is odd as:</p>
-
-<p>\[ \begin{aligned}
-\text{error} &amp;= \text{correct} - \text{result} \\
-              &amp;= M(a,n) - M(a+a,n \gg 1) \\
-              &amp;= M(a,n) - M(2a,\frac{n-1}{2}) \\
-              &amp;= an - 2a\big(\frac{n-1}{2}\big) \\
-              &amp;= an - a(n-1) \\
-              &amp;= an - an+a \\
-              &amp;= a
-\end{aligned} \]</p>
-
-<p>So we can see that all we need to do to adjust our algorithm is to add the error \(a\) in the case where \(n\) is negative. We can determine if \(n\) is negative by checking if its least significant bit is a \(1\) via a bitmask (todo: illustrate the bitmask), and result in the following corrected implementation.</p>
-
-<p>Can see that by right bit-wise shift, it will eventually hit zero, which will be our new base case. (otherwise zero would not have worked (todo add failing test))</p>
-<pre class="chroma"><span class="c1">// multiply.go
-</span><span class="c1"></span>
-<span class="kd">func</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="mi">0</span>
-  <span class="p">}</span>
-
-  <span class="nx">result</span> <span class="o">:=</span> <span class="nx">Multiply1</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
-
-  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-    <span class="c1">// account for error of &#34;a&#34; 
-</span><span class="c1"></span>    <span class="c1">// for case where &#34;n&#34; is odd
-</span><span class="c1"></span>    <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">a</span> 
-  <span class="p">}</span>
-
-  <span class="k">return</span> <span class="nx">result</span>
-<span class="p">}</span>
-</pre>
-<p>So what is actually happening?</p>
-
-<p><code>010110</code></p>
-
-<p><code>001011</code></p>
-
-<p><code>000101</code></p>
-
-<p><code>000010</code></p>
-
-<p><code>000001</code></p>
-
-<p><code>000000</code></p>
-
-<p>The only time our function adds anything to the result is when it adds the error factor of \(a\), and it only does so when the last bit of \(n\) is a one. Also every time we shift, our \(a\) grows by a factor of two. So then what our algorithm effectively does is to double \(a\) every shift and sum all the cases where the bit is one. A way to visualize this is by first representing \(a\) in binary, and putting into a table as rows:</p>
-
-<p>(todo: observe the last digit of \(a\) as function \(\text{lsb}\) of iteration ((k\) corresponds to:)</p>
-
-<p>$$ \text{lsb}(28, k) = 0,1,0,0,0,1 $$</p>
-
-<p>(todo: go through algorithm by hand for case, show that it is faster because it is doing less additions and then discuss that it is really just an &ldquo;addition chain&rdquo; and discuss optimal addition chains, and relate to multiplication chains for exponentiation etc.)</p>
-
-<p>(todo: discuss that the number of operations depends on the &ldquo;population count&rdquo; of the n)</p>
-
-<table>
-<thead>
-<tr>
-<th>\(2^ka\)</th>
-<th>\(\text{lsb}(n, k)\)</th>
-<th>\(\text{col}_{1} \times \text{col}_{2}\)</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>17</td>
-<td>0</td>
-<td>0</td>
-</tr>
-
-<tr>
-<td>34</td>
-<td>0</td>
-<td>0</td>
-</tr>
-
-<tr>
-<td>68</td>
-<td>1</td>
-<td>68</td>
-</tr>
-
-<tr>
-<td>136</td>
-<td>1</td>
-<td>136</td>
-</tr>
-
-<tr>
-<td>272</td>
-<td>1</td>
-<td>272</td>
-</tr>
-</tbody>
-</table>
-<p>$$ 17 \times 28 = \sum \text{col}_{3} = 68 + 136 + 272= 476  $$</p>
-
-<p>This turns out to be a quick and easy way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.</p>
-
-<p>On my mac I get the following results: (todo: split into two tables with captions OR use bar chart)</p>
-
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>\(a\)</th>
-<th>\(n\)</th>
-<th>performance</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>native</code></td>
-<td>2</td>
-<td>16</td>
-<td>2.80 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply0</code></td>
-<td>2</td>
-<td>16</td>
-<td>53.7 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply1</code></td>
-<td>2</td>
-<td>16</td>
-<td>15.1 ns/op</td>
-</tr>
-
-<tr>
-<td><code>native</code></td>
-<td>19,998</td>
-<td>12,234</td>
-<td>2.46 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply0</code></td>
-<td>19,998</td>
-<td>12,234</td>
-<td>4,143 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply1</code></td>
-<td>19,998</td>
-<td>12,234</td>
-<td>46.3 ns/op</td>
-</tr>
-</tbody>
-</table>
-<p>Which is almost 2 orders of magnitude better than our first naive algorithm in the case where our inputs are even a little large! However we are still not even close to matching the native multiplication implementation in the language.</p>
-
-<p>Also note that the number of operations are not the only factor, we are also doing a lot of function calls. We can move this in the right direction step by step by first refactoring our code to be tail recursive.</p>
-<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply2</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="mi">0</span>
-  <span class="p">}</span>
-
-  <span class="kd">var</span> <span class="kt">error</span> <span class="kt">int</span>
-  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-    <span class="kt">error</span> <span class="p">=</span> <span class="nx">a</span>
-  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
-    <span class="kt">error</span> <span class="p">=</span> <span class="mi">0</span>
-  <span class="p">}</span>
-  
-  <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
-  <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
-  <span class="k">return</span> <span class="kt">error</span> <span class="o">+</span> <span class="nx">Multiply2</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
-<span class="p">}</span>
-</pre>
-<p>Now it is in a deferred recursive state, we want to try to move it into a strict tail recurisive state. the benefit of tail recursion it that it easy to visualize what is happening with the plug and chug strategy. To understand how to move from this deferred tail recursion to strict tail recursion, we can &ldquo;plug and chug&rdquo; with an example to see how it behaves when \(a = 17\) and \(n = 28\):</p>
-
-<p>\[ \begin{aligned}
-M(17,28) &amp;= 0 + M(34,14) \\
-         &amp;= 0 + 0 + M(68,7) \\
-         &amp;= 0 + 0 + 68 + M(136,3) \\
-         &amp;= 0 + 0 + 68 + 136 + M(272,1) \\
-         &amp;= 0 + 0 + 68 + 136 + 272 + M(544,0) \\
-         &amp;= 0 + 0 + 68 + 136 + 272 + 0 \\
-         &amp;= 0 + 0 + 68 + 136 + 272 \\
-         &amp;= 0 + 0 + 68 + 408 \\
-         &amp;= 0 + 0 + 476 \\
-         &amp;= 0 + 476 \\
-         &amp;= 476 \\
-\end{aligned} \]</p>
-
-<p>To make this strictly tail recursive then it seems like we need to pass forward the amounts being summed as an additional accumulator argument somehow to get a behaviour that is more like this:</p>
-
-<p>\[ \begin{aligned}
-M(17,28) &amp;= M^\prime(0, 17, 28) \\
-         &amp;= M^\prime(0,34,14) \\
-         &amp;= M^\prime(0,68,7) \\
-         &amp;= M^\prime(68,136,3) \\
-         &amp;= M^\prime(204,272,1) \\
-         &amp;= M^\prime(476,544,0) \\
-         &amp;= 476 \\
-\end{aligned} \]</p>
-
-<p>(todo: optimisation for 0!)
-(todo: demonstrate the the invariant is held for each iteration)
-The code that achieves that looks like:</p>
-<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply3</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="nx">a</span> <span class="p">{</span>
-    <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">a</span>
-  <span class="p">}</span>
-
-  <span class="k">return</span> <span class="nx">Multiply3Acc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nx">Multiply3Acc</span><span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="nx">result</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-    <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
-  <span class="p">}</span>
-  
-  <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span>
-  <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span>
-  <span class="k">return</span> <span class="nx">Multiply3Acc</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
-<span class="p">}</span>
-</pre>
-<p>Now we can change the strict recursive tail call into a while true loop directly:</p>
-<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply4</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
-  <span class="p">}</span>
-
-  <span class="k">return</span> <span class="nx">Multiply4Acc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
-<span class="p">}</span>
-
-<span class="kd">func</span> <span class="nx">Multiply4Acc</span><span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">for</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">result</span>
-    <span class="p">}</span>
-
-    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-      <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
-    <span class="p">}</span>
-
-    <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
-    <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre>
-<h3>Small input \(a=2, n=16\):</h3>
-
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>strategy</th>
-<th>performance</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>native</code></td>
-<td>-</td>
-<td>2.80 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply0</code></td>
-<td>add/subtract recursive</td>
-<td>55.3 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply1</code></td>
-<td>double/half recursive</td>
-<td>17.0 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply2</code></td>
-<td>double/half deferred tail-recursive</td>
-<td>20.9 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply3</code></td>
-<td>double/half strict tail-recursive (accum)</td>
-<td>20.0 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply4</code></td>
-<td>double/half while loop (accum)</td>
-<td>8.83 ns/op</td>
-</tr>
-</tbody>
-</table>
-
-<h3>Larger input \(a=19998, n=12234\):</h3>
-
-<table>
-<thead>
-<tr>
-<th>Method</th>
-<th>strategy</th>
-<th>performance</th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td><code>native</code></td>
-<td>-</td>
-<td>2.80 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply0</code></td>
-<td>add/subtract recursive</td>
-<td>5,3444 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply1</code></td>
-<td>double/half recursive</td>
-<td>47.9 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply2</code></td>
-<td>double/half deferred tail-recursive</td>
-<td>53.0 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply3</code></td>
-<td>double/half strict tail-recursive (accum)</td>
-<td>53.1 ns/op</td>
-</tr>
-
-<tr>
-<td><code>multiply4</code></td>
-<td>double/half while loop (accum)</td>
-<td>16.7 ns/op</td>
-</tr>
-</tbody>
-</table>
-<p>One stand out optimization is that it seems we are needlessly doubling a in the case where n has become zero after right shifting. We can remove this by changing our base case to ((n=1\) and checking early if n is zero, though now that our base case is odd, we have to first.</p>
-<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply5Acc</span><span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="mi">0</span>
-  <span class="p">}</span>
-
-  <span class="k">for</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-      <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
-    <span class="p">}</span>
-
-    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-      <span class="k">return</span> <span class="nx">result</span>
-    <span class="p">}</span>
-
-    <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
-    <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre>
-<p>Also, another immediate optimization is we could check initially whether \(n\) is greater than \(a\), then if so we can switch them, then our algorithm will run in \(O(\log{\text{min}(a,n)})\).</p>
-
-<p>our final:</p>
-<pre class="chroma"><span class="kd">func</span> <span class="nx">Multiply6</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="nx">result</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="o">||</span> <span class="nx">a</span> <span class="p">&lt;</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="nb">panic</span><span class="p">(</span><span class="s">&#34;operand &lt; 0&#34;</span><span class="p">)</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="nx">n</span> <span class="p">&gt;</span> <span class="nx">a</span> <span class="p">{</span>
-    <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">a</span>
-  <span class="p">}</span>
-
-  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">{</span>
-    <span class="k">return</span> <span class="mi">0</span>
-  <span class="p">}</span>
-
-  <span class="k">for</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-      <span class="nx">result</span> <span class="o">+=</span> <span class="nx">a</span>
-
-      <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-        <span class="k">return</span> <span class="nx">result</span>
-      <span class="p">}</span>
-    <span class="p">}</span>
-
-    <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
-    <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
-  <span class="p">}</span>
-<span class="p">}</span>
-</pre>
-<table>
-<thead>
-<tr>
-<th>\(a\)</th>
-<th>\(n\)</th>
-<th><code>native</code></th>
-<th><code>Multiply</code></th>
-</tr>
-</thead>
-
-<tbody>
-<tr>
-<td>2</td>
-<td>16</td>
-<td>2.92 ns/op</td>
-<td>5.92 ns/op</td>
-</tr>
-
-<tr>
-<td>19998</td>
-<td>12234</td>
-<td>2.90 ns/op</td>
-<td>19.3 ns/op</td>
-</tr>
-
-<tr>
-<td>2</td>
-<td>12234</td>
-<td>2.90 ns/op</td>
-<td>6.22 ns/op</td>
-</tr>
-</tbody>
-</table>
-<p>(todo: benchmark with power of two, and one minus power of two)
-(todo: how big can it handle?)
-(todo: consistent benchmarks )</p>
+<blockquote>
+<p>todo</p>
+</blockquote>
 
   </div>
 </div>
