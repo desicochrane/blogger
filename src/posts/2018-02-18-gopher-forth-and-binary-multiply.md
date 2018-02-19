@@ -1,54 +1,48 @@
 ---
-title: Gopher Forth and Multiply
+title: Gopher Forth and Binary Multiply
 date: 18-Feb-2018
 ---
 # Gopher Forth and Binary Multiply
 
 ### The problem
-Suppose we are tasked with implementing the function `Multiply` that takes as input two positive integers \\(a\\), \\(n\\) and outputs their product, that is:
+Suppose we are tasked with implementing a function `Multiply` which takes two positive integers \\(a\\), \\(n\\) and outputs their product:
 
 $$ \\text{Multiply} : (a,n) \to a \times n \text{ where } a,n \in \\{1,2,3,\\ldots \\} $$
 
-To makes things fun, we are not allowed to use the native product operator `*`, however bitwise operations, addition and subtraction are allowed.
+We are not allowed to use the native product operator `*` in our solution, however bitwise operations, addition and subtraction are permitted. 
+
+Because we will be comparing several different implementations, it is convenient to first define an interface for our solutions to adhere to:
+
+```go
+// multiply.go
+package multiply
+
+type Multiply func(a int, n int) int
+```
+
 
 > For the remainder of this article we assume \\(a\\) and \\(n\\) to be strictly positive integers.
 
 ### Multiplication as repeated addition
-At risk of perpetuating [multiplication as repeated addition](https://www.maa.org/external_archive/devlin/devlin_06_08.html) we can use the fact that repeated addition for the natural numbers yields the same result as multiplication. Then we can express multiplication as recursive addition, by first defining the base case for \\(n = 0\\) and then for the arbitrary case where \\(n > 0\\):
+At risk of perpetuating [multiplication as repeated addition](https://www.maa.org/external_archive/devlin/devlin_06_08.html), we can take advantage of the fact that repeated addition for the natural numbers yields the same result as multiplication, that is:
+ 
+ $$ \\text{Multiply}(a,n) = a \times n = \sum_{1}^n a  $$
 
-\\[
-M(a,n) = 
-\\begin{cases}
-  a          & \\text{if } n = 1 \\\\
-  (n-1)a + a & \\text{if } n > 1
-\\end{cases} \\]
-
-Which although might seem obviously correct, we can prove it via induction:
-
-\\[ \text{base case: }  M(a,0) = a \\times 0 = 0 \\]
-
-\\[ \text{Suppose true for arbitrary n:} \\]
-
-\\[ \\begin{aligned}
-M(a,n+1) &= ((n+1)-1)a + a \\\\
-         &= ((n-0)a + a \\\\
-\\end{aligned} \\]
+When we translate this to golang we get:
 
 ```go
 // multiply.go
+package multiply
 
-func Multiply0(a int, n int) int {
-  if n < 0 || a < 0 {
-    panic("operand < 0")
+func RepeatedAddition(a int, n int) int {
+  product := 0
+  for i := 1; i <= n; i++ {
+    product += a
   }
 
-  if n == 0 {
-    return 0
-  }
-
-  return Multiply0(a, n-1) + a
+  return product
 }
-```  
+```
 
 ### Benchmarking
 To get a feeling of how well our solution performs we can use golang's benchmarking tool to compare our solution with the native product operator:
@@ -57,10 +51,10 @@ To get a feeling of how well our solution performs we can use golang's benchmark
 // multiply.go
 package multiply
 
-type Multiply func(a int, n int) int
+// ...
 
 // the native operate to compare our solutions against 
-func MultiplyNative(a int, n int) int {
+func NativeProduct(a int, n int) int {
   return a * n
 }
 ```
@@ -77,15 +71,31 @@ func benchmarkMultiply(b *testing.B, a int, n int, multiply Multiply) {
   }
 }
 
-// actual benchmark-test for the native product operator
-func BenchmarkMultiplyNative(b *testing.B) {
-  benchmarkMultiply(b, 17, 28, MultiplyNative)
+// NativeProduct
+func BenchmarkNativeProduct(b *testing.B) {
+	benchmarkMultiply(b, 17, 28, NativeProduct)
+}
+
+// RepeatedAddition
+func BenchmarkRepeatedAddition(b *testing.B) {
+	benchmarkMultiply(b, 17, 28, RepeatedAddition)
 }
 ```
 
+I ran this on my mac for various inputs for \\( (a,n) \\) and I get:
+
+
+| \\( (a,n) \\)         | `NativeProduct`    | `RepeatedAddition` |
+|-----------------------|--------------------|--------------------|
+| \\( (17,28) \\)       | 2.4 ns/op          | 13.0 ns/op         |
+| \\( (19998,12234) \\) | 2.4 ns/op          | 4,182 ns/op         |
+
+We can see that our solution performs poorly compared to the native product operator and does not scale at all for larger inputs. I also tried much larger inputs, but I lost my patience well before `RepeatedAddition` finished its computation.
+
+It seems we need to be more clever in our approach.
 
 ### Shifting to double and halve
-As a starting point we can use the fact that a performing a bitwise left-shift on a number \\(k\\) times is the same as multiplying by it by two \\(k\\) times. That is:
+We tried addition, but now let's explore bitwise shifts. We can use the fact that a performing a bitwise left-shift on a number \\(k\\) times is the same as multiplying by it by two \\(k\\) times. That is:
 
 $$ a \times 2^k \equiv a \ll k \text{ where } k \in \\{0,1,2,\\ldots\\} $$
 

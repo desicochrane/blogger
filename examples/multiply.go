@@ -3,8 +3,19 @@ package examples
 // -----------------------------------------------------------------------------
 type Multiply func(a int, n int) int
 
-func MultiplyNative(a int, n int) int {
+func NativeProduct(a int, n int) int {
 	return a * n
+}
+
+// -----------------------------------------------------------------------------
+
+func RepeatedAddition(a int, n int) int {
+	product := 0
+	for i := 1; i <= n; i++ {
+		product += a
+	}
+
+	return product
 }
 
 // -----------------------------------------------------------------------------
