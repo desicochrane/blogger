@@ -83,11 +83,11 @@ I ran this on my mac for various inputs for \\( (a,n) \\) and I get:
 | \\( (17,28) \\)       | 2.4 ns/op          | 13.0 ns/op         |
 | \\( (19998,12234) \\) | 2.4 ns/op          | 4,182 ns/op         |
 
-We can see that our solution performs poorly compared to the native product operator and does not scale at all for larger inputs. I also tried much larger inputs, but I lost my patience well before `RepeatedAddition` finished its computation.
+We can see that our solution performs poorly compared to the native product operator and does not scale at all for larger inputs.
 
 It seems we need to be more clever in our approach.
 
-### Shifting to double and halve
+### Doubling and halving
 We tried addition, but now let's explore bitwise shifts. We can use the fact that a performing a bitwise left-shift on a number \\(k\\) times is the same as multiplying by it by two \\(k\\) times. That is:
 
 $$ a \times 2^k \equiv a \ll k \text{ where } k \in \\{0,1,2,\\ldots\\} $$
@@ -105,7 +105,8 @@ However this requires performing a logarithm operation to compute \\(\log_2{n}\\
                          &= \\text{Multiply}(a \times 2^1, 2^{k-1})  &(\text{definition of Multiply}) \\\\
 \\end{aligned} \\]
 
-By repeating this process \\(m\\) times we can observe the recursive pattern:
+In other words we are doubling our first argument and halving our second argument (notice that \\(2^{k-1} = 2^k / 2 \\)
+). By repeating this process \\(m\\) times we can observe the recursive pattern:
 
 \\[ \\begin{aligned}
 \\text{Multiply}(a, 2^k) &= \\text{Multiply}(a \times 2^1, 2^{k-1}) \\\\
@@ -119,9 +120,7 @@ Notice that eventually we will reach the point where \\(m=k\\) whereby:
 
 \\[ \\text{Multiply}(a \times 2^k, 2^{k-k}) = \\text{Multiply}(a \times 2^k, 1) = a \times 2^k \\]
 
-Thus we can see if we recursively double \\(a\\) and halve \\(n\\) we will eventually reach the case where \\(n=2^0 = 1\\), which we will use as our base case.
- 
-Since doubling can be computed by a left shift and and halving an even number can be computed by a right shift (and since \\(n=2^k\\) is an even number) we can define the following recursive function:
+Thus we can see that we are guaranteed our second argument will eventually reach \\(2^0 = 1\\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \\(a\\) and half the second argument \\(n\\), which we can perform by left and right shifts respectively:
 
 \\[
 \\text{Multiply}(a,n) =
@@ -147,17 +146,100 @@ func RecursiveDoubleHalf(a int, n int) int {
 }
 ```
 
+### Fixing for arbitrary \\(n\\)
 
-### Accounting for our error
-> todo
+If we compare our double/half solution to our first algorithm, we can see that we have a big improvement in terms of the number of operations. For `RepeatedAddition` we performed \\(n\\) additions, whereas `RecursiveDoubleHalf` performs \\(2log_2{n}\\) shift operations, so we have gone from a worst case scenario of \\(O(n)\\) to \\(O(\log{n})\\). 
+
+However our new algorithm depends on \\(n\\) being a power of 2, if we try \\(a = 17 \\) and \\(n = 28\\) we get:
+
+```go
+fmt.PrintLn(RecursiveDoubleHalf(17,28)) // 272
+```
+
+Which is incorrect.
+
+To see why, notice that right-shifting an odd number means we lose any information that was in the least significant (rightmost) bit as it drops off the end after the shift:
+ 
+\\[ \\begin{aligned}
+17\_{\text{base} 10} \gg 1 &\to 10001\_{\text{base} 2} \gg 1 \\\\
+         &\to 01000\_{\text{base} 2} \\\\
+         &\to 8\_{\text{base} 10}
+\\end{aligned} \\]
+
+Thus we can define a right-shift as:
+
+\\[
+n \gg 1 = 
+\\begin{cases}
+  \frac{n}{2} & \\text{if } n \text{ is even} \\\\
+  \frac{n-1}{2} & \\text{if } n \text{ is odd}
+\\end{cases} \\]
+
+Thus for our function to return a correct answer \\(n\\) must be even for every recursive call, which is only the case where \\(n\\)) is a natural power of 2. For any step where \\(n\\) is not even we are actually computing:
+
+\\[ \\begin{aligned}
+\\text{Multiply}(a,n) &= \\text{Multiply}(a\ll1,n\gg1) \\\\
+                      &= \\text{Multiply}(2a,\frac{n-1}{2}) \\\\
+\\end{aligned} \\]
+
+We can calculate the error algebraically as:
+
+\\[ \\begin{aligned}
+\\text{error} &= \text{correct} - \\text{computed} \\\\
+              &= (a \times n)   - \\text{Multiply}(2a,\frac{n-1}{2}) \\\\
+              &= an - 2a\big( \frac{n-1}{2} \big) \\\\
+              &= an - a(n-1) \\\\
+              &= an - an+a \\\\
+              &= a
+\\end{aligned} \\]
+
+So in the case where \\(n\\) is odd we need to adjust our answer by \\(a\\). 
+
+To determine if \\(n\\) is odd we just need to check if its least significant bit is a 1, which we can do by performing a logical `and` with \\(n\\) and 1 and seeing if the result is 1:
+
+\\[ \\begin{aligned}
+17\_{\text{base} 10} \\small{\\text{ AND }} 1\_{\text{base} 10} &\to 10001\_{\text{base} 2} \\small{\\text{ AND }} 00001\_{\text{base} 2} \\\\
+                                     &\to 00001\_{\text{base} 2} \\\\
+                    &\to 1\_{\text{base} 10}
+\\end{aligned} \\]
+
+Now we can fix our function:
+
+```go
+// multiply.go
+
+func RecursiveDoubleHalf(a int, n int) int {
+  if n == 1 {
+    return a
+  }
+
+  result := RecursiveDoubleHalf(a<<1, n>>1)
+
+  // if n is odd we need to add "a"
+  if n&0x1 == 1 {
+    return result + a
+  }
+
+  return result
+}
+```
+
+When I run the benchmarking I get:
+
+| \\( (a,n) \\)         | `NativeProduct`    | `RepeatedAddition` | `RecursiveDoubleHalf` |
+|-----------------------|--------------------|--------------------|-----------------------|
+| \\( (17,28) \\)       | 2.4 ns/op          | 13.0 ns/op         | 14.1 ns/op            |
+| \\( (19998,12234) \\) | 2.4 ns/op          | 4,182 ns/op        | 45.6 ns/op            |
+
+So we can see that while our performance has not changed much for small inputs, our new algorithm seems to scale for larger much better.
 
 ### Understanding what's happening
 > todo
 
-### Tail recursion
+### Can we do better? Tail recursion
 > todo
 
-### Fine Tuning
+### Can we do better? Fine Tuning
 > todo
 
 ### Summary

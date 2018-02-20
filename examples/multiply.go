@@ -19,6 +19,22 @@ func RepeatedAddition(a int, n int) int {
 }
 
 // -----------------------------------------------------------------------------
+func RecursiveDoubleHalf(a int, n int) int {
+	if n == 1 {
+		return a
+	}
+
+	result := RecursiveDoubleHalf(a<<1, n>>1)
+
+	// if n is odd we need to add "a"
+	if n&0x1 == 1 {
+		return result + a
+	}
+
+	return result
+}
+
+// -----------------------------------------------------------------------------
 func MultiplyV1(a int, n int) int {
 	if n == 1 {
 		return a

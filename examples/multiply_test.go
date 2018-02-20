@@ -4,16 +4,17 @@ import "testing"
 
 func TestMultiply(t *testing.T) {
 	samples := [][]int{
+		{17, 28, 476},
 		{2, 8, 16},
 		{9, 16, 144},
 		{2, 28, 56},
-		{17, 28, 476},
 		{19998, 12234, 244655532},
 	}
 
 	for _, fn := range []Multiply{
 		NativeProduct,
 		RepeatedAddition,
+		RecursiveDoubleHalf,
 	} {
 		for _, sample := range samples {
 			r := fn(sample[0], sample[1])
@@ -44,4 +45,12 @@ func BenchmarkRepeatedAddition_smallInput(b *testing.B) {
 }
 func BenchmarkRepeatedAddition_largerInput(b *testing.B) {
 	benchmarkMultiply(b, 19998, 12234, RepeatedAddition)
+}
+
+// RecursiveDoubleHalf
+func BenchmarkRecursiveDoubleHalf_smallInput(b *testing.B) {
+	benchmarkMultiply(b, 17, 28, RecursiveDoubleHalf)
+}
+func BenchmarkRecursiveDoubleHalf_largerInput(b *testing.B) {
+	benchmarkMultiply(b, 19998, 12234, RecursiveDoubleHalf)
 }

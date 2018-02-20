@@ -105,11 +105,11 @@
 </tr>
 </tbody>
 </table>
-<p>We can see that our solution performs poorly compared to the native product operator and does not scale at all for larger inputs. I also tried much larger inputs, but I lost my patience well before <code>RepeatedAddition</code> finished its computation.</p>
+<p>We can see that our solution performs poorly compared to the native product operator and does not scale at all for larger inputs.</p>
 
 <p>It seems we need to be more clever in our approach.</p>
 
-<h3>Shifting to double and halve</h3>
+<h3>Doubling and halving</h3>
 
 <p>We tried addition, but now let&rsquo;s explore bitwise shifts. We can use the fact that a performing a bitwise left-shift on a number \(k\) times is the same as multiplying by it by two \(k\) times. That is:</p>
 
@@ -128,7 +128,8 @@
                          &amp;= \text{Multiply}(a \times 2^1, 2^{k-1})  &amp;(\text{definition of Multiply}) \\
 \end{aligned} \]</p>
 
-<p>By repeating this process \(m\) times we can observe the recursive pattern:</p>
+<p>In other words we are doubling our first argument and halving our second argument (notice that \(2^{k-1} = 2^k / 2 \)
+). By repeating this process \(m\) times we can observe the recursive pattern:</p>
 
 <p>\[ \begin{aligned}
 \text{Multiply}(a, 2^k) &amp;= \text{Multiply}(a \times 2^1, 2^{k-1}) \\
@@ -142,9 +143,7 @@
 
 <p>\[ \text{Multiply}(a \times 2^k, 2^{k-k}) = \text{Multiply}(a \times 2^k, 1) = a \times 2^k \]</p>
 
-<p>Thus we can see if we recursively double \(a\) and halve \(n\) we will eventually reach the case where \(n=2^0 = 1\), which we will use as our base case.</p>
-
-<p>Since doubling can be computed by a left shift and and halving an even number can be computed by a right shift (and since \(n=2^k\) is an even number) we can define the following recursive function:</p>
+<p>Thus we can see that we are guaranteed our second argument will eventually reach \(2^0 = 1\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \(a\) and half the second argument \(n\), which we can perform by left and right shifts respectively:</p>
 
 <p>\[
 \text{Multiply}(a,n) =
@@ -166,11 +165,107 @@
   <span class="k">return</span> <span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
 <span class="p">}</span>
 </pre>
-<h3>Accounting for our error</h3>
+<h3>Fixing for arbitrary \(n\)</h3>
 
-<blockquote>
-<p>todo</p>
-</blockquote>
+<p>If we compare our double/half solution to our first algorithm, we can see that we have a big improvement in terms of the number of operations. For <code>RepeatedAddition</code> we performed \(n\) additions, whereas <code>RecursiveDoubleHalf</code> performs \(2log_2{n}\) shift operations, so we have gone from a worst case scenario of \(O(n)\) to \(O(\log{n})\).</p>
+
+<p>However our new algorithm depends on \(n\) being a power of 2, if we try \(a = 17 \) and \(n = 28\) we get:</p>
+<pre class="chroma"><span class="nx">fmt</span><span class="p">.</span><span class="nx">PrintLn</span><span class="p">(</span><span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="mi">28</span><span class="p">)</span><span class="p">)</span> <span class="c1">// 272
+</span><span class="c1"></span></pre>
+<p>Which is incorrect.</p>
+
+<p>To see why, notice that right-shifting an odd number means we lose any information that was in the least significant (rightmost) bit as it drops off the end after the shift:</p>
+
+<p>\[ \begin{aligned}
+17_{\text{base} 10} \gg 1 &amp;\to 10001_{\text{base} 2} \gg 1 \\
+         &amp;\to 01000_{\text{base} 2} \\
+         &amp;\to 8_{\text{base} 10}
+\end{aligned} \]</p>
+
+<p>Thus we can define a right-shift as:</p>
+
+<p>\[
+n \gg 1 =
+\begin{cases}
+  \frac{n}{2} &amp; \text{if } n \text{ is even} \\
+  \frac{n-1}{2} &amp; \text{if } n \text{ is odd}
+\end{cases} \]</p>
+
+<p>Thus for our function to return a correct answer \(n\) must be even for every recursive call, which is only the case where \(n\)) is a natural power of 2. For any step where \(n\) is not even we are actually computing:</p>
+
+<p>\[ \begin{aligned}
+\text{Multiply}(a,n) &amp;= \text{Multiply}(a\ll1,n\gg1) \\
+                      &amp;= \text{Multiply}(2a,\frac{n-1}{2}) \\
+\end{aligned} \]</p>
+
+<p>We can calculate the error algebraically as:</p>
+
+<p>\[ \begin{aligned}
+\text{error} &amp;= \text{correct} - \text{computed} \\
+              &amp;= (a \times n)   - \text{Multiply}(2a,\frac{n-1}{2}) \\
+              &amp;= an - 2a\big( \frac{n-1}{2} \big) \\
+              &amp;= an - a(n-1) \\
+              &amp;= an - an+a \\
+              &amp;= a
+\end{aligned} \]</p>
+
+<p>So in the case where \(n\) is odd we need to adjust our answer by \(a\).</p>
+
+<p>To determine if \(n\) is odd we just need to check if its least significant bit is a 1, which we can do by performing a logical <code>and</code> with \(n\) and 1 and seeing if the result is 1:</p>
+
+<p>\[ \begin{aligned}
+17_{\text{base} 10} \small{\text{ AND }} 1_{\text{base} 10} &amp;\to 10001_{\text{base} 2} \small{\text{ AND }} 00001_{\text{base} 2} \\
+                                     &amp;\to 00001_{\text{base} 2} \\
+                    &amp;\to 1_{\text{base} 10}
+\end{aligned} \]</p>
+
+<p>Now we can fix our function:</p>
+<pre class="chroma"><span class="c1">// multiply.go
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="nx">result</span> <span class="o">:=</span> <span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
+
+  <span class="c1">// if n is odd we need to add &#34;a&#34;
+</span><span class="c1"></span>  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">result</span>
+<span class="p">}</span>
+</pre>
+<p>When I run the benchmarking I get:</p>
+
+<table>
+<thead>
+<tr>
+<th>\( (a,n) \)</th>
+<th><code>NativeProduct</code></th>
+<th><code>RepeatedAddition</code></th>
+<th><code>RecursiveDoubleHalf</code></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>\( (17,28) \)</td>
+<td>2.4 ns/op</td>
+<td>13.0 ns/op</td>
+<td>14.1 ns/op</td>
+</tr>
+
+<tr>
+<td>\( (19998,12234) \)</td>
+<td>2.4 ns/op</td>
+<td>4,182 ns/op</td>
+<td>45.6 ns/op</td>
+</tr>
+</tbody>
+</table>
+<p>So we can see that while our performance has not changed much for small inputs, our new algorithm seems to scale for larger much better.</p>
 
 <h3>Understanding what&rsquo;s happening</h3>
 
@@ -178,13 +273,13 @@
 <p>todo</p>
 </blockquote>
 
-<h3>Tail recursion</h3>
+<h3>Can we do better? Tail recursion</h3>
 
 <blockquote>
 <p>todo</p>
 </blockquote>
 
-<h3>Fine Tuning</h3>
+<h3>Can we do better? Fine Tuning</h3>
 
 <blockquote>
 <p>todo</p>

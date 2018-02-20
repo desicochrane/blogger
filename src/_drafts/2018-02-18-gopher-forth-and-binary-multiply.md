@@ -5,43 +5,6 @@ date: 18-Feb-2018
 
 ### Accounting for our error
 
-Observe the number of operations for our naive first implementation for the large numbers. So let's turn back to our symbolic representation of the problem to see how it behaves for case \\(n = 4\\):
-
-<div katex>
-\[ \begin{aligned}
-M(a,4) &= (4-1)a+a \\
-       &= ((3-1)a+a)+a \\
-       &= (((2-1)a+a)+a)+a \\
-       &= ((((1-1)a+a)+a)+a)+a \\
-       &= (((0+a)+a)+a)+a \\
-       &= ((a+a)+a)+a \\
-       &= (a+a)+(a+a) \text{ (associative law of addition)} \\ 
-       &= 2(a+a) \\
-\end{aligned} \]
-</div>
-
-This means that we only need to compute \\(a+a\\) once and then reuse it. We can generalize this as:
-
-$$ M(a,n) = M(a+a, \frac{n}{2}) $$
-
-Notice that calculating \\(a+a\\)) and \\(\\frac{n}{2}\\) are as simple as a bitwise shift to the left and right respectively if \\(n\\) is an even number. In fact in the case where \\(n\\) is a power of two, that repeatedly dividing in half would eventually reduce the second argument to \\(1\\) which we could use as our inductive base case and we could construct the recursive algorithm as:
-
-```go
-// multiply.go
-
-func Multiply1(a int, n int) int {
-  if n < 0 || a < 0 {
-    panic("operand < 0")
-  }
-
-  if n == 1 {
-    return a
-  }
-
-  return Multiply1(a<<1, n>>1)
-}
-```
-
 This is a big improvement in terms of operations, because in each successive iteration \\(n\\) decreased by a factor of 2 and we are only performing constant time operations in our function we have gone from a worst case scenario of \\(O(n)\\) to \\(O(\log{n})\\). 
 
 However our algorithm assumes that we can divide \\(n\\) by a factor of two cleanly at every iteration, that is we assume that \\(n\\)) is a power of 2. If we invoked our new method with \\(n=28\\) for example we will get an incorrect result:
