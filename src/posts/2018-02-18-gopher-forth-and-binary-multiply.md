@@ -175,7 +175,7 @@ n \gg 1 =
   \frac{n-1}{2} & \\text{if } n \text{ is odd}
 \\end{cases} \\]
 
-Thus for our function to return a correct answer \\(n\\) must be even for every recursive call, which is only the case where \\(n\\)) is a natural power of 2. For any step where \\(n\\) is not even we are actually computing:
+Because our function depends on right-shifting being equivalent to halving, we require that \\(n\\) is even for every recursive call - which is only the case where \\(n\\)) is a natural power of 2. If \\(n\\) is *not* even for even a single recursive call we will get an incorrect answer, because we are actually computing:
 
 \\[ \\begin{aligned}
 \\text{Multiply}(a,n) &= \\text{Multiply}(a\ll1,n\gg1) \\\\
