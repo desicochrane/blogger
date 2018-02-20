@@ -148,7 +148,7 @@ func RecursiveDoubleHalf(a int, n int) int {
 
 ### Fixing for arbitrary \\(n\\)
 
-If we compare our new approach to our first algorithm, we can see that we've made a big improvement in terms of operations performed. For `RepeatedAddition` we performed \\(n\\) additions, whereas `RecursiveDoubleHalf` performs \\(2log_2{n}\\) shift operations, so we have gone from a worst case scenario of \\(O(n)\\) to \\(O(\log{n})\\). 
+If we compare our new approach to our first algorithm, we can see that we've made a big improvement in terms of operations performed. For `RepeatedAddition` we performed \\(n\\) additions, whereas `RecursiveDoubleHalf` performs \\(2\log_2{n}\\) shift operations, so we have gone from a worst case scenario of \\(O(n)\\) to \\(O(\log{n})\\). 
 
 However our new algorithm depends on \\(n\\) being a power of 2, if we try \\(a = 17 \\) and \\(n = 28\\) we get:
 

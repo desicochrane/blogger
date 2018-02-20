@@ -167,7 +167,7 @@
 </pre>
 <h3>Fixing for arbitrary \(n\)</h3>
 
-<p>If we compare our new approach to our first algorithm, we can see that we&rsquo;ve made a big improvement in terms of operations performed. For <code>RepeatedAddition</code> we performed \(n\) additions, whereas <code>RecursiveDoubleHalf</code> performs \(2log_2{n}\) shift operations, so we have gone from a worst case scenario of \(O(n)\) to \(O(\log{n})\).</p>
+<p>If we compare our new approach to our first algorithm, we can see that we&rsquo;ve made a big improvement in terms of operations performed. For <code>RepeatedAddition</code> we performed \(n\) additions, whereas <code>RecursiveDoubleHalf</code> performs \(2\log_2{n}\) shift operations, so we have gone from a worst case scenario of \(O(n)\) to \(O(\log{n})\).</p>
 
 <p>However our new algorithm depends on \(n\) being a power of 2, if we try \(a = 17 \) and \(n = 28\) we get:</p>
 <pre class="chroma"><span class="nx">fmt</span><span class="p">.</span><span class="nx">PrintLn</span><span class="p">(</span><span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span><span class="mi">28</span><span class="p">)</span><span class="p">)</span> <span class="c1">// 272
