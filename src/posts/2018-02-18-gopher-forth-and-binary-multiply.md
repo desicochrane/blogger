@@ -88,9 +88,11 @@ We can see that our solution performs poorly compared to the native product oper
 It seems we need to be more clever in our approach.
 
 ### Doubling and halving
-We tried addition, but now let's explore bitwise shifts. We can use the fact that a performing a bitwise left-shift on a number \\(k\\) times is the same as multiplying by it by two \\(k\\) times. That is:
+We tried addition, but now let's explore bitwise shifts. We can use the fact that a performing a bitwise left-shift on a number \\(k\\) times is the same as multiplying by it by two, \\(k\\) times. That is:
 
 $$ a \times 2^k \equiv a \ll k \text{ where } k \in \\{0,1,2,\\ldots\\} $$
+
+> todo: define the bitwise shift operator to be clear
 
 Then for the special case where \\(n\\) is a natural power of 2 we can shift \\(a\\) to the left \\(\log_2{n}\\) times to arrive at a correct solution:
 

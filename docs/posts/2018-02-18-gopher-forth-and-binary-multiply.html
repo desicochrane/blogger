@@ -111,9 +111,13 @@
 
 <h3>Doubling and halving</h3>
 
-<p>We tried addition, but now let&rsquo;s explore bitwise shifts. We can use the fact that a performing a bitwise left-shift on a number \(k\) times is the same as multiplying by it by two \(k\) times. That is:</p>
+<p>We tried addition, but now let&rsquo;s explore bitwise shifts. We can use the fact that a performing a bitwise left-shift on a number \(k\) times is the same as multiplying by it by two, \(k\) times. That is:</p>
 
 <p>$$ a \times 2^k \equiv a \ll k \text{ where } k \in \{0,1,2,\ldots\} $$</p>
+
+<blockquote>
+<p>todo: define the bitwise shift operator to be clear</p>
+</blockquote>
 
 <p>Then for the special case where \(n\) is a natural power of 2 we can shift \(a\) to the left \(\log_2{n}\) times to arrive at a correct solution:</p>
 
