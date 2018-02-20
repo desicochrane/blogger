@@ -232,7 +232,7 @@ When I run the benchmarking I get:
 | \\( (17,28) \\)       | 2.4 ns/op          | 13.0 ns/op         | 14.1 ns/op            |
 | \\( (19998,12234) \\) | 2.4 ns/op          | 4,182 ns/op        | 45.6 ns/op            |
 
-So we can see that while our performance has not changed much for small inputs, our new algorithm seems to scale for larger much better.
+So we can see that while our performance has not changed much for small inputs, our new algorithm seems to scale much better for larger inputs.
 
 ### Understanding what's happening
 > todo
