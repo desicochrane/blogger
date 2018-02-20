@@ -188,14 +188,13 @@ We can calculate the error algebraically as:
 
 \\[ \\begin{aligned}
 \\text{error} &= \text{correct} - \\text{computed} \\\\
-              &= (a \times n)   - \\text{Multiply}(2a,\frac{n-1}{2}) \\\\
-              &= an - 2a\big( \frac{n-1}{2} \big) \\\\
+              &= (a \times n)   - 2a\big( \frac{n-1}{2} \big) \\\\
               &= an - a(n-1) \\\\
               &= an - an+a \\\\
               &= a
 \\end{aligned} \\]
 
-So in the case where \\(n\\) is odd we need to adjust our answer by \\(a\\). 
+So in the case where \\(n\\) is odd our computed solution will be \\(a\\) less than the correct answer, fixing our algorithm then means we need to add \\(a\\) to our result when \\(n\\) is odd. 
 
 To determine if \\(n\\) is odd we just need to check if its least significant bit is a 1, which we can do by performing a logical `and` with \\(n\\) and 1 and seeing if the result is 1:
 

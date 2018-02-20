@@ -206,14 +206,13 @@ n \gg 1 =
 
 <p>\[ \begin{aligned}
 \text{error} &amp;= \text{correct} - \text{computed} \\
-              &amp;= (a \times n)   - \text{Multiply}(2a,\frac{n-1}{2}) \\
-              &amp;= an - 2a\big( \frac{n-1}{2} \big) \\
+              &amp;= (a \times n)   - 2a\big( \frac{n-1}{2} \big) \\
               &amp;= an - a(n-1) \\
               &amp;= an - an+a \\
               &amp;= a
 \end{aligned} \]</p>
 
-<p>So in the case where \(n\) is odd we need to adjust our answer by \(a\).</p>
+<p>So in the case where \(n\) is odd our computed solution will be \(a\) less than the correct answer, fixing our algorithm then means we need to add \(a\) to our result when \(n\) is odd.</p>
 
 <p>To determine if \(n\) is odd we just need to check if its least significant bit is a 1, which we can do by performing a logical <code>and</code> with \(n\) and 1 and seeing if the result is 1:</p>
 
