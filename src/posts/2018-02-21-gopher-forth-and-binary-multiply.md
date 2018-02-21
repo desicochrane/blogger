@@ -1,6 +1,6 @@
 ---
 title: Gopher Forth and Binary Multiply
-date: 18-Feb-2018
+date: 21-Feb-2018
 ---
 # Gopher Forth and Binary Multiply
 
