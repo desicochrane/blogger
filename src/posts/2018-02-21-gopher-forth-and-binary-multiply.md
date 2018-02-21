@@ -4,6 +4,9 @@ date: 21-Feb-2018
 ---
 # Gopher Forth and Binary Multiply
 
+### Introduction
+> todo
+
 ### The problem
 Suppose we are tasked with implementing a function `Multiply` which takes two positive integers \\(a\\), \\(n\\) and outputs their product:
 
