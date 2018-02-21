@@ -271,7 +271,7 @@ If this algorithm seems vaguely familiar to you, it's because this is actually w
   111011100 = 476
 ```
 
-Which is doing exactly what we are doing, it scans through the digits of \\(n\\) left to right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \\(a\\).
+Which follows exactly the same pattern as our function - it scans through the digits of \\(n\\) left to right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
 > todo
