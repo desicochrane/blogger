@@ -1,8 +1,8 @@
 ---
-title: Gopher Forth and Binary Multiply
+title: Gopher Forth and Multiply
 date: 21-Feb-2018
 ---
-# Gopher Forth and Binary Multiply
+# Gopher Forth and Multiply
 
 ### Introduction
 > todo
@@ -291,7 +291,7 @@ If something about this algorithm seems vaguely familiar to you, it's because th
 Which follows exactly the same pattern as our function - it scans through the each digit of \\(n\\) left-to-right, in the case where that digit is a zero we add nothing, in the case where that digit is a one we adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
-At this point the operations we are performing are \\(\lfloor \log_2{n} \rfloor\\) left shifts plus \\(m = \lfloor \log_2{n} \rfloor\\) right shifts plus an addition operation for every \\(1\\) in the binary representation of \\(n\\) (also known as the *population count* of \\(n\\)).
+At this point the operations we are performing are \\(\lfloor \log_2{n} \rfloor\\) left shifts plus \\(m = \lfloor \log_2{n} \rfloor\\) right shifts plus an addition operation for every \\(1\\) in the binary representation of \\(n\\) , also known as the *population count* of \\(n\\) or \\(\\text{pop}(n) \\).
 
 $$ \\text{operations} = 2\lfloor \log_2{n} \rfloor + \\text{pop}(n) $$
 

@@ -15,7 +15,13 @@
 
 <div class="content">
   <div class="container">
-    <h1>Gopher Forth and Binary Multiply</h1>
+    <h1>Gopher Forth and Multiply</h1>
+
+<h3>Introduction</h3>
+
+<blockquote>
+<p>todo</p>
+</blockquote>
 
 <h3>The problem</h3>
 
@@ -366,7 +372,7 @@ n \gg 1 =
 
 <h3>Can we do better? Tail recursion</h3>
 
-<p>At this point the operations we are performing are \(\lfloor \log_2{n} \rfloor\) left shifts plus \(m = \lfloor \log_2{n} \rfloor\) right shifts plus an addition operation for every \(1\) in the binary representation of \(n\) (also known as the <em>population count</em> of \(n\)).</p>
+<p>At this point the operations we are performing are \(\lfloor \log_2{n} \rfloor\) left shifts plus \(m = \lfloor \log_2{n} \rfloor\) right shifts plus an addition operation for every \(1\) in the binary representation of \(n\) , also known as the <em>population count</em> of \(n\) or \(\text{pop}(n) \).</p>
 
 <p>$$ \text{operations} = 2\lfloor \log_2{n} \rfloor + \text{pop}(n) $$</p>
 
