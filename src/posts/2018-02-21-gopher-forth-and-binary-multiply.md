@@ -248,7 +248,7 @@ So at each iteration \\(k\\) we have for \\(n=28\\):
 
 $$ \\text{ksb}(n) = 0,0,1,1,1 $$
 
-Which is the left to right binary representation of 28. 
+Which is the left-to-right binary representation of 28. 
 
 To better understand then how our function works we can construct the following table to compute the solution by hand for \\(a=17\\) and \\(n=28\\):
 
@@ -285,7 +285,7 @@ If something about this algorithm seems vaguely familiar to you, it's because th
   111011100 = 476
 ```
 
-Which follows exactly the same pattern as our function - it scans through the digits of \\(n\\) left to right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \\(a\\).
+Which follows exactly the same pattern as our function - it scans through the digits of \\(n\\) left-to-right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
 > todo
