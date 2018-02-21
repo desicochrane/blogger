@@ -264,8 +264,8 @@ $$ 17 \times 28 = \sum \\text{col}\_{3} = 68 + 136 + 272= 476  $$
 
 > Notice that \\( \text{col}\_{3} \\) can be calculated as: 
     \\( \text{col}\_{3} = \\begin{cases}
-                            0               & \\text{if } \text{col}\_{2} = 1 \\\\
-                            \text{col}\_{1} & \\text{if } \text{col}\_{2} = 0 \\\\
+                            0               & \\text{if } \text{col}\_{2} = 0 \\\\
+                            \text{col}\_{1} & \\text{if } \text{col}\_{2} = 1 \\\\
                           \\end{cases} \\)
 
 This turns out to be a pretty quick way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.
