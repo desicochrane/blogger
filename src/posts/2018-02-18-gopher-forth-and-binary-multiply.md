@@ -235,7 +235,43 @@ When I run the benchmarking I get:
 So we can see that while our performance has not changed much for small inputs, our new algorithm seems to scale much better for larger inputs.
 
 ### Understanding what's happening
-> todo
+We can observe that at each recursive step we are performing the following:
+
+1. If the last bit of \\(n\\) is a 1, add \\(a\\) to our result
+2. right-shift \\(n\\), left-shift \\(a\\)
+
+Notice that the only time we update our result is when the least significant bit (lsb) of \\(n\\) is a 1. Since our \\(n\\) is shifted right at every iteration, this is equivalent to a left-to-right bitwise scan of \\(n\\), that is for each iteration \\(k\\) we are checking if the \\(k^{\text{th}}\\) significant bit of \\(n\\), \\(\text{ksb}(n)\\).
+
+To better understand how our function works we can construct the following table to compute the solution by hand for \\(a=17\\) and \\(n=28\\):
+
+| k | \\(a \times 2^k\\) | \\(\\text{ksb}(n)\\) | \\(\\text{col}\_{1} \times \\text{col}\_{2}\\) |
+|---|------------------- |----------------------|----------------|
+| 0 |  17                | 0                    | 0              |
+| 1 |  34                | 0                    | 0              |
+| 2 |  68                | 1                    | 68             |
+| 3 | 136                | 1                    | 136            |
+| 4 | 272                | 1                    | 272            |
+
+$$ 17 \times 28 = \sum \\text{col}\_{3} = 68 + 136 + 272= 476  $$
+
+This turns out to be a pretty quick way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.
+
+If this algorithm seems vaguely familiar to you, it's because this is actually what is happening in the grade-school multiplication algorithm - just using a base 2 numbering system. To see why:
+
+```txt
+      10001 =  17
+    x 11100 =  28
+    -------  
+      00000  
+     00000   
+    10001    
+   10001    
++ 10001      
+-----------  
+  111011100 = 476
+```
+
+Which is doing exactly what we are doing, it scans through the digits of \\(n\\) left to right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
 > todo

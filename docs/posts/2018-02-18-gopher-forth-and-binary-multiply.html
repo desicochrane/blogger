@@ -272,9 +272,81 @@ n \gg 1 =
 
 <h3>Understanding what&rsquo;s happening</h3>
 
-<blockquote>
-<p>todo</p>
-</blockquote>
+<p>We can observe that at each recursive step we are performing the following:</p>
+
+<ol>
+<li>If the last bit of \(n\) is a 1, add \(a\) to our result</li>
+<li>right-shift \(n\), left-shift \(a\)</li>
+</ol>
+
+<p>Notice that the only time we update our result is when the least significant bit (lsb) of \(n\) is a 1. Since our \(n\) is shifted right at every iteration, this is equivalent to a left-to-right bitwise scan of \(n\), that is for each iteration \(k\) we are checking if the \(k^{\text{th}}\) significant bit of \(n\), \(\text{ksb}(n)\).</p>
+
+<p>To better understand how our function works we can construct the following table to compute the solution by hand for \(a=17\) and \(n=28\):</p>
+
+<table>
+<thead>
+<tr>
+<th>k</th>
+<th>\(a \times 2^k\)</th>
+<th>\(\text{ksb}(n)\)</th>
+<th>\(\text{col}_{1} \times \text{col}_{2}\)</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>0</td>
+<td>17</td>
+<td>0</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>1</td>
+<td>34</td>
+<td>0</td>
+<td>0</td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>68</td>
+<td>1</td>
+<td>68</td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>136</td>
+<td>1</td>
+<td>136</td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>272</td>
+<td>1</td>
+<td>272</td>
+</tr>
+</tbody>
+</table>
+<p>$$ 17 \times 28 = \sum \text{col}_{3} = 68 + 136 + 272= 476  $$</p>
+
+<p>This turns out to be a pretty quick way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.</p>
+
+<p>If this algorithm seems vaguely familiar to you, it&rsquo;s because this is actually what is happening in the grade-school multiplication algorithm - just using a base 2 numbering system. To see why:</p>
+<pre class="chroma">      <span class="mi">10001</span> <span class="o">=</span>  <span class="mi">17</span>
+    x <span class="mi">11100</span> <span class="o">=</span>  <span class="mi">28</span>
+    -------  
+      <span class="mi">00000</span>  
+     <span class="mi">00000</span>   
+    <span class="mi">10001</span>    
+   <span class="mi">10001</span>    
+<span class="o">+</span> <span class="mi">10001</span>      
+-----------  
+  <span class="mi">111011100</span> <span class="o">=</span> <span class="mi">476</span>
+</pre>
+<p>Which is doing exactly what we are doing, it scans through the digits of \(n\) left to right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \(a\).</p>
 
 <h3>Can we do better? Tail recursion</h3>
 
