@@ -362,19 +362,151 @@ n \gg 1 =
 -----------  
   <span class="mi">111011100</span> <span class="o">=</span> <span class="mi">476</span>
 </pre>
-<p>Which follows exactly the same pattern as our function - it scans through the digits of \(n\) left-to-right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \(a\).</p>
+<p>Which follows exactly the same pattern as our function - it scans through the each digit of \(n\) left-to-right, in the case where that digit is a zero we add nothing, in the case where that digit is a one we adds a left-shifted \(a\).</p>
 
 <h3>Can we do better? Tail recursion</h3>
 
+<p>Also note that the number of operations are not the only factor, we are also doing a lot of function calls. We can move this in the right direction step by step by first refactoring our code to be tail recursive.</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">TailRecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="kt">error</span> <span class="o">:=</span> <span class="mi">0</span>
+  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="kt">error</span> <span class="p">=</span> <span class="nx">a</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="kt">error</span> <span class="o">+</span> <span class="nx">TailRecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+<p>Notice that our recursive call is now the final operation in the function. As it is, this is what is known as a <em>deferred tail-recursive</em> state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the <code>error</code> term.</p>
+
+<p>What we want however is for our function to be in a <em>strict tail-recursive</em> state, that is, we want there to be no additional work to be done after the recursive step.</p>
+
+<p>To see why, let&rsquo;s &ldquo;plug and chug&rdquo; our way through an example using \(a=17\) and \(n=28\) as our function currently is:</p>
+
+<p>\[ \begin{aligned}
+\text{Multiply}(17,28) &amp;= 0 + \text{Multiply}(34,14) \\
+                        &amp;= 0 + 0 + \text{Multiply}(68,7) \\
+                        &amp;= 0 + 0 + 68 + \text{Multiply}(136,3) \\
+                        &amp;= 0 + 0 + 68 + 136 + \text{Multiply}(272,1) \\
+                        &amp;= 0 + 0 + 68 + 136 + 272 \\
+                        &amp;= 0 + 0 + 68 + 408 \\
+                        &amp;= 0 + 0 + 476 \\
+                        &amp;= 0 + 476 \\
+                        &amp;= 476 \\
+\end{aligned} \]</p>
+
+<p>Here we can see clearly the addition operations that are deferred, separate from our recursive call. For our function to be strictly tail recursive, we need to find a way to accumulate those deferred operations into our recursive function, that is we want our function to somehow behave more like this:</p>
+
+<p>\[ \begin{aligned}
+\text{Multiply}(17,28) &amp;= \text{Multiply}^\prime(0,17,28) \\
+                        &amp;= \text{Multiply}^\prime(0,34,14) \\
+                        &amp;= \text{Multiply}^\prime(0,68,7) \\
+                        &amp;= \text{Multiply}^\prime(68,136,3) \\
+                        &amp;= \text{Multiply}^\prime(204,272,1) \\
+                        &amp;= 476 \\
+\end{aligned} \]</p>
+
 <blockquote>
-<p>todo</p>
+<p>Notice that at each recursive call the invariant \(\text{acc} + a \times n \) remains the same.</p>
 </blockquote>
 
-<h3>Can we do better? Fine Tuning</h3>
+<p>Notice we are using a new function \(\text{Multiply}^\prime\) which now takes 3 arguments, the first of which is acts as an accumulator, capturing those deferred additions in our current implementation. This additional helper function is known as an <em>accumulator</em> function.</p>
 
-<blockquote>
-<p>todo</p>
-</blockquote>
+<p>Using the desired output as instructions, we can see how our new accumulator function should behave. It seems to check if \(n\) is odd in which case it increases the accumulator argument by \(a\), and in the case where \(n=1\) it returns the accumulator as the solution.</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">StrictTailRecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">StrictTailRecursiveDoubleHalfAcc</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">StrictTailRecursiveDoubleHalfAcc</span><span class="p">(</span><span class="nx">acc</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="nx">acc</span> <span class="o">+=</span> <span class="nx">a</span>
+
+    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">acc</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+  <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+  <span class="k">return</span> <span class="nx">StrictTailRecursiveDoubleHalfAcc</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">n</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+<p>Now our solution is <strong>strictly tail recursive</strong> - its has no deferred operations after its recursive call and it simply calls itself with the same arguments. This is effectively the same as a <code>GOTO</code> statement, telling the function to start at the top again.</p>
+
+<p>When I benchmark this new implementation against our previous, we see a performance <em>decrease</em>:</p>
+
+<table>
+<thead>
+<tr>
+<th>\( (a,n) \)</th>
+<th><code>RecursiveDoubleHalf</code></th>
+<th><code>StrictTailRecursiveDoubleHalf</code></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>\( (17,28) \)</td>
+<td>14.1 ns/op</td>
+<td>17.6 ns/op</td>
+</tr>
+
+<tr>
+<td>\( (19998,12234) \)</td>
+<td>45.6 ns/op</td>
+<td>50.7 ns/op</td>
+</tr>
+</tbody>
+</table>
+<p>It would seem golang is not providing built in tail-recursion optimisation, but so we can implement it ourselves, since strict-tail recursion is effectively a <code>GOTO</code> we can replace all our function calls with a <code>for</code> loop:</p>
+<pre class="chroma"><span class="kd">func</span> <span class="nx">IterativeDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="nx">acc</span> <span class="o">:=</span> <span class="mi">0</span>
+
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="nx">acc</span> <span class="o">+=</span> <span class="nx">a</span>
+
+      <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">acc</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="nx">a</span> <span class="p">=</span> <span class="nx">a</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span>
+    <span class="nx">n</span> <span class="p">=</span> <span class="nx">n</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+<p>Which yields a significant performance boost:</p>
+
+<table>
+<thead>
+<tr>
+<th>\( (a,n) \)</th>
+<th><code>RecursiveDoubleHalf</code></th>
+<th><code>StrictTailRecursiveDoubleHalf</code></th>
+<th><code>IterativeDoubleHalf</code></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>\( (17,28) \)</td>
+<td>14.1 ns/op</td>
+<td>17.6 ns/op</td>
+<td>9.18 ns/op</td>
+</tr>
+
+<tr>
+<td>\( (19998,12234) \)</td>
+<td>45.6 ns/op</td>
+<td>50.7 ns/op</td>
+<td>21.9 ns/op</td>
+</tr>
+</tbody>
+</table>
 
 <h3>Summary</h3>
 

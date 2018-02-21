@@ -15,6 +15,9 @@ func TestMultiply(t *testing.T) {
 		NativeProduct,
 		RepeatedAddition,
 		RecursiveDoubleHalf,
+		TailRecursiveDoubleHalf,
+		StrictTailRecursiveDoubleHalf,
+		IterativeDoubleHalf,
 	} {
 		for _, sample := range samples {
 			r := fn(sample[0], sample[1])
@@ -53,4 +56,28 @@ func BenchmarkRecursiveDoubleHalf_smallInput(b *testing.B) {
 }
 func BenchmarkRecursiveDoubleHalf_largerInput(b *testing.B) {
 	benchmarkMultiply(b, 19998, 12234, RecursiveDoubleHalf)
+}
+
+// TailRecursiveDoubleHalf
+func BenchmarkTailRecursiveDoubleHalf_smallInput(b *testing.B) {
+	benchmarkMultiply(b, 17, 28, TailRecursiveDoubleHalf)
+}
+func BenchmarkTailRecursiveDoubleHalf_largerInput(b *testing.B) {
+	benchmarkMultiply(b, 19998, 12234, TailRecursiveDoubleHalf)
+}
+
+// StrictTailRecursiveDoubleHalf
+func BenchmarkStrictTailRecursiveDoubleHalf_smallInput(b *testing.B) {
+	benchmarkMultiply(b, 17, 28, StrictTailRecursiveDoubleHalf)
+}
+func BenchmarkStrictTailRecursiveDoubleHalf_largerInput(b *testing.B) {
+	benchmarkMultiply(b, 19998, 12234, StrictTailRecursiveDoubleHalf)
+}
+
+// StrictTailRecursiveDoubleHalf
+func BenchmarkIterativeDoubleHalf_smallInput(b *testing.B) {
+	benchmarkMultiply(b, 17, 28, IterativeDoubleHalf)
+}
+func BenchmarkIterativeDoubleHalf_largerInput(b *testing.B) {
+	benchmarkMultiply(b, 19998, 12234, IterativeDoubleHalf)
 }

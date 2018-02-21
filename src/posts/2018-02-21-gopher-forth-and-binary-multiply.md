@@ -288,10 +288,114 @@ If something about this algorithm seems vaguely familiar to you, it's because th
 Which follows exactly the same pattern as our function - it scans through the each digit of \\(n\\) left-to-right, in the case where that digit is a zero we add nothing, in the case where that digit is a one we adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
-> todo
+Also note that the number of operations are not the only factor, we are also doing a lot of function calls. We can move this in the right direction step by step by first refactoring our code to be tail recursive. 
 
-### Can we do better? Fine Tuning
-> todo
+```go
+func TailRecursiveDoubleHalf(a int, n int) int {
+  if n == 1 {
+    return a
+  }
+
+  error := 0
+  if n&0x1 == 1 {
+    error = a
+  }
+
+  return error + TailRecursiveDoubleHalf(a<<1,n>>1)
+}
+``` 
+
+Notice that our recursive call is now the final operation in the function. As it is, this is what is known as a *deferred tail-recursive* state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the `error` term.
+
+What we want however is for our function to be in a *strict tail-recursive* state, that is, we want there to be no additional work to be done after the recursive step.
+
+To see why, let's "plug and chug" our way through an example using \\(a=17\\) and \\(n=28\\) as our function currently is:
+
+\\[ \\begin{aligned}
+\\text{Multiply}(17,28) &= 0 + \\text{Multiply}(34,14) \\\\
+                        &= 0 + 0 + \\text{Multiply}(68,7) \\\\
+                        &= 0 + 0 + 68 + \\text{Multiply}(136,3) \\\\
+                        &= 0 + 0 + 68 + 136 + \\text{Multiply}(272,1) \\\\
+                        &= 0 + 0 + 68 + 136 + 272 \\\\
+                        &= 0 + 0 + 68 + 408 \\\\
+                        &= 0 + 0 + 476 \\\\
+                        &= 0 + 476 \\\\
+                        &= 476 \\\\
+\\end{aligned} \\]
+
+Here we can see clearly the addition operations that are deferred, separate from our recursive call. For our function to be strictly tail recursive, we need to find a way to accumulate those deferred operations into our recursive function, that is we want our function to somehow behave more like this:
+
+\\[ \\begin{aligned}
+\\text{Multiply}(17,28) &= \\text{Multiply}^\prime(0,17,28) \\\\
+                        &= \\text{Multiply}^\prime(0,34,14) \\\\
+                        &= \\text{Multiply}^\prime(0,68,7) \\\\
+                        &= \\text{Multiply}^\prime(68,136,3) \\\\
+                        &= \\text{Multiply}^\prime(204,272,1) \\\\
+                        &= 476 \\\\
+\\end{aligned} \\]
+
+> Notice that at each recursive call the invariant \\(\text{acc} + a \times n \\) remains the same.
+
+Notice we are using a new function \\(\\text{Multiply}^\prime\\) which now takes 3 arguments, the first of which is acts as an accumulator, capturing those deferred additions in our current implementation. This additional helper function is known as an *accumulator* function. 
+
+Using the desired output as instructions, we can see how our new accumulator function should behave. It seems to check if \\(n\\) is odd in which case it increases the accumulator argument by \\(a\\), and in the case where \\(n=1\\) it returns the accumulator as the solution.
+
+```go
+func StrictTailRecursiveDoubleHalf(a int, n int) int {
+  return StrictTailRecursiveDoubleHalfAcc(0, a, n)
+}
+
+func StrictTailRecursiveDoubleHalfAcc(acc int, a int, n int) int {
+  if n&0x1 == 1 {
+    acc += a
+
+    if n == 1 {
+      return acc
+    }
+  }
+
+  a = a << 1
+  n = n >> 1
+  return StrictTailRecursiveDoubleHalfAcc(acc, a, n)
+}
+```
+
+Now our solution is **strictly tail recursive** - its has no deferred operations after its recursive call and it simply calls itself with the same arguments. This is effectively the same as a `GOTO` statement, telling the function to start at the top again.
+
+When I benchmark this new implementation against our previous, we see a performance *decrease*:
+
+| \\( (a,n) \\)         | `RecursiveDoubleHalf` | `StrictTailRecursiveDoubleHalf` |
+|-----------------------|-----------------------|---------------------------------|
+| \\( (17,28) \\)       | 14.1 ns/op            | 17.6 ns/op                      |
+| \\( (19998,12234) \\) | 45.6 ns/op            | 50.7 ns/op                      |
+
+It would seem golang is not providing built in tail-recursion optimisation, but so we can implement it ourselves, since strict-tail recursion is effectively a `GOTO` we can replace all our function calls with a `for` loop:
+
+```go
+func IterativeDoubleHalf(a int, n int) int {
+  acc := 0
+
+  for {
+    if n&0x1 == 1 {
+      acc += a
+
+      if n == 1 {
+        return acc
+      }
+    }
+
+    a = a << 1
+    n = n >> 1
+  }
+}
+```
+
+Which yields a significant performance boost:
+
+| \\( (a,n) \\)         | `RecursiveDoubleHalf` | `StrictTailRecursiveDoubleHalf` | `IterativeDoubleHalf` |
+|-----------------------|-----------------------|---------------------------------|-----------------------|
+| \\( (17,28) \\)       | 14.1 ns/op            | 17.6 ns/op                      | 9.18 ns/op            |
+| \\( (19998,12234) \\) | 45.6 ns/op            | 50.7 ns/op                      | 21.9 ns/op            |
 
 ### Summary
 > todo
