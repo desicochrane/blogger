@@ -256,7 +256,7 @@ $$ 17 \times 28 = \sum \\text{col}\_{3} = 68 + 136 + 272= 476  $$
 
 This turns out to be a pretty quick way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.
 
-If this algorithm seems vaguely familiar to you, it's because this is actually what is happening in the grade-school multiplication algorithm - just using a base 2 numbering system. To see why we can try it by hand:
+If something about this algorithm seems vaguely familiar to you, it's because this is actually what is happening in the grade-school multiplication technique you likely learned when you were a child - just that this uses a base 2 numbering system. To see why we can try it by hand:
 
 ```txt
       10001 =  17
