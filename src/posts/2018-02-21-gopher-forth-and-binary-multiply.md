@@ -240,11 +240,19 @@ We can observe that at each recursive step we are performing the following:
 1. If the last bit of \\(n\\) is a 1, add \\(a\\) to our result
 2. right-shift \\(n\\), left-shift \\(a\\)
 
-Notice that the only time we update our result is when the least significant bit (lsb) of \\(n\\) is a 1. Since our \\(n\\) is shifted right at every iteration, this is equivalent to a left-to-right bitwise scan of \\(n\\), that is for each iteration \\(k\\) we are checking if the \\(k^{\text{th}}\\) significant bit of \\(n\\), \\(\text{ksb}(n)\\).
+And it repeats this process until it has \\(n\\) has been completely right-shifted, which we say takes \\(m\\) iterations where \\(m\\) is the number of bits in \\(n\\), i.e. \\(m = \lfloor \log_2{n} \rfloor\\).
 
-To better understand how our function works we can construct the following table to compute the solution by hand for \\(a=17\\) and \\(n=28\\):
+Notice that the only time we update our result is when the least significant bit of \\(n\\) is a 1. Since our \\(n\\) is shifted right at every iteration, this is equivalent to a left-to-right bitwise scan of \\(n\\), that is for each iteration \\(k\\) we are checking if the \\(k^{\text{th}}\\) significant bit of \\(n\\), \\(\text{ksb}(n)\\).
 
-| k | \\(a \times 2^k\\) | \\(\\text{ksb}(n)\\) | \\(\\text{col}\_{1} \times \\text{col}\_{2}\\) |
+So at each iteration \\(k\\) we have for \\(n=28\\):
+
+$$ \\text{ksb}(n) = 0,0,1,1,1 $$
+
+Which is the left to right binary representation of 28. 
+
+To better understand then how our function works we can construct the following table to compute the solution by hand for \\(a=17\\) and \\(n=28\\):
+
+| k | \\(\\text{col}\_{1} = a \times 2^k\\) | \\(\\text{col}\_{2} = \\text{ksb}(n)\\) | \\(\\text{col}\_{3} = \\text{col}\_{1} \times \\text{col}\_{2}\\) |
 |---|------------------- |----------------------|----------------|
 | 0 |  17                | 0                    | 0              |
 | 1 |  34                | 0                    | 0              |
@@ -253,6 +261,12 @@ To better understand how our function works we can construct the following table
 | 4 | 272                | 1                    | 272            |
 
 $$ 17 \times 28 = \sum \\text{col}\_{3} = 68 + 136 + 272= 476  $$
+
+> Notice that \\( \text{col}\_{3} \\) can be calculated as: 
+    \\( \text{col}\_{3} = \\begin{cases}
+                            0               & \\text{if } \text{col}\_{2} = 1 \\\\
+                            \text{col}\_{1} & \\text{if } \text{col}\_{2} = 0 \\\\
+                          \\end{cases} \\)
 
 This turns out to be a pretty quick way to perform multiplication by hand, and indeed this method was used as far back as ancient egypt.
 
