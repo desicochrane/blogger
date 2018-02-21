@@ -285,7 +285,7 @@ If something about this algorithm seems vaguely familiar to you, it's because th
   111011100 = 476
 ```
 
-Which follows exactly the same pattern as our function - it scans through the digits of \\(n\\) left-to-right, in any case where that digit is a zero there is nothing to add, in the case where the digit is a one it adds a left-shifted \\(a\\).
+Which follows exactly the same pattern as our function - it scans through the each digit of \\(n\\) left-to-right, in the case where that digit is a zero we add nothing, in the case where that digit is a one we adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
 > todo
