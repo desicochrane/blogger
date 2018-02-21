@@ -92,7 +92,7 @@ We tried addition, but now let's explore bitwise shifts. We can use the fact tha
 
 $$ a \times 2^k \equiv a \ll k \text{ where } k \in \\{0,1,2,\\ldots\\} $$
 
-> todo: define the bitwise shift operator to be clear
+> Note we use the notation \\(\ll\\) and \\(\gg\\) as left and right bitwise-shift operators
 
 Then for the special case where \\(n\\) is a natural power of 2 we can shift \\(a\\) to the left \\(\log_2{n}\\) times to arrive at a correct solution:
 
@@ -262,7 +262,7 @@ To better understand then how our function works we can construct the following 
 
 $$ 17 \times 28 = \sum \\text{col}\_{3} = 68 + 136 + 272= 476  $$
 
-> Notice that \\( \text{col}\_{3} \\) can be calculated as: 
+> Note that \\( \text{col}\_{3} \\) can be calculated as: 
     \\( \text{col}\_{3} = \\begin{cases}
                             0               & \\text{if } \text{col}\_{2} = 0 \\\\
                             \text{col}\_{1} & \\text{if } \text{col}\_{2} = 1 \\\\
@@ -288,7 +288,13 @@ If something about this algorithm seems vaguely familiar to you, it's because th
 Which follows exactly the same pattern as our function - it scans through the each digit of \\(n\\) left-to-right, in the case where that digit is a zero we add nothing, in the case where that digit is a one we adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
-Also note that the number of operations are not the only factor, we are also doing a lot of function calls. We can move this in the right direction step by step by first refactoring our code to be tail recursive. 
+At this point the operations we are performing are \\(\lfloor \log_2{n} \rfloor\\) left shifts plus \\(m = \lfloor \log_2{n} \rfloor\\) right shifts plus an addition operation for every \\(1\\) in the binary representation of \\(n\\) (also known as the *population count* of \\(n\\)).
+
+$$ \\text{operations} = 2\lfloor \log_2{n} \rfloor + \\text{pop}(n) $$
+
+Which is still of the order \\(O(\log{n})\\).
+
+However on top of these operations we are also performing \\(\lfloor \log_2{n} \rfloor\\) recursive function calls, which come with a performance cost. To get rid of these function calls we need to first refactor our solution to be tail-recursive.
 
 ```go
 func TailRecursiveDoubleHalf(a int, n int) int {
@@ -305,11 +311,11 @@ func TailRecursiveDoubleHalf(a int, n int) int {
 }
 ``` 
 
-Notice that our recursive call is now the final operation in the function. As it is, this is what is known as a *deferred tail-recursive* state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the `error` term.
+Notice that our recursive call is now the final operation in the function. We say that our function is in a *deferred* tail-recursive state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the `error` term.
 
-What we want however is for our function to be in a *strict tail-recursive* state, that is, we want there to be no additional work to be done after the recursive step.
+What we want however is for our function to be in a *strict* tail-recursive state, that is, we want there to be no additional work to be done after the recursive step.
 
-To see why, let's "plug and chug" our way through an example using \\(a=17\\) and \\(n=28\\) as our function currently is:
+To see why, we can "plug and chug" our way through an example using \\(a=17\\) and \\(n=28\\) as our function currently is:
 
 \\[ \\begin{aligned}
 \\text{Multiply}(17,28) &= 0 + \\text{Multiply}(34,14) \\\\
@@ -323,7 +329,7 @@ To see why, let's "plug and chug" our way through an example using \\(a=17\\) an
                         &= 476 \\\\
 \\end{aligned} \\]
 
-Here we can see clearly the addition operations that are deferred, separate from our recursive call. For our function to be strictly tail recursive, we need to find a way to accumulate those deferred operations into our recursive function, that is we want our function to somehow behave more like this:
+Here we can see clearly the addition operations that are deferred, separate from our recursive call. For our function to be strictly tail-recursive, we need to find a way to accumulate those deferred operations into our recursive function, that is we want our function to somehow behave more like this:
 
 \\[ \\begin{aligned}
 \\text{Multiply}(17,28) &= \\text{Multiply}^\prime(0,17,28) \\\\
@@ -334,11 +340,12 @@ Here we can see clearly the addition operations that are deferred, separate from
                         &= 476 \\\\
 \\end{aligned} \\]
 
-> Notice that at each recursive call the invariant \\(\text{acc} + a \times n \\) remains the same.
+This is our desired "plug and chug" output. Notice it uses a new function \\(\\text{Multiply}^\prime\\) which takes 3 arguments, the first of which is acts as an accumulator, capturing those deferred additions in our current implementation. This additional helper function is known as an *accumulator* function. 
 
-Notice we are using a new function \\(\\text{Multiply}^\prime\\) which now takes 3 arguments, the first of which is acts as an accumulator, capturing those deferred additions in our current implementation. This additional helper function is known as an *accumulator* function. 
+Observe that at each recursive call of \\(\\text{Multiply}^\prime\\) the invariant \\(\text{acc} + a \times n \\) remains the same, which is the value of the final output. Our new accumulator function can then be defined as:
+ $$ \\text{Multiply}^\prime(\text{acc},a,n) = \text{acc} + a \times n $$
 
-Using the desired output as instructions, we can see how our new accumulator function should behave. It seems to check if \\(n\\) is odd in which case it increases the accumulator argument by \\(a\\), and in the case where \\(n=1\\) it returns the accumulator as the solution.
+By inspecting the desired "plug and chug" we can see how our accumulator ought to behave and thus these become our instructions as we implement it. At each step it checks if \\(n\\) is odd in which case it increases the accumulator argument by \\(a\\), and in the case where \\(n=1\\) it returns the accumulator as the solution:
 
 ```go
 func StrictTailRecursiveDoubleHalf(a int, n int) int {
@@ -360,7 +367,7 @@ func StrictTailRecursiveDoubleHalfAcc(acc int, a int, n int) int {
 }
 ```
 
-Now our solution is **strictly tail recursive** - its has no deferred operations after its recursive call and it simply calls itself with the same arguments. This is effectively the same as a `GOTO` statement, telling the function to start at the top again.
+Now our solution is **strictly tail-recursive** - its has no deferred operations after its recursive call and it simply calls itself with the same arguments. This is effectively the same as a `GOTO` statement, telling the function to start at the top again.
 
 When I benchmark this new implementation against our previous, we see a performance *decrease*:
 
