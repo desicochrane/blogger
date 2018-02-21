@@ -240,7 +240,7 @@ We can observe that at each recursive step we are performing the following:
 1. If the last bit of \\(n\\) is a 1, add \\(a\\) to our result
 2. right-shift \\(n\\), left-shift \\(a\\)
 
-And it repeats this process until it has \\(n\\) has been completely right-shifted, which we say takes \\(m\\) iterations where \\(m\\) is the number of bits in \\(n\\), i.e. \\(m = \lfloor \log_2{n} \rfloor\\).
+And it repeats this process until \\(n\\) has been completely right-shifted, which we say takes \\(m\\) iterations where \\(m\\) is the number of bits in \\(n\\), i.e. \\(m = \lfloor \log_2{n} \rfloor\\).
 
 Notice that the only time we update our result is when the least significant bit of \\(n\\) is a 1. Since our \\(n\\) is shifted right at every iteration, this is equivalent to a left-to-right bitwise scan of \\(n\\), that is for each iteration \\(k\\) we are checking if the \\(k^{\text{th}}\\) significant bit of \\(n\\), \\(\text{ksb}(n)\\).
 
