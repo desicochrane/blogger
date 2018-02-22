@@ -161,7 +161,7 @@
 
 <p>\[ \text{Multiply}(a \times 2^k, 2^{k-k}) = \text{Multiply}(a \times 2^k, 1) = a \times 2^k \]</p>
 
-<p>Thus we can see that we are guaranteed our second argument will eventually reach \(2^0 = 1\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \(a\) and half the second argument \(n\), which we can perform by left and right shifts respectively:</p>
+<p>Thus we can see that we are guaranteed our second argument will eventually reach \(2^0 = 1\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \(a\) and half the second argument \(n\), which we can perform by left and right-shifts respectively:</p>
 
 <p>\[
 \text{Multiply}(a,n) =
@@ -380,7 +380,13 @@ n \gg 1 =
 
 <h3>Can we do better? Tail recursion</h3>
 
-<p>At this point the operations we are performing are \(\lfloor \log_2{n} \rfloor\) left shifts plus \(m = \lfloor \log_2{n} \rfloor\) right shifts plus an addition operation for every \(1\) in the binary representation of \(n\) , also known as the <em>population count</em> of \(n\) or \(\text{pop}(n) \).</p>
+<p>At this point our algorithm performs a number of operations, namely:</p>
+
+<ul>
+<li>\(\lfloor \log_2{n} \rfloor\) left-shifts; plus</li>
+<li>\(\lfloor \log_2{n} \rfloor\) right-shifts; plus</li>
+<li>an addition operation every time a \(1\) is the least-significant-bit, which is just the number of 1&rsquo;s in the binary representation of \(n\), also known as the <em>population count</em> of \(n\) or \(\text{pop}(n) \).</li>
+</ul>
 
 <p>$$ \text{operations} = 2\lfloor \log_2{n} \rfloor + \text{pop}(n) $$</p>
 

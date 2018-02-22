@@ -27,7 +27,7 @@ func RecursiveDoubleHalf(a int, n int) int {
 	result := RecursiveDoubleHalf(a<<1, n>>1)
 
 	// if n is odd we need to add "a"
-	if n&0x1 == 1 {
+	if n&1 == 1 {
 		return result + a
 	}
 
@@ -41,7 +41,7 @@ func TailRecursiveDoubleHalf(a int, n int) int {
 	}
 
 	error := 0
-	if n&0x1 == 1 {
+	if n&1 == 1 {
 		error = a
 	}
 
@@ -54,7 +54,7 @@ func StrictTailRecursiveDoubleHalf(a int, n int) int {
 }
 
 func StrictTailRecursiveDoubleHalfAcc(acc int, a int, n int) int {
-	if n&0x1 == 1 {
+	if n&1 == 1 {
 		acc += a
 
 		if n == 1 {
@@ -72,7 +72,7 @@ func IterativeDoubleHalf(a int, n int) int {
 	acc := 0
 
 	for {
-		if n&0x1 == 1 {
+		if n&1 == 1 {
 			acc += a
 
 			if n == 1 {

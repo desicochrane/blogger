@@ -132,7 +132,7 @@ Notice that eventually we will reach the point where \\(m=k\\) whereby:
 
 \\[ \\text{Multiply}(a \times 2^k, 2^{k-k}) = \\text{Multiply}(a \times 2^k, 1) = a \times 2^k \\]
 
-Thus we can see that we are guaranteed our second argument will eventually reach \\(2^0 = 1\\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \\(a\\) and half the second argument \\(n\\), which we can perform by left and right shifts respectively:
+Thus we can see that we are guaranteed our second argument will eventually reach \\(2^0 = 1\\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \\(a\\) and half the second argument \\(n\\), which we can perform by left and right-shifts respectively:
 
 \\[
 \\text{Multiply}(a,n) =
@@ -227,7 +227,7 @@ func RecursiveDoubleHalf(a int, n int) int {
   result := RecursiveDoubleHalf(a<<1, n>>1)
 
   // if n is odd we need to add "a"
-  if n&0x1 == 1 {
+  if n&1 == 1 {
     return result + a
   }
 
@@ -298,7 +298,11 @@ If something about this algorithm seems vaguely familiar to you, it's because th
 Which follows exactly the same pattern as our function - it scans through the each digit of \\(n\\) left-to-right, in the case where that digit is a zero we add nothing, in the case where that digit is a one we adds a left-shifted \\(a\\).
 
 ### Can we do better? Tail recursion
-At this point the operations we are performing are \\(\lfloor \log_2{n} \rfloor\\) left shifts plus \\(m = \lfloor \log_2{n} \rfloor\\) right shifts plus an addition operation for every \\(1\\) in the binary representation of \\(n\\) , also known as the *population count* of \\(n\\) or \\(\\text{pop}(n) \\).
+At this point our algorithm performs a number of operations, namely:
+
+- \\(\lfloor \log_2{n} \rfloor\\) left-shifts; plus
+- \\(\lfloor \log_2{n} \rfloor\\) right-shifts; plus 
+- an addition operation every time a \\(1\\) is the least-significant-bit, which is just the number of 1's in the binary representation of \\(n\\), also known as the *population count* of \\(n\\) or \\(\\text{pop}(n) \\).
 
 $$ \\text{operations} = 2\lfloor \log_2{n} \rfloor + \\text{pop}(n) $$
 
@@ -313,7 +317,7 @@ func TailRecursiveDoubleHalf(a int, n int) int {
   }
 
   error := 0
-  if n&0x1 == 1 {
+  if n&1 == 1 {
     error = a
   }
 
@@ -363,7 +367,7 @@ func StrictTailRecursiveDoubleHalf(a int, n int) int {
 }
 
 func StrictTailRecursiveDoubleHalfAcc(acc int, a int, n int) int {
-  if n&0x1 == 1 {
+  if n&1 == 1 {
     acc += a
 
     if n == 1 {
@@ -393,7 +397,7 @@ func IterativeDoubleHalf(a int, n int) int {
   acc := 0
 
   for {
-    if n&0x1 == 1 {
+    if n&1 == 1 {
       acc += a
 
       if n == 1 {
