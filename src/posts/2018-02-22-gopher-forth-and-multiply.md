@@ -12,7 +12,7 @@ We will be using golang for our implementation because I like it and because it 
 > In the spirit of learning and thinking more symbolically about the code we write I have not shied away from mathematical notation. But don't let that scare you off! For me at least, the satisfaction of reaching that "Aha!" moment is totally worth the time spent studying and staring down a chunk of intimidating math that I didn't immediately understand.
 
 ### The problem
-Suppose we are tasked with implementing a function `Multiply` which takes two positive integers \\(a\\), \\(n\\) and outputs their product:
+Suppose we are tasked with implementing a function `Multiply` which takes as input two positive integers \\(a\\) and \\(n\\) and returns their product as output:
 
 $$ \\text{Multiply}(a,n) = a \times n \text{ where } a,n \in \\{1,2,3,\\ldots \\} $$
 
@@ -424,4 +424,6 @@ Which yields a significant performance boost:
 So that's that! In the end our solution is still much slower than the native operator, but we have come a long way. We've seen how to reason about and make solid claims about our recursive code. We have spent some time thinking about our algorithm from different perspectives to get deeper intuition for what is going on. We've seen how we can refactor to strict tail recursion via the "plug-and-chug" strategy. We've seen how useful it is to benchmark our code to point us in the right direction.
 
 The final implementation still has a lot of wiggle room for optimization, and there are many other multiplication algorithms out there. Exploring those is left as an exercise to the reader.
+
+If you're interested in this kind of thing, I recommend checking out [From Mathematics to Generic Programming](https://www.amazon.com/Mathematics-Generic-Programming-Alexander-Stepanov-ebook/dp/B00PKH9XAG/ref=mt_kindle?_encoding=UTF8&me=) which was the inspiration for this article.
 
