@@ -1,6 +1,6 @@
 ---
 title: Gopher Forth and Multiply
-date: 21-Feb-2018
+date: 22-Feb-2018
 ---
 # Gopher Forth and Multiply
 
