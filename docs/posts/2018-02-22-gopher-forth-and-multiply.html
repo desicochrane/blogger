@@ -65,7 +65,7 @@
 </pre>
 <h3>Benchmarking</h3>
 
-<p>To get a feeling of how well our solution performs we can use golang&rsquo;s benchmarking tool to compare our solution with the native product operator:</p>
+<p>To get a feeling for how well our solution performs we can use golang&rsquo;s benchmarking tool to compare our solution with the native product operator:</p>
 <pre class="chroma"><span class="c1">// multiply.go
 </span><span class="c1"></span>
 <span class="kd">func</span> <span class="nx">NativeProduct</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
@@ -486,7 +486,9 @@ n \gg 1 =
 </tr>
 </tbody>
 </table>
-<p>It would seem golang is not providing built in tail-recursion optimization, but so we can implement it ourselves, since strict-tail recursion is effectively a <code>GOTO</code> we can replace all our function calls with a <code>for</code> loop:</p>
+<p>This performance hit is due to the golang compiler not providing automatic tail-recursion optimization (at least at time of writing). Fortunately, when our code is in a strict-tail-recursive state, optimization is as straight-forward as replacing the recursive call with a <code>while(true)</code> loop or a <code>GOTO</code> statement - the rest of the code can be left as-is!</p>
+
+<p>In golang we emulate a <code>while(true)</code> loop by using a <code>for</code> loop without any condition. Also once we have replaced the recursive call with a loop, we no longer need the accumulator function. The final result comes out as:</p>
 <pre class="chroma"><span class="kd">func</span> <span class="nx">IterativeDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="nx">acc</span> <span class="o">:=</span> <span class="mi">0</span>
 

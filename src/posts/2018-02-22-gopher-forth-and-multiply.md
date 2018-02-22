@@ -51,7 +51,7 @@ func RepeatedAddition(a int, n int) int {
 ```
 
 ### Benchmarking
-To get a feeling of how well our solution performs we can use golang's benchmarking tool to compare our solution with the native product operator:
+To get a feeling for how well our solution performs we can use golang's benchmarking tool to compare our solution with the native product operator:
 
 
 ```go
@@ -390,7 +390,9 @@ When I benchmark this new implementation against our previous, we see a performa
 | \\( (17,28) \\)       | 14.1 ns/op            | 17.6 ns/op                      |
 | \\( (19998,12234) \\) | 45.6 ns/op            | 50.7 ns/op                      |
 
-It would seem golang is not providing built in tail-recursion optimization, but so we can implement it ourselves, since strict-tail recursion is effectively a `GOTO` we can replace all our function calls with a `for` loop:
+This performance hit is due to the golang compiler not providing automatic tail-recursion optimization (at least at time of writing). Fortunately, when our code is in a strict-tail-recursive state, optimization is as straight-forward as replacing the recursive call with a `while(true)` loop or a `GOTO` statement - the rest of the code can be left as-is!
+
+In golang we emulate a `while(true)` loop by using a `for` loop without any condition. Also once we have replaced the recursive call with a loop, we no longer need the accumulator function. The final result comes out as:
 
 ```go
 func IterativeDoubleHalf(a int, n int) int {
