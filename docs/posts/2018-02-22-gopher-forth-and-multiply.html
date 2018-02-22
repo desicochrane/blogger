@@ -486,7 +486,7 @@ n \gg 1 =
 </tr>
 </tbody>
 </table>
-<p>It would seem golang is not providing built in tail-recursion optimisation, but so we can implement it ourselves, since strict-tail recursion is effectively a <code>GOTO</code> we can replace all our function calls with a <code>for</code> loop:</p>
+<p>It would seem golang is not providing built in tail-recursion optimization, but so we can implement it ourselves, since strict-tail recursion is effectively a <code>GOTO</code> we can replace all our function calls with a <code>for</code> loop:</p>
 <pre class="chroma"><span class="kd">func</span> <span class="nx">IterativeDoubleHalf</span><span class="p">(</span><span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="nx">acc</span> <span class="o">:=</span> <span class="mi">0</span>
 

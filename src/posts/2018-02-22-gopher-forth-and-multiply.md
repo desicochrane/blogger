@@ -390,7 +390,7 @@ When I benchmark this new implementation against our previous, we see a performa
 | \\( (17,28) \\)       | 14.1 ns/op            | 17.6 ns/op                      |
 | \\( (19998,12234) \\) | 45.6 ns/op            | 50.7 ns/op                      |
 
-It would seem golang is not providing built in tail-recursion optimisation, but so we can implement it ourselves, since strict-tail recursion is effectively a `GOTO` we can replace all our function calls with a `for` loop:
+It would seem golang is not providing built in tail-recursion optimization, but so we can implement it ourselves, since strict-tail recursion is effectively a `GOTO` we can replace all our function calls with a `for` loop:
 
 ```go
 func IterativeDoubleHalf(a int, n int) int {
