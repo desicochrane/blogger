@@ -1,11 +1,10 @@
 # blogger
 
-WIP https://desicochrane.github.io/blogger/
+Working blog here: https://blog.des.io/
 
 todo:
 
-- add watcher
-- allow absolute prefix for serving same url in dev and prod
-- move config to .env or conf.toml
-- cache busting
-- decouple from blog to make brew tool
+- [ ] add watcher
+- [ ]  cache busting
+- [ ]  decouple builder from my blog
+- [ ]  make brew package
