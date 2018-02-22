@@ -17,6 +17,23 @@
   <div class="container">
     {{.Doc.Content}}
   </div>
+
+  <div class="container">
+      <div id="disqus_thread"></div>
+  </div>
+
+  <script>
+    var disqus_config = function () {
+      this.page.url = "{{ absurl .Doc.URL }}";
+      this.page.identifier = "{{.Doc.URL}}";
+    };
+    (function() { // DON'T EDIT BELOW THIS LINE
+      var d = document, s = d.createElement('script');
+      s.src = 'https://des-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
 </div>
 
 <div class="footer">
@@ -24,6 +41,7 @@
     <a href="https://github.com/desicochrane">github</a>
   </div>
 </div>
+
 
 <script src="{{ absurl "js/blog.js" }}"></script>
 </body>

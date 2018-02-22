@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>Blog</title>
-  <link rel="stylesheet" href="/blogger/css/blog.css">
+  <link rel="stylesheet" href="https://github.com/desicochrane/blogger/css/blog.css">
 
 </head>
 <body>
 <div class="header">
   <div class="container">
-    <a href="/blogger">des.io</a>
+    <a href="https://github.com/desicochrane/blogger">des.io</a>
   </div>
 </div>
 
@@ -19,8 +19,12 @@
 
 <h3>Introduction</h3>
 
+<p>In this article we will use the &ldquo;Binary Multiplication Algorithm&rdquo; as a toy motivating example to play with recursion. We are going to approach the algorithm by first examining the problem it solves then building up to the final solution bit by bit. In this way I hope you gain an intuition for how the algorithm works and at the same time pick up some useful tactics for how to refactor recursive functions to improve performance.</p>
+
+<p>We will be using golang for our implementation because I like it and because it has built in benchmarking for us to measure our performance - but the code examples should be straightforward enough to understand even if you&rsquo;ve never seen any golang before.</p>
+
 <blockquote>
-<p>todo</p>
+<p>In the spirit of learning and thinking more symbolically about the code we write I have not shied away from mathematical notation. But don&rsquo;t let that scare you off! For me at least, the satisfaction of reaching that &ldquo;Aha!&rdquo; moment is totally worth the time spent studying and staring down a chunk of intimidating math that I didn&rsquo;t immediately understand.</p>
 </blockquote>
 
 <h3>The problem</h3>
@@ -86,6 +90,10 @@
   <span class="nx">benchmarkMultiply</span><span class="p">(</span><span class="nx">b</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="nx">RepeatedAddition</span><span class="p">)</span>
 <span class="p">}</span>
 </pre>
+<blockquote>
+<p>Don&rsquo;t worry if the benchmarking code is unfamiliar, all we are doing is getting an idea of how fast our code is by running it a bunch of times. You won&rsquo;t need to understand it to follow the rest of the article.</p>
+</blockquote>
+
 <p>I ran this on my mac for various inputs for \( (a,n) \) and I get:</p>
 
 <table>
@@ -521,11 +529,28 @@ n \gg 1 =
 
 <h3>Summary</h3>
 
-<blockquote>
-<p>todo</p>
-</blockquote>
+<p>So that&rsquo;s that! In the end our solution is still much slower than the native operator, but we have come a long way. We&rsquo;ve seen how to reason about and make solid claims about our recursive code. We have spent some time thinking about our algorithm from different perspectives to get deeper intuition for what is going on. We&rsquo;ve seen how we can refactor to strict tail recursion via the &ldquo;plug-and-chug&rdquo; strategy. We&rsquo;ve seen how useful it is to benchmark our code to point us in the right direction.</p>
+
+<p>The final implementation still has a lot of wiggle room for optimization, and there are many other multiplication algorithms out there. Exploring those is left as an exercise to the reader.</p>
 
   </div>
+
+  <div class="container">
+      <div id="disqus_thread"></div>
+  </div>
+
+  <script>
+    var disqus_config = function () {
+      this.page.url = "https:\/\/github.com\/desicochrane\/blogger\/posts\/2018-02-21-gopher-forth-and-multiply.html";
+      this.page.identifier = "\/posts\/2018-02-21-gopher-forth-and-multiply.html";
+    };
+    (function() { 
+      var d = document, s = d.createElement('script');
+      s.src = 'https://des-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
 </div>
 
 <div class="footer">
@@ -534,6 +559,7 @@ n \gg 1 =
   </div>
 </div>
 
-<script src="/blogger/js/blog.js"></script>
+
+<script src="https://github.com/desicochrane/blogger/js/blog.js"></script>
 </body>
 </html>

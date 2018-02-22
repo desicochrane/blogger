@@ -5,7 +5,11 @@ date: 21-Feb-2018
 # Gopher Forth and Multiply
 
 ### Introduction
-> todo
+In this article we will use the "Binary Multiplication Algorithm" as a toy motivating example to play with recursion. We are going to approach the algorithm by first examining the problem it solves then building up to the final solution bit by bit. In this way I hope you gain an intuition for how the algorithm works and at the same time pick up some useful tactics for how to refactor recursive functions to improve performance.
+
+We will be using golang for our implementation because I like it and because it has built in benchmarking for us to measure our performance - but the code examples should be straightforward enough to understand even if you've never seen any golang before. 
+
+> In the spirit of learning and thinking more symbolically about the code we write I have not shied away from mathematical notation. But don't let that scare you off! For me at least, the satisfaction of reaching that "Aha!" moment is totally worth the time spent studying and staring down a chunk of intimidating math that I didn't immediately understand.
 
 ### The problem
 Suppose we are tasked with implementing a function `Multiply` which takes two positive integers \\(a\\), \\(n\\) and outputs their product:
@@ -49,6 +53,7 @@ func RepeatedAddition(a int, n int) int {
 ### Benchmarking
 To get a feeling of how well our solution performs we can use golang's benchmarking tool to compare our solution with the native product operator:
 
+
 ```go
 // multiply.go
 
@@ -77,6 +82,8 @@ func BenchmarkRepeatedAddition(b *testing.B) {
   benchmarkMultiply(b, 17, 28, RepeatedAddition)
 }
 ```
+
+> Don't worry if the benchmarking code is unfamiliar, all we are doing is getting an idea of how fast our code is by running it a bunch of times. You won't need to understand it to follow the rest of the article.
 
 I ran this on my mac for various inputs for \\( (a,n) \\) and I get:
 
@@ -408,4 +415,7 @@ Which yields a significant performance boost:
 | \\( (19998,12234) \\) | 45.6 ns/op            | 50.7 ns/op                      | 21.9 ns/op            |
 
 ### Summary
-> todo
+So that's that! In the end our solution is still much slower than the native operator, but we have come a long way. We've seen how to reason about and make solid claims about our recursive code. We have spent some time thinking about our algorithm from different perspectives to get deeper intuition for what is going on. We've seen how we can refactor to strict tail recursion via the "plug-and-chug" strategy. We've seen how useful it is to benchmark our code to point us in the right direction.
+
+The final implementation still has a lot of wiggle room for optimization, and there are many other multiplication algorithms out there. Exploring those is left as an exercise to the reader.
+
