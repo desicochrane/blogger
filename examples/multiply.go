@@ -40,12 +40,12 @@ func TailRecursiveDoubleHalf(a int, n int) int {
 		return a
 	}
 
-	error := 0
+	correction := 0
 	if n&1 == 1 {
-		error = a
+		correction = a
 	}
 
-	return error + TailRecursiveDoubleHalf(a<<1, n>>1)
+	return correction + TailRecursiveDoubleHalf(a<<1, n>>1)
 }
 
 // -----------------------------------------------------------------------------

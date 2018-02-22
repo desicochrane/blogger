@@ -194,10 +194,10 @@ Because our function depends on right-shifting being equivalent to halving, we r
                       &= \\text{Multiply}(2a,\frac{n-1}{2}) \\\\
 \\end{aligned} \\]
 
-We can calculate the error algebraically as:
+We can calculate the correction we need to apply algebraically as:
 
 \\[ \\begin{aligned}
-\\text{error} &= \text{correct} - \\text{computed} \\\\
+\\text{correction} &= \text{correct} - \\text{computed} \\\\
               &= (a \times n)   - 2a\big( \frac{n-1}{2} \big) \\\\
               &= an - a(n-1) \\\\
               &= an - an+a \\\\
@@ -316,16 +316,16 @@ func TailRecursiveDoubleHalf(a int, n int) int {
     return a
   }
 
-  error := 0
+  correction := 0
   if n&1 == 1 {
-    error = a
+    correction = a
   }
 
-  return error + TailRecursiveDoubleHalf(a<<1,n>>1)
+  return correction + TailRecursiveDoubleHalf(a<<1,n>>1)
 }
 ``` 
 
-Notice that our recursive call is now the final operation in the function. We say that our function is in a *deferred* tail-recursive state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the `error` term.
+Notice that our recursive call is now the final operation in the function. We say that our function is in a *deferred* tail-recursive state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the `correction` term.
 
 What we want however is for our function to be in a *strict* tail-recursive state, that is, we want there to be no additional work to be done after the recursive step.
 
@@ -356,7 +356,7 @@ Here we can see clearly the addition operations that are deferred, separate from
 
 This is our desired "plug and chug" output. Notice it uses a new function \\(\\text{Multiply}^\prime\\) which takes 3 arguments, the first of which is acts as an accumulator, capturing those deferred additions in our current implementation. This additional helper function is known as an *accumulator* function. 
 
-Observe that at each recursive call of \\(\\text{Multiply}^\prime\\) the invariant \\(\text{acc} + a \times n \\) remains the same, which is the value of the final output. Our new accumulator function can then be defined as:
+Observe that at each recursive call of \\(\\text{Multiply}^\prime\\) the invariant \\(\text{acc} + a \times n \\) holds, which is the value of the final output. Our new accumulator function can then be defined as:
  $$ \\text{Multiply}^\prime(\text{acc},a,n) = \text{acc} + a \times n $$
 
 By inspecting the desired "plug and chug" we can see how our accumulator ought to behave and thus these become our instructions as we implement it. At each step it checks if \\(n\\) is odd in which case it increases the accumulator argument by \\(a\\), and in the case where \\(n=1\\) it returns the accumulator as the solution:

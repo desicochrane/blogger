@@ -216,10 +216,10 @@ n \gg 1 =
                       &amp;= \text{Multiply}(2a,\frac{n-1}{2}) \\
 \end{aligned} \]</p>
 
-<p>We can calculate the error algebraically as:</p>
+<p>We can calculate the correction we need to apply algebraically as:</p>
 
 <p>\[ \begin{aligned}
-\text{error} &amp;= \text{correct} - \text{computed} \\
+\text{correction} &amp;= \text{correct} - \text{computed} \\
               &amp;= (a \times n)   - 2a\big( \frac{n-1}{2} \big) \\
               &amp;= an - a(n-1) \\
               &amp;= an - an+a \\
@@ -247,7 +247,7 @@ n \gg 1 =
   <span class="nx">result</span> <span class="o">:=</span> <span class="nx">RecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
 
   <span class="c1">// if n is odd we need to add &#34;a&#34;
-</span><span class="c1"></span>  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+</span><span class="c1"></span>  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nx">result</span> <span class="o">+</span> <span class="nx">a</span>
   <span class="p">}</span>
 
@@ -398,15 +398,15 @@ n \gg 1 =
     <span class="k">return</span> <span class="nx">a</span>
   <span class="p">}</span>
 
-  <span class="kt">error</span> <span class="o">:=</span> <span class="mi">0</span>
-  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
-    <span class="kt">error</span> <span class="p">=</span> <span class="nx">a</span>
+  <span class="nx">correction</span> <span class="o">:=</span> <span class="mi">0</span>
+  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="nx">correction</span> <span class="p">=</span> <span class="nx">a</span>
   <span class="p">}</span>
 
-  <span class="k">return</span> <span class="kt">error</span> <span class="o">+</span> <span class="nx">TailRecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
+  <span class="k">return</span> <span class="nx">correction</span> <span class="o">+</span> <span class="nx">TailRecursiveDoubleHalf</span><span class="p">(</span><span class="nx">a</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">,</span><span class="nx">n</span><span class="o">&gt;&gt;</span><span class="mi">1</span><span class="p">)</span>
 <span class="p">}</span>
 </pre>
-<p>Notice that our recursive call is now the final operation in the function. We say that our function is in a <em>deferred</em> tail-recursive state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the <code>error</code> term.</p>
+<p>Notice that our recursive call is now the final operation in the function. We say that our function is in a <em>deferred</em> tail-recursive state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the <code>correction</code> term.</p>
 
 <p>What we want however is for our function to be in a <em>strict</em> tail-recursive state, that is, we want there to be no additional work to be done after the recursive step.</p>
 
@@ -446,7 +446,7 @@ n \gg 1 =
 <span class="p">}</span>
 
 <span class="kd">func</span> <span class="nx">StrictTailRecursiveDoubleHalfAcc</span><span class="p">(</span><span class="nx">acc</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
-  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
     <span class="nx">acc</span> <span class="o">+=</span> <span class="nx">a</span>
 
     <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
@@ -491,7 +491,7 @@ n \gg 1 =
   <span class="nx">acc</span> <span class="o">:=</span> <span class="mi">0</span>
 
   <span class="k">for</span> <span class="p">{</span>
-    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mh">0x1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span><span class="o">&amp;</span><span class="mi">1</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
       <span class="nx">acc</span> <span class="o">+=</span> <span class="nx">a</span>
 
       <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
