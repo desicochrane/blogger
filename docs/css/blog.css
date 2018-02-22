@@ -991,16 +991,6 @@
   border-bottom-width: 0.08em;
 }
 @font-face {
-  font-family: cmunrm;
-  src: url("../fonts/cmunrm.ttf") format("truetype");
-}
-
-@font-face {
-  font-family: Roboto;
-  src: url("../fonts/Roboto-Regular.ttf") format("truetype");
-}
-
-@font-face {
   font-family: "Source Code Pro";
   src: url("../fonts/SourceCodePro-Regular.ttf") format("truetype");
 }
@@ -1018,9 +1008,9 @@ h1 {
 }
 
 h3 {
-  font-weight: 400;
   margin-top: 50px;
   margin-bottom: 10px;
+  font-weight: 400;
 }
 
 blockquote {
@@ -1107,9 +1097,10 @@ table {
 
 th,
 td {
-  border: 0.5px solid #000;
-  padding: 0.333em;
+  border: 0.5px solid #333;
+  padding: 0.222em;
   text-align: center;
+  font-weight: 400;
 }
 
 .container {

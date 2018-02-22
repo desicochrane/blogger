@@ -1,14 +1,14 @@
 @import "../../node_modules/katex/dist/katex.css";
 
-@font-face {
-  font-family: cmunrm;
-  src: url('../fonts/cmunrm.ttf') format('truetype');
-}
+//@font-face {
+//  font-family: cmunrm;
+//  src: url('../fonts/cmunrm.ttf') format('truetype');
+//}
 
-@font-face {
-  font-family: Roboto;
-  src: url('../fonts/Roboto-Regular.ttf') format('truetype');
-}
+//@font-face {
+//  font-family: Roboto;
+//  src: url('../fonts/Roboto-Regular.ttf') format('truetype');
+//}
 
 @font-face {
   font-family: "Source Code Pro";
@@ -28,9 +28,9 @@ h1 {
 }
 
 h3 {
-  font-weight: 400;
   margin-top: 50px;
   margin-bottom: 10px;
+  font-weight: 400;
 }
 
 blockquote {
@@ -108,9 +108,8 @@ code {
   margin: 0 auto;
 }
 
-$table-margin: 1.667em 0 1em;
-$table-cell-padding: 0.333em;
-$table-border: 0.5px solid #000;
+$table-cell-padding: 0.222em;
+$table-border: 0.5px solid #333;
 table {
   border-collapse: collapse;
   counter-increment: table;
@@ -123,6 +122,7 @@ td {
   border: $table-border;
   padding: $table-cell-padding;
   text-align: center;
+  font-weight: 400;
 }
 
 .container {
