@@ -5,18 +5,16 @@ date: 22-Feb-2018
 # Gopher Forth and Multiply
 
 ### Introduction
-In this article we will use the "Binary Multiplication Algorithm" as a toy motivating example to play with recursion. We are going to approach the algorithm by first examining the problem it solves then building up to the final solution bit by bit. In this way I hope you gain an intuition for how the algorithm works and at the same time pick up some useful tactics for how to refactor recursive functions to improve performance.
+In this article we will derive the "Binary Multiplication Algorithm" as a toy motivating example to learn tactics for refactoring recursive functions. At the same time we will develop an intuition for how the algorithm works and get some practice reasoning about tail-recursion.
 
-We will be using golang for our implementation because I like it and because it has built in benchmarking for us to measure our performance - but the code examples should be straightforward enough to understand even if you've never seen any golang before. 
-
-> In the spirit of learning and thinking more symbolically about the code we write I have not shied away from mathematical notation. But don't let that scare you off! For me at least, the satisfaction of reaching that "Aha!" moment is totally worth the time spent studying and staring down a chunk of intimidating math that I didn't immediately understand.
+We will use Golang for its built-in benchmarking, but it should be easy to follow even if you've never seen Golang before.
 
 ### The problem
 Suppose we are tasked with implementing a function `Multiply` which takes as input two positive integers \\(a\\) and \\(n\\) and returns their product as output:
 
 $$ \\text{Multiply}(a,n) = a \times n \text{ where } a,n \in \\{1,2,3,\\ldots \\} $$
 
-We are not allowed to use the native product operator `*` in our solution, however bitwise operations, addition and subtraction are permitted. 
+We are not allowed to use the native product operator `*` in our solution, however bitwise operations, addition, and subtraction are permitted. 
 
 Because we will be comparing several different implementations, it is convenient to first define an interface for our solutions to adhere to:
 
@@ -35,7 +33,7 @@ At risk of perpetuating [multiplication as repeated addition](https://www.maa.or
  
  $$ \\text{Multiply}(a,n) = a \times n = \sum_{1}^n a  $$
 
-When we translate this to golang we get:
+When we translate this to Golang we get:
 
 ```go
 // multiply.go
@@ -51,7 +49,7 @@ func RepeatedAddition(a int, n int) int {
 ```
 
 ### Benchmarking
-To get a feeling for how well our solution performs we can use golang's benchmarking tool to compare our solution with the native product operator:
+To get a feeling for how well our solution performs we can use Golang's benchmarking tool to compare our solution with the native product operator:
 
 
 ```go
@@ -83,7 +81,7 @@ func BenchmarkRepeatedAddition(b *testing.B) {
 }
 ```
 
-> Don't worry if the benchmarking code is unfamiliar, all we are doing is getting an idea of how fast our code is by running it a bunch of times. You won't need to understand it to follow the rest of the article.
+> Don't worry if the benchmarking code is unfamiliar, all we are doing is getting an idea of how fast our code is by running it a bunch of times.
 
 I ran this on my mac for various inputs for \\( (a,n) \\) and I get:
 
@@ -118,21 +116,17 @@ However this requires performing a logarithm operation to compute \\(\log_2{n}\\
 \\end{aligned} \\]
 
 In other words we are doubling our first argument and halving our second argument (notice that \\(2^{k-1} = 2^k / 2 \\)
-). By repeating this process \\(m\\) times we can observe the recursive pattern:
+). By repeating this process \\(k\\) times we can observe the recursive pattern:
 
 \\[ \\begin{aligned}
 \\text{Multiply}(a, 2^k) &= \\text{Multiply}(a \times 2^1, 2^{k-1}) \\\\
                          &= \\text{Multiply}(a \times 2^2, 2^{k-2}) \\\\
                          &= \\text{Multiply}(a \times 2^3, 2^{k-3}) \\\\
                          & \ldots \\\\
-                         &= \\text{Multiply}(a \times 2^m, 2^{k-m})
+                         &= \\text{Multiply}(a \times 2^k, 2^{k-k})
 \\end{aligned} \\]
 
-Notice that eventually we will reach the point where \\(m=k\\) whereby:
-
-\\[ \\text{Multiply}(a \times 2^k, 2^{k-k}) = \\text{Multiply}(a \times 2^k, 1) = a \times 2^k \\]
-
-Thus we can see that we are guaranteed our second argument will eventually reach \\(2^0 = 1\\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \\(a\\) and half the second argument \\(n\\), which we can perform by left and right-shifts respectively:
+Notice that since \\(k\\) is finite, our second argument will eventually reach \\(2^0 = 1\\), which we can use as our base case. For the non-base case, we will recursively call the function with double the first argument \\(a\\) and half the second argument \\(n\\), which we can perform by left and right-shifts respectively:
 
 \\[
 \\text{Multiply}(a,n) =
@@ -144,7 +138,7 @@ Thus we can see that we are guaranteed our second argument will eventually reach
 \\]
 
 
-In golang this is as simple as:
+In Golang this is as simple as:
 
 ```go
 // multiply.go
@@ -160,9 +154,7 @@ func RecursiveDoubleHalf(a int, n int) int {
 
 ### Fixing for arbitrary \\(n\\)
 
-If we compare our new approach to our first algorithm, we can see that we've made a big improvement in terms of operations performed. For `RepeatedAddition` we performed \\(n\\) additions, whereas `RecursiveDoubleHalf` performs \\(2\log_2{n}\\) shift operations, so we have gone from a worst case scenario of \\(O(n)\\) to \\(O(\log{n})\\). 
-
-However our new algorithm depends on \\(n\\) being a power of 2, if we try \\(a = 17 \\) and \\(n = 28\\) we get:
+Our new algorithm depends on \\(n\\) being a power of 2, if we try \\(a = 17 \\) and \\(n = 28\\) we get:
 
 ```go
 fmt.PrintLn(RecursiveDoubleHalf(17,28)) // 272
@@ -170,7 +162,7 @@ fmt.PrintLn(RecursiveDoubleHalf(17,28)) // 272
 
 Which is incorrect.
 
-To see why, notice that right-shifting an odd number means we lose any information that was in the least significant (rightmost) bit as it drops off the end after the shift:
+To see why, observe that every odd number has a 1 as its least significant bit (right-most), conversely every even number has a 0 as its least significant bit. Notice that when we right-shift a number we lose any information that was in the least significant bit as it drops off the end after the shift:
  
 \\[ \\begin{aligned}
 17\_{\text{base} 10} \gg 1 &\to 10001\_{\text{base} 2} \gg 1 \\\\
@@ -178,7 +170,7 @@ To see why, notice that right-shifting an odd number means we lose any informati
          &\to 8\_{\text{base} 10}
 \\end{aligned} \\]
 
-Thus we can define a right-shift as:
+Which is the same as if we had first subtracted 1 and then shifted. Thus we can define a right-shift as:
 
 \\[
 n \gg 1 = 
@@ -187,7 +179,7 @@ n \gg 1 =
   \frac{n-1}{2} & \\text{if } n \text{ is odd}
 \\end{cases} \\]
 
-Because our function depends on right-shifting being equivalent to halving, we require that \\(n\\) is even for every recursive call - which is only the case where \\(n\\) is a natural power of 2. If \\(n\\) is *not* even for even a single recursive call we will get an incorrect answer, because we are actually computing:
+Our function depends on right-shifting being equal to halving, that is it requires \\(n\\) to be an even number for every recursive call - however the only numbers that satisfy this condition are natural powers of 2. If \\(n\\) is **not** even at any of the recursive calls we will get an incorrect answer, because we are actually computing:
 
 \\[ \\begin{aligned}
 \\text{Multiply}(a,n) &= \\text{Multiply}(a\ll1,n\gg1) \\\\
@@ -206,12 +198,14 @@ We can calculate the correction we need to apply algebraically as:
 
 So in the case where \\(n\\) is odd our computed solution will be \\(a\\) less than the correct answer, fixing our algorithm then means we need to add \\(a\\) to our result when \\(n\\) is odd. 
 
-To determine if \\(n\\) is odd we just need to check if its least significant bit is a 1, which we can do by performing a logical `and` with \\(n\\) and 1 and seeing if the result is 1:
+To determine if \\(n\\) is odd we just need to check if its least significant bit is a 1, which we can do by performing a logical `AND` with \\(n\\) and 1 and seeing if the result is 1:
 
 \\[ \\begin{aligned}
-17\_{\text{base} 10} \\small{\\text{ AND }} 1\_{\text{base} 10} &\to 10001\_{\text{base} 2} \\small{\\text{ AND }} 00001\_{\text{base} 2} \\\\
-                                     &\to 00001\_{\text{base} 2} \\\\
-                    &\to 1\_{\text{base} 10}
+17\_{\text{base} 10} \\text{ AND } 1\_{\text{base} 10} &\to 10001\_{\text{base} 2} \\text{ AND } 00001\_{\text{base} 2} \\\\
+                                     &= 00001\_{\text{base} 2} \\\\
+                    &= 1\_{\text{base} 10} \\\\
+                    \\\\
+                    & \therefore 17 \\text{ is odd}
 \\end{aligned} \\]
 
 Now we can fix our function:
@@ -247,22 +241,22 @@ So we can see that while our performance has not changed much for small inputs, 
 ### Understanding what's happening
 We can observe that at each recursive step we are performing the following:
 
-1. If the last bit of \\(n\\) is a 1, add \\(a\\) to our result
-2. right-shift \\(n\\), left-shift \\(a\\)
+1. If the last bit of \\(n\\) is a 1 we add \\(a\\) to our result
+2. right-shift \\(n\\) and left-shift \\(a\\)
 
-And it repeats this process until \\(n\\) has been completely right-shifted, which we say takes \\(m\\) iterations where \\(m\\) is the number of bits in \\(n\\), i.e. \\(m = \lfloor \log_2{n} \rfloor\\).
+We repeat this process until \\(n\\) has been completely right-shifted, which we say takes \\(k\\) iterations where \\(k\\) is one less than the number of bits in \\(n\\), i.e. \\(k = \lfloor \log_2{n} \rfloor\\).
 
-Notice that the only time we update our result is when the least significant bit of \\(n\\) is a 1. Since our \\(n\\) is shifted right at every iteration, this is equivalent to a left-to-right bitwise scan of \\(n\\), that is for each iteration \\(k\\) we are checking if the \\(k^{\text{th}}\\) significant bit of \\(n\\), \\(\text{ksb}(n)\\).
+Notice that the only time we update our result is when the least significant bit of \\(n\\) is a 1. Since our \\(n\\) is shifted right at every iteration, this is equivalent to a left-to-right bitwise scan of \\(n\\), that is for each iteration \\(i\\) we are inspecting the \\(i^{\text{th}}\\) significant bit of \\(n\\), which we will denote as \\(\text{bit}_i(n)\\).
 
-So at each iteration \\(k\\) we have for \\(n=28\\):
+For \\(n=28\\), this gives the sequence:
 
-$$ \\text{ksb}(n) = 0,0,1,1,1 $$
+$$ \text\{bit}_i(n) = 0,0,1,1,1 $$
 
 Which is the left-to-right binary representation of 28. 
 
 To better understand then how our function works we can construct the following table to compute the solution by hand for \\(a=17\\) and \\(n=28\\):
 
-| k | \\(\\text{col}\_{1} = a \times 2^k\\) | \\(\\text{col}\_{2} = \\text{ksb}(n)\\) | \\(\\text{col}\_{3} = \\text{col}\_{1} \times \\text{col}\_{2}\\) |
+| i | \\(\\text{col}\_{1} = a \times 2^i\\) | \\(\\text{col}\_{2} = \\text{bit}_i(n)\\) | \\(\\text{col}\_{3} = \\text{col}\_{1} \times \\text{col}\_{2}\\) |
 |---|------------------- |----------------------|----------------|
 | 0 |  17                | 0                    | 0              |
 | 1 |  34                | 0                    | 0              |
@@ -302,11 +296,11 @@ At this point our algorithm performs a number of operations, namely:
 
 - \\(\lfloor \log_2{n} \rfloor\\) left-shifts; plus
 - \\(\lfloor \log_2{n} \rfloor\\) right-shifts; plus 
-- an addition operation every time a \\(1\\) is the least-significant-bit, which is just the number of 1's in the binary representation of \\(n\\), also known as the *population count* of \\(n\\) or \\(\\text{pop}(n) \\).
+- an addition operation every time the least significant bit of \\(n\\) is a 1 - which is just the number of 1's in the binary representation of \\(n\\), also known as the **population count** of \\(n\\) or \\(\\text{pop}(n) \\).
 
 $$ \\text{operations} = 2\lfloor \log_2{n} \rfloor + \\text{pop}(n) $$
 
-Which is still of the order \\(O(\log{n})\\).
+Which is of the order \\(O(\log{n})\\).
 
 However on top of these operations we are also performing \\(\lfloor \log_2{n} \rfloor\\) recursive function calls, which come with a performance cost. To get rid of these function calls we need to first refactor our solution to be tail-recursive.
 
@@ -325,11 +319,11 @@ func TailRecursiveDoubleHalf(a int, n int) int {
 }
 ``` 
 
-Notice that our recursive call is now the final operation in the function. We say that our function is in a *deferred* tail-recursive state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the `correction` term.
+Notice that our recursive call is now the final operation in the function. We say that our function is in a **deferred tail-recursive** state. This is because after the recursive call returns we have some deferred work to do, namely we need to add the `correction` term.
 
-What we want however is for our function to be in a *strict* tail-recursive state, that is, we want there to be no additional work to be done after the recursive step.
+What we want however is for our function to be in a **strict tail-recursive** state, that is, we want there to be no additional work to be done after the recursive call.
 
-To see why, we can "plug and chug" our way through an example using \\(a=17\\) and \\(n=28\\) as our function currently is:
+To see why, we can "plug and chug" our way through our function using \\(a=17\\) and \\(n=28\\):
 
 \\[ \\begin{aligned}
 \\text{Multiply}(17,28) &= 0 + \\text{Multiply}(34,14) \\\\
@@ -343,7 +337,7 @@ To see why, we can "plug and chug" our way through an example using \\(a=17\\) a
                         &= 476 \\\\
 \\end{aligned} \\]
 
-Here we can see clearly the addition operations that are deferred, separate from our recursive call. For our function to be strictly tail-recursive, we need to find a way to accumulate those deferred operations into our recursive function, that is we want our function to somehow behave more like this:
+Here we can clearly see the deferred addition operations accumulating on the left of our recursive call. For our function to be **strictly tail-recursive**, we need to find a way to collect those deferred operations into our recursive function. That is, we want our function to somehow behave more like this:
 
 \\[ \\begin{aligned}
 \\text{Multiply}(17,28) &= \\text{Multiply}^\prime(0,17,28) \\\\
@@ -354,12 +348,23 @@ Here we can see clearly the addition operations that are deferred, separate from
                         &= 476 \\\\
 \\end{aligned} \\]
 
-This is our desired "plug and chug" output. Notice it uses a new function \\(\\text{Multiply}^\prime\\) which takes 3 arguments, the first of which is acts as an accumulator, capturing those deferred additions in our current implementation. This additional helper function is known as an *accumulator* function. 
+This is our desired "plug and chug" output. Notice it uses a new function \\(\\text{Multiply}^\prime\\) which takes 3 arguments, the first of which is acts as an accumulator, capturing those deferred additions in our current implementation. This additional helper function is known as an **accumulator** function. 
 
 Observe that at each recursive call of \\(\\text{Multiply}^\prime\\) the invariant \\(\text{acc} + a \times n \\) holds, which is the value of the final output. Our new accumulator function can then be defined as:
  $$ \\text{Multiply}^\prime(\text{acc},a,n) = \text{acc} + a \times n $$
 
-By inspecting the desired "plug and chug" we can see how our accumulator ought to behave and thus these become our instructions as we implement it. At each step it checks if \\(n\\) is odd in which case it increases the accumulator argument by \\(a\\), and in the case where \\(n=1\\) it returns the accumulator as the solution:
+We can use the desired "plug and chug" output as instructions for how our accumulator ought to behave. We can see that at each step it appears to check if \\(n\\) is odd in which case it increases the accumulator argument by \\(a\\). In the case where \\(n=1\\) it returns the accumulator as its output, otherwise it recursively calls itself with a left and right shifted \\(a\\) and \\(n\\):
+
+\\[
+\\text{Multiply}^\prime(\text{acc},a,n) =
+\\begin{cases}
+  \text{acc} + a                                    & \\text{if } n = 1 \\\\
+  \\text{Multiply}^\prime(\text{acc}+a,a\ll1,n\gg1) & \\text{if } n > 1 \\text{ and } n \\text{ is odd}\\\\
+  \\text{Multiply}^\prime(\text{acc},a\ll1,n\gg1)   & \\text{if } n \\text{ is even}\\\\
+\\end{cases}
+\\]
+
+We can implement this in Golang as follows:
 
 ```go
 func StrictTailRecursiveDoubleHalf(a int, n int) int {
@@ -381,18 +386,18 @@ func StrictTailRecursiveDoubleHalfAcc(acc int, a int, n int) int {
 }
 ```
 
-Now our solution is **strictly tail-recursive** - its has no deferred operations after its recursive call and it simply calls itself with the same arguments. This is effectively the same as a `GOTO` statement, telling the function to start at the top again.
+Now our solution is **strictly tail-recursive**. It has no deferred operations after its recursive call and it calls itself with the same arguments. This is effectively the same as a `GOTO` statement, telling the function to start at the top again.
 
-When I benchmark this new implementation against our previous, we see a performance *decrease*:
+When I benchmark this new implementation against our previous, we see a performance **decrease**:
 
 | \\( (a,n) \\)         | `RecursiveDoubleHalf` | `StrictTailRecursiveDoubleHalf` |
 |-----------------------|-----------------------|---------------------------------|
 | \\( (17,28) \\)       | 14.1 ns/op            | 17.6 ns/op                      |
 | \\( (19998,12234) \\) | 45.6 ns/op            | 50.7 ns/op                      |
 
-This performance hit is due to the golang compiler not providing automatic tail-recursion optimization (at least at time of writing). Fortunately, when our code is in a strict-tail-recursive state, optimization is as straight-forward as replacing the recursive call with a `while(true)` loop or a `GOTO` statement - the rest of the code can be left as-is!
+This performance hit is due to the Golang compiler not providing automatic tail-recursion optimization (at least at time of writing). Fortunately, when our code is in a strict-tail-recursive state, optimization is as straight-forward as replacing the recursive call with a `while(true)` loop or a `GOTO` statement - the rest of the code can be left as-is!
 
-In golang we emulate a `while(true)` loop by using a `for` loop without any condition. Also once we have replaced the recursive call with a loop, we no longer need the accumulator function. The final result comes out as:
+In Golang we emulate a `while(true)` loop by using a `for` loop without any condition. Also once we have replaced the recursive call with a loop, we no longer need the accumulator function. The final result comes out as:
 
 ```go
 func IterativeDoubleHalf(a int, n int) int {

@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>The Fibonacci Problem - Part I</title>
+  <link rel="stylesheet" href="https://blog.des.io/css/blog.css">
+
+</head>
+<body>
+<div class="header">
+  <div class="container">
+    <a href="https://blog.des.io/">des.io</a>
+  </div>
+</div>
+
+<div class="content">
+  <div class="container">
+    <h1>The Fibonacci Problem - Part I</h1>
+
+<blockquote>
+<p>This article is under active development, check back again in a week or so.</p>
+</blockquote>
+
+<h3>Introduction</h3>
+
+<blockquote>
+<p>todo</p>
+</blockquote>
+
+<h3>The Problem</h3>
+
+<p>Over 800 years ago Leonardo of Pisa, nowadays known as <strong>Fibonacci</strong> (son of Bonacci), posed a question that went something like this:</p>
+
+<blockquote>
+<p>Suppose we have a newly-born pair of baby fluffies, a boy and a girl. Fluffies are magical creatures - they never die and when they are one month old they become adult fluffies. One month after a boy-girl pair of fluffies become adults, they will produce another newly-born pair of baby boy and girl fluffies, and then again every month after. Given this process repeats for every new pair of baby fluffies, how many pairs of fluffies will there be after one year has passed?</p>
+</blockquote>
+
+<p>To simplify the language of the problem, we will consider each <strong>pair</strong> of fluffies as a single unit, so when we refer to the &ldquo;number of fluffies&rdquo; we are really referring to the &ldquo;number of <strong>pairs</strong> of fluffies&rdquo;</p>
+
+<p>If we then denote the number of fluffies in a given month \(n\) as \(F_n\) then our task is to find \( F_{12} \).</p>
+
+<p>As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of <strong>a</strong>dult fluffies and <strong>b</strong>aby fluffies in month \(n\) as \(a_n\) and \(b_n\) respectively, we have that:</p>
+
+<p>$$ F_n = a_n + b_n $$</p>
+
+<p>Let&rsquo;s first examine the number of adult fluffies. Observe that the number of adult fluffies in a given month will equal the number adult fluffies from the previous month <strong>plus</strong> all the baby fluffies from the previous month which have now become adults</p>
+
+<p>\[ \begin{aligned}
+a_n &amp;= a_{n-1} + b_{n-1} &amp; \\
+     &amp;= F_{n-1}            &amp; (\text{above definition of } F_n)
+\end{aligned} \]</p>
+
+<p>Next, let&rsquo;s examine the baby fluffies. Because every adult fluffy in a given month will each produce a baby fluffy the next month we have that the number of baby fluffies in a any given month must equal to the number of adult fluffies in the previous month:</p>
+
+<p>\[ \begin{aligned}
+b_{n} &amp;= a_{n-1} \\
+       &amp;= F_{n-2}   &amp; (\text{above definition of } a_n)
+\end{aligned} \]</p>
+
+<p>With this improved understanding of \(a_n\) and \(b_n\) we can re-write our definition of \(F_n\):</p>
+
+<p>\[ \begin{aligned}
+F_n &amp;= a_{n} + b_{n} \\
+     &amp;= F_{n-1} + F_{n-2}
+\end{aligned} \]</p>
+
+<p>Which means that the number of fluffies in a given month is completely determined by the number of fluffies in the previous two months. Since we started the first month with one pair of fluffies, and before that (in month zero) we had no fluffies then we can define the number of fluffies as a recursive function:</p>
+
+<p>\[
+F_n =
+\begin{cases}
+  0                   &amp; \text{if } n = 0 \\
+  1                   &amp; \text{if } n = 1 \\
+  F_{n-1} + F_{n-2} &amp; \text{if } n &gt; 1 \\
+\end{cases}
+\]</p>
+
+<p>Which is the definition of the famous fibonacci sequence, where each number is equal to the sum of the previous 2 numbers and the first two numbers are 0 then 1.</p>
+
+<p>Because our sequence starts at month zero, we can manually iterate over the first 13 numbers in the sequence to solve get the number of fluffies in month 12 and solve Fibonacci&rsquo;s problem:</p>
+
+<p>\[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 \]</p>
+
+<p>\[ \therefore F_{12} = 144 \]</p>
+
+<h3>Finding \(F_n\) for arbitrary \(n\)</h3>
+
+<blockquote>
+<p>todo</p>
+</blockquote>
+
+<h3>Improvement: Remember what you saw here</h3>
+
+<blockquote>
+<p>todo</p>
+</blockquote>
+
+<h3>Can we do better? Tail recursion revisited</h3>
+
+<blockquote>
+<p>todo</p>
+</blockquote>
+
+<h3>Strict tail recursion</h3>
+
+<blockquote>
+<p>todo</p>
+</blockquote>
+
+<h3>Summary</h3>
+
+  </div>
+
+  <div class="container" style="margin-top: 40px;">
+      <div id="disqus_thread"></div>
+  </div>
+
+  <script>
+    var disqus_config = function () {
+      this.page.url = "https:\/\/blog.des.io\/posts\/2018-03-02-fibonacci-part-1.html";
+      this.page.identifier = "\/posts\/2018-03-02-fibonacci-part-1.html";
+    };
+    (function() { 
+      var d = document, s = d.createElement('script');
+      s.src = 'https://des-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+</div>
+
+<div class="footer">
+  <div class="container">
+    <a href="https://github.com/desicochrane">github</a>
+  </div>
+</div>
+
+
+<script src="https://blog.des.io/js/blog.js"></script>
+</body>
+</html>
