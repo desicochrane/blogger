@@ -1,12 +1,12 @@
 digraph {
- node [fontname="CMU Serif Roman"]
+ node [fontname="Fira Code"]
 
- "fib5" [label="F(5)"]
- "fib4" [label="F(4)"]
- "fib3" [label="F(3)"]
- "fib2" [label="F(2)"]
- "fib1" [label="F(1)"]
- "fib0" [label="F(0)"]
+ "fib5" [label="Fib(5)"]
+ "fib4" [label="Fib(4)"]
+ "fib3" [label="Fib(3)"]
+ "fib2" [label="Fib(2)"]
+ "fib1" [label="Fib(1)"]
+ "fib0" [label="Fib(0)"]
 
  "fib5" -> {"fib4", "fib3"}
  {rank=same fib5 -> fib4 -> fib3 -> fib2 -> fib1 -> fib0 [style=invis]}

@@ -1,69 +1,9 @@
 ---
-title: The Fibonacci Problem - Part I
-date: 28-Feb-2018
+title: [wip] The Fibonacci Problem - Part I
+date: 01-Jan-2018
 ---
 
-### Recursive implementation
-
-```go
-type Fib func(n int) int
-
-func FibNaive(n int) int {
-    if n < 2 {
-        return n
-    }
-    
-    return FibNaive(n-1) + FibNaive(n-2)
-}
-```
-
-| \\( n \\)   | `FibNaive`         |
-|-------------|--------------------|
-| \\( 12 \\)  | 1,150 ns/op        |
-| \\( 40 \\)  | 816,681,704 ns/op  |
-| \\( 90 \\)  | too long           |
-
-### Improvement: Remember what you saw here
-
-![fib-naive](../img/fibonacci-naive.dot.svg)
-
-```go
-func FibCached(n int) int {
-  return FibCacheAux(n, make(map[int]int))
-}
-
-func FibCacheAux(n int, cache map[int]int) int {
-  if n < 2 {
-    return n
-  }
-
-  a, cached := cache[n-1]
-  if !cached {
-    a = FibCacheAux(n-1, cache)
-  }
-
-  b, cached := cache[n-2]
-  if !cached {
-    b = FibCacheAux(n-2, cache)
-  }
-
-  result := a + b
-  cache[n] = result
-
-  return result
-}
-```
-
-![fib-naive](../img/fibonacci-cached.dot.svg)
-
-| \\( n \\)   | `FibNaive`         |`FibCached`   |
-|-------------|--------------------|--------------|
-| \\( 12 \\)  | 1,150 ns/op        | 1,092 ns/op  |
-| \\( 40 \\)  | 816,681,704 ns/op  | 6,044 ns/op  |
-| \\( 90 \\)  | too long           | 15,979 ns/op |
-
 ### Can we do better? Tail recursion revisited
-> todo
 
 \\[ \\begin{aligned}
 F_0 &= 0 \\\\
@@ -216,3 +156,6 @@ func FibTupleTailIterative(n int) int {
 | \\( 90 \\)  | too long           | 15,979 ns/op | 359 ns/op  | 361 ns/op               | 56.6 ns/op          |
 
 > todo: mention if use global var for tests huge performance boost -> explain the gotcha! 
+
+http://explorabl.es/
+http://www.olioapps.com/blog/the-lost-art-of-the-makefile/

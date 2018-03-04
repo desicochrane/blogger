@@ -52,6 +52,10 @@ func BenchmarkFibNaive_40(b *testing.B) {
 	benchmarkFib(b, FibNaive, 40)
 }
 
+//func BenchmarkFibNaive_90(b *testing.B) {
+//	benchmarkFib(b, FibNaive, 90)
+//}
+
 // -----------------------------------------------------------------------------
 func BenchmarkFibCached_12(b *testing.B) {
 	benchmarkFib(b, FibCached, 12)

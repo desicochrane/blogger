@@ -1,6 +1,6 @@
 ---
-title: WIP Bits
-date: 10-Feb-2018
+title: [wip]  Bits
+date: 01-Jan-2018
 ---
 # Bits
 

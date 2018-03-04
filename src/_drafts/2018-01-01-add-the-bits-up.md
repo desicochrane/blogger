@@ -1,5 +1,5 @@
 ---
-title: WIP Bits Add
+title: [wip]  Bits Add
 date: 01-Jan-2018
 ---
 https://eater.net/8bit/

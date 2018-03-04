@@ -2,6 +2,9 @@
 title: Gopher Forth and Multiply
 date: 22-Feb-2018
 ---
+
+<div style="margin-top: 40px; text-align: center;"><img style="width: 350px; display: inline-block; margin: 0 auto;" src="../img/gopher_forth_shift_machine.png" /></div>
+
 # Gopher Forth and Multiply
 
 ### Introduction

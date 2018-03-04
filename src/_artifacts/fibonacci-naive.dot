@@ -1,27 +1,26 @@
 graph {
- rankdir=LR
- node [fontname="CMU Serif Roman"]
+ node [fontname="Fira Code"]
 
- "x" [label="F(5)"]
- "xa" [label="F(3)"]
- "xaa" [label="F(2)"]
- "xab" [label="F(1)"]
+ "x" [label="Fib(5)"]
+ "xa" [label="Fib(3)"]
+ "xaa" [label="Fib(2)"]
+ "xab" [label="Fib(1)"]
 
- "xaaa" [label="F(1)"]
- "xaab" [label="F(0)"]
+ "xaaa" [label="Fib(1)"]
+ "xaab" [label="Fib(0)"]
 
- "a" [label="F(4)"]
- "ab" [label="F(3)"]
- "aa" [label="F(2)"]
+ "a" [label="Fib(4)"]
+ "ab" [label="Fib(3)"]
+ "aa" [label="Fib(2)"]
 
- "aab" [label="F(1)"]
- "aaa" [label="F(0)"]
+ "aab" [label="Fib(1)"]
+ "aaa" [label="Fib(0)"]
 
- "aba" [label="F(2)"]
- "abb" [label="F(1)"]
+ "aba" [label="Fib(2)"]
+ "abb" [label="Fib(1)"]
 
- "abaa" [label="F(1)"]
- "abab" [label="F(0)"]
+ "abaa" [label="Fib(1)"]
+ "abab" [label="Fib(0)"]
 
  "x" -- {"a", "xa"}
  "xa" -- {"xaa", "xab"}

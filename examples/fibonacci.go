@@ -13,22 +13,22 @@ func FibNaive(n int) int {
 
 // -----------------------------------------------------------------------------
 func FibCached(n int) int {
-	return FibCachedAux(n, make(map[int]int))
+	return FibCachedHelper(n, make(map[int]int))
 }
 
-func FibCachedAux(n int, cache map[int]int) int {
+func FibCachedHelper(n int, cache map[int]int) int {
 	if n < 2 {
 		return n
 	}
 
 	a, cached := cache[n-2]
 	if !cached {
-		a = FibCachedAux(n-2, cache)
+		a = FibCachedHelper(n-2, cache)
 	}
 
 	b, cached := cache[n-1]
 	if !cached {
-		b = FibCachedAux(n-1, cache)
+		b = FibCachedHelper(n-1, cache)
 	}
 
 	result := a + b
