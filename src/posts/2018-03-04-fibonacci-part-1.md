@@ -49,7 +49,7 @@ This gives us all the pieces we need to define the \\(F_n\\) with a recursive re
 \\[ \\begin{aligned}
 F\_0 &= 0 \\\\
 F\_1 &= 1 \\\\
-F\_n &= F\_{n-1} + F\_{n-2}
+F\_n &= F\_{n-1} + F\_{n-2} \\text{ where } n > 1
 \\end{aligned} \\]
 
 To solve Fibonacci's problem then we can use simply use the definition to compute from \\(F_0\\) to \\(F\_{12}\\):
