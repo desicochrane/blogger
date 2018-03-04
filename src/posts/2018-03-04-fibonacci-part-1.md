@@ -109,7 +109,7 @@ Here we can see the problem - our solution seems to do a lot of duplicate work. 
 <img style="max-width: 500px;" src="../img/fibonacci-naive.dot.svg">
 </p>
 
-Our graph shows our algorithm behaves like a tree and seems to grow in an exponential manner. In fact we can see that as \\(n\\) increases our tree will have a height of approximately \\(n\\), with each layer having approximately double the nodes of the above layer. Since the addition operations happen in the leaves, we can see there will be \\(2^n\\) additions, which means our code runs in exponential time. Also each node in the entire graph roughly corresponds to another function call added to our call-stack which means we are taking exponential space as well! 
+Our graph shows our algorithm behaves like a tree and seems to grow in an exponential manner. In fact we can see that as \\(n\\) increases our tree will have a height of approximately \\(n\\), with each layer having approximately double the nodes of the above layer. Since the addition operations happen in the leaves, we can see there will be \\(2^n\\) numbers to add up! Also each node in the entire graph roughly corresponds to another function call added to our call-stack which means we are taking exponential space as well! 
 
 > It's no wonder then that I ran out of memory trying to perform `Fib(90)`. \\(2^{90}\\) is an obscenely large number and too much for my mac to handle.
 
