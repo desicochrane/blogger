@@ -11,7 +11,7 @@ date: 04-Mar-2018
 ### The Problem
 Over 800 years ago Leonardo of Pisa posed a question that went something like this:
 
-> Suppose we have a newly-born fluffy. Fluffies are magical creatures - they never die and when they are one month old they become adult fluffies. One month after a fluffies has become an adult it will produce another newly-born fluffy - and then again every month after. Given this process repeats for every newly-born fluffy, how many fluffies will there be after one year has passed?
+> Suppose we have a newly-born fluffy. Fluffies are magical creatures - they never die and when they are one month old they become adult fluffies. One month after a fluffy has become an adult it will produce another newly-born fluffy - and then again every month after. Given this process repeats for every newly-born fluffy, how many fluffies will there be after one year has passed?
 
 If we then denote the number of fluffies in a given month \\(n\\) as \\(F\_n\\) then our task is to find \\( F\_{12} \\).
 
@@ -114,7 +114,7 @@ Our graph shows our algorithm behaves like a tree and seems to grow in an expone
 > It's no wonder then that I ran out of memory trying to perform `Fib(90)`. \\(2^{90}\\) is an obscenely large number and too much for my mac to handle.
 
 ### Remember what you saw here
-The result of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-use our previous computation. The graph representation for our manual approach is would then be:
+The results of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-used our previous computation. The graph representation for our manual approach is then:
 
 <p style="text-align: center; margin: 50px 0;">
 <img style="max-width: 500px;" src="../img/fibonacci-cached.dot.svg">
