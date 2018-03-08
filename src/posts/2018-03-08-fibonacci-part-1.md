@@ -104,7 +104,7 @@ F\_5 &= F\_3 + F\_4 \\\\
     &= 5
 \\end{aligned} \\]
 
-Here we can see the problem - our solution seems to do a lot of duplicate work. We can see that in the case for \\(n=5\\) we are computing \\(F\_2\\) three times! This is even more apparent when we visualize our algorithm with a graph:
+Here we can see the problem - our solution seems to do a lot of duplicate work. We can see that in the case for \\(n=5\\) we are computing \\(F\_3\\) twice and \\(F\_2\\) three times! This is even more apparent when we visualize our algorithm with a graph:
 
 <p style="text-align: center; margin: 50px 0;">
 <img style="max-width: 500px;" src="../img/fibonacci-naive.dot.svg">
@@ -171,86 +171,92 @@ In a [previous article](2018-02-22-gopher-forth-and-multiply.html) we saw how re
 
 One tactic we can employ is "Replace \\(n\\) recursive calls with one". That is, we currently have two recursive calls to a function that returns a single integer and we can refactor this into a single new function that will return two integers. 
 
-We can return two integers from a single function by grouping them into a tuple or a vector. We can describe this refactoring as:
+We can return two integers from a single function by grouping them into a tuple or vector. We can describe this refactoring as:
 
 \\[ \\begin{aligned}
 F\_n &= F\_{n-1} + F\_{n-2} \\\\
-\\text{ becomes: } F\_n &= \sum{\vec{F}\_n} \\text{ where } \vec{F}\_n = \\begin{bmatrix} F\_{n-1} \\\\ F\_{n-2} \\end{bmatrix}
+\\text{ becomes: } F\_n &= \sum{\vec{v}} \\text{ where } \vec{v} = \\begin{bmatrix} F\_{n-1} \\\\ F\_{n-2} \\end{bmatrix}
 \\end{aligned} \\]
+
+As a convention we will refer to \\( \\begin{bmatrix} F\_n \\\\ F\_{n-1} \\end{bmatrix}\\) as the \\( n^{th} \\) **fibonacci vector** denoted \\( \\vec{F}_n \\). Then the \\(n^{th}\\) fibonacci **number** can be defined as the vector sum of the \\( (n-1)^{th} \\) fibonacci **vector**:
+
+\\[
+F\_n = \sum{ \\begin{bmatrix} F\_{n-1} \\\\ F\_{n-2} \\end{bmatrix}} = \sum{ \\vec{F}\_{n-1} } \\text{ where } n > 1
+\\]
+
+> Notice that \\( \\vec{F}\_1 \\) is the smallest fibonacci vector because \\( \vec{F}\_0 \\) would be \\( \begin{bmatrix} F\_0 \\\ F\_{(-1)} \end{bmatrix} \\) but \\( F\_{(-1)} \\) is undefined.
 
 We can flesh out the boilerplate for this refactoring from our naive implementation as:
 
 ```go
 // fibonacci.go
 
-func FibSumTuple(n int) int {
+func FibVecSum(n int) int {
   if n < 2 {
     return n
   }
 
-  a, b := FibTuple(n)
+  a, b := FibVec(n - 1)
 
   return a + b
 }
 
-func FibTuple(n int) (int, int) {
+func FibVec(n int) (int, int) {
   // todo
 }
 ```
 
-Here we can see our new function `FibSumTuple` works by calling a single function `FibTuple` and summing the two integers it returns. This now begs the question of how to implement `FibTuple`. 
+Here we can see our new function `FibVecSum` works by calling a single function `FibVec` and summing the two integers it returns. This now begs the question of how to implement `FibVec`. 
 
-Knowing that the first item \\( \vec{F}\_2 = \begin{bmatrix} F\_1 \\\ F\_0 \end{bmatrix} = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\), we can observe the sequence:
+Since the first item in the **fibonacci vector sequence** is \\( \vec{F}\_1 = \begin{bmatrix} F\_1 \\\ F\_0 \end{bmatrix} = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\) we can generate the rest of the sequence:
 
 $$ \vec{F}\_n := \begin{bmatrix} 1 \\\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\\ 3 \end{bmatrix}, ... $$
-
-> Notice that \\( \\vec{F}\_2 \\) is first item in the sequence because \\( \vec{F}\_1 = \begin{bmatrix} F\_0 \\\ F\_{(-1)} \end{bmatrix} \\) and \\( F\_{(-1)} \\) is undefined.
 
 To understand its recursive behaviour we can examine \\( \vec{F}\_n \\) vs \\( \vec{F}\_{n+1} \\):
 
 \\[
-\vec{F}\_n = \begin{bmatrix} F\_{n-1} \\\ F\_{n-2} \end{bmatrix}
+\vec{F}\_n = \begin{bmatrix} F\_{n} \\\ F\_{n-1} \end{bmatrix}
 \\]
 
 \\[
-\vec{F}\_{n+1} = \begin{bmatrix} F\_{n} \\\ F\_{n-1} \end{bmatrix} = \begin{bmatrix} F\_{n-2} + F\_{n-1} \\\ F\_{n-1} \end{bmatrix}
+\vec{F}\_{n+1} = \begin{bmatrix} F\_{n+1} \\\ F\_{n} \end{bmatrix} = \begin{bmatrix} F\_{n} + F\_{n-1} \\\ F\_{n-1} \end{bmatrix}
 \\]
 
-Notice the components of \\( \\vec{F}\_{n+1} \\) are defined in terms of the components of \\( \\vec{F}\_n \\):
+Notice the components of \\( \\vec{F}\_{n+1} \\) can be computed from the components of \\( \\vec{F}\_n \\) as so:
 
  $$ \\text{if } \\vec{F}\_n = \begin{bmatrix} a \\\ b \end{bmatrix} \\text{ then } \\vec{F}\_{n+1} = \begin{bmatrix} a + b \\\ a \end{bmatrix} $$ 
 
 If we define a transform function \\( T\Big(\begin{bmatrix} a \\\ b \end{bmatrix}\Big) \mapsto \begin{bmatrix} a + b \\\ a \end{bmatrix}  \\) we can then define \\( \vec{F}_n \\) with a recursive relation:
 
 \\[ \\begin{aligned}
-\vec{F}\_2 &= \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\\\
-\vec{F}\_n       &= T(F\_{n-1}) \\text{ where } n > 2
+\vec{F}\_1 &= \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\\\
+\vec{F}\_n       &= T(F\_{n-1}) \\text{ where } n > 1
 \\end{aligned} \\]
 
-Translating this into Golang we can now implement `FibTuple`:
+Translating this into Golang we can now implement `FibVec`:
 
 ```go
 // fibonacci.go
 
-func FibSumTuple(n int) int {
+func FibVecSum(n int) int {
   if n < 2 {
     return n
   }
 
-  a, b := FibTuple(n)
+  a, b := FibVec(n - 1)
 
   return a + b
 }
 
-func FibTuple(n int) (int, int) {
-  if n == 2 {
+func FibVec(n int) (int, int) {
+  if n == 1 {
     return 1, 0
   }
 
-  return FibTupleTransform(FibTuple(n - 1))
+  return FibVecTransform(FibVec(n - 1))
 }
 
-func FibTupleTransform(a int, b int) (int, int) {
+func FibVecTransform(a int, b int) (int, int) {
   return a + b, a
 }
 ```
@@ -259,7 +265,7 @@ At this point our refactored implementation of `Fib` now contains one recursive 
 
 Upon benchmarking this refactored implementation we get quite a performance boost:
 
-| \\( n \\)   | `Naive`           | `Cached`     | `SumTuple`    |
+| \\( n \\)   | `Naive`           | `Cached`     | `VecSum`    |
 |-------------|-------------------|--------------|-------------|
 | \\( 12 \\)  | 1,062 ns/op       | 1,120 ns/op  |  34.6 ns/op |
 | \\( 40 \\)  | 816,681,704 ns/op | 7,331 ns/op  | 137 ns/op   |

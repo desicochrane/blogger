@@ -27,7 +27,7 @@ func TestFib(t *testing.T) {
 		{90, 2880067194370816120},
 	}
 
-	fibs := []Fib{FibSumTuple, FibCached, FibTupleTailRecursive, FibTupleTailIterative, FibTupleTailIterative2, FibTupleTailIterativeStorage}
+	fibs := []Fib{FibVecSum, FibCached, FibTupleTailRecursive, FibTupleTailIterative, FibTupleTailIterative2, FibTupleTailIterativeStorage}
 
 	for _, f := range fibs {
 		for _, sample := range samples {
@@ -69,11 +69,11 @@ func BenchmarkFibCached_90(b *testing.B) {
 
 // -----------------------------------------------------------------------------
 func BenchmarkFibSumVec_12(b *testing.B) {
-	benchmarkFib(b, FibSumTuple, 12)
+	benchmarkFib(b, FibVecSum, 12)
 }
 func BenchmarkFibSumVec_40(b *testing.B) {
-	benchmarkFib(b, FibSumTuple, 40)
+	benchmarkFib(b, FibVecSum, 40)
 }
 func BenchmarkFibSumVec_90(b *testing.B) {
-	benchmarkFib(b, FibSumTuple, 90)
+	benchmarkFib(b, FibVecSum, 90)
 }

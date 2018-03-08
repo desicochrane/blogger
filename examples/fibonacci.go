@@ -39,25 +39,25 @@ func FibCachedHelper(n int, cache map[int]int) int {
 
 // -----------------------------------------------------------------------------
 
-func FibSumTuple(n int) int {
+func FibVecSum(n int) int {
 	if n < 2 {
 		return n
 	}
 
-	a, b := FibTuple(n)
+	a, b := FibVec(n - 1)
 
 	return a + b
 }
 
-func FibTuple(n int) (int, int) {
-	if n == 2 {
+func FibVec(n int) (int, int) {
+	if n == 1 {
 		return 1, 0
 	}
 
-	return FibTupleTransform(FibTuple(n - 1))
+	return FibVecTransform(FibVec(n - 1))
 }
 
-func FibTupleTransform(a int, b int) (int, int) {
+func FibVecTransform(a int, b int) (int, int) {
 	return a + b, a
 }
 
