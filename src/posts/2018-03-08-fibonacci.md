@@ -411,7 +411,7 @@ func FibIterativeVec(acc int, a int, b int) int {
 }
 ```
 
-Now that the main function has no deferred operations and our helper function is iterative, we can inline our logic to a single function, which also means we can use \\(n\\) as our accumulator. The final, elegant solution is:
+Now that the main function has no deferred operations and our helper function is iterative, we can inline our logic to a single function, which also means we can use \\(n\\) as a countdown instead of our accumulator. This leaves our final, elegant solution of:
 
 ```go
 // fibonacci.go
@@ -423,13 +423,11 @@ func FibIterative(n int) int {
 
   a, b := 1, 0
 
-  for {
-    if n == 2 {
-      return a + b
-    }
-
+  for n > 2 {
     n, a, b = n-1, a+b, a
   }
+
+  return a + b
 }
 ```
 

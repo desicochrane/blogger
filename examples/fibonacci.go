@@ -91,13 +91,11 @@ func FibIterative(n int) int {
 
 	a, b := 1, 0
 
-	for {
-		if n == 2 {
-			return a + b
-		}
-
+	for n > 2 {
 		n, a, b = n-1, a+b, a
 	}
+
+	return a + b
 }
 
 // -----------------------------------------------------------------------------
