@@ -200,7 +200,7 @@ func FibTuple(n int) (int, int) {
 
 Here we can see our new function `FibSumTuple` works by calling a single function `FibTuple` and summing the two integers it returns. This now begs the question of how to implement `FibTuple`. 
 
-Knowing that the first item \\( \vec{F}\_2 = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\), we can observe the sequence:
+Knowing that the first item \\( \vec{F}\_2 = \begin{bmatrix} F\_1 \\\ F\_0 \end{bmatrix} = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\), we can observe the sequence:
 
 $$ \vec{F}\_n := \begin{bmatrix} 1 \\\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\\ 3 \end{bmatrix}, ... $$
 
@@ -210,11 +210,11 @@ To understand its recursive behaviour we can examine \\( \vec{F}\_{n+1} \\):
 \vec{F}\_{n+1} = \begin{bmatrix} F\_{n} \\\ F\_{n-1} \end{bmatrix} = \begin{bmatrix} F\_{n-2} + F\_{n-1} \\\ F\_{n-1} \end{bmatrix}
 \\]
 
-Observe that the components of \\( \\vec{F}\_{n+1} \\) are defined in terms of the components of \\( \\vec{F}\_n \\) which means we can define \\( \\vec{F}\_{n+1} \\) as a transformation on \\( \\vec{F}\_n \\), that is:
+Notice the components of \\( \\vec{F}\_{n+1} \\) are defined in terms of the components of \\( \\vec{F}\_n \\):
 
  $$ \\text{if } \\vec{F}\_n = \begin{bmatrix} a \\\ b \end{bmatrix} \\text{ then } \\vec{F}\_{n+1} = \begin{bmatrix} a + b \\\ a \end{bmatrix} $$ 
 
-If we define a transform function \\( T\Big(\begin{bmatrix} a \\\ b \end{bmatrix}\Big) = \begin{bmatrix} a + b \\\ a \end{bmatrix}  \\) we can then define \\( \vec{F}_n \\) with a recursive relation:
+If we define a transform function \\( T\Big(\begin{bmatrix} a \\\ b \end{bmatrix}\Big) \mapsto \begin{bmatrix} a + b \\\ a \end{bmatrix}  \\) we can then define \\( \vec{F}_n \\) with a recursive relation:
 
 \\[ \\begin{aligned}
 \vec{F}\_2 &= \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\\\
@@ -224,6 +224,8 @@ If we define a transform function \\( T\Big(\begin{bmatrix} a \\\ b \end{bmatrix
 Translating this into Golang we can now implement `FibTuple`:
 
 ```go
+// fibonacci.go
+
 func FibSumTuple(n int) int {
   if n < 2 {
     return n

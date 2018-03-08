@@ -254,7 +254,7 @@ F_n &amp;= F_{n-1} + F_{n-2} \\
 </pre>
 <p>Here we can see our new function <code>FibSumTuple</code> works by calling a single function <code>FibTuple</code> and summing the two integers it returns. This now begs the question of how to implement <code>FibTuple</code>.</p>
 
-<p>Knowing that the first item \( \vec{F}_2 = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \), we can observe the sequence:</p>
+<p>Knowing that the first item \( \vec{F}_2 = \begin{bmatrix} F_1 \\ F_0 \end{bmatrix} = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \), we can observe the sequence:</p>
 
 <p>$$ \vec{F}_n := \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\ 3 \end{bmatrix}, &hellip; $$</p>
 
@@ -264,11 +264,11 @@ F_n &amp;= F_{n-1} + F_{n-2} \\
 \vec{F}_{n+1} = \begin{bmatrix} F_{n} \\ F_{n-1} \end{bmatrix} = \begin{bmatrix} F_{n-2} + F_{n-1} \\ F_{n-1} \end{bmatrix}
 \]</p>
 
-<p>Observe that the components of \( \vec{F}_{n+1} \) are defined in terms of the components of \( \vec{F}_n \) which means we can define \( \vec{F}_{n+1} \) as a transformation on \( \vec{F}_n \), that is:</p>
+<p>Notice the components of \( \vec{F}_{n+1} \) are defined in terms of the components of \( \vec{F}_n \):</p>
 
 <p>$$ \text{if } \vec{F}_n = \begin{bmatrix} a \\ b \end{bmatrix} \text{ then } \vec{F}_{n+1} = \begin{bmatrix} a + b \\ a \end{bmatrix} $$</p>
 
-<p>If we define a transform function \( T\Big(\begin{bmatrix} a \\ b \end{bmatrix}\Big) = \begin{bmatrix} a + b \\ a \end{bmatrix}  \) we can then define \( \vec{F}_n \) with a recursive relation:</p>
+<p>If we define a transform function \( T\Big(\begin{bmatrix} a \\ b \end{bmatrix}\Big) \mapsto \begin{bmatrix} a + b \\ a \end{bmatrix}  \) we can then define \( \vec{F}_n \) with a recursive relation:</p>
 
 <p>\[ \begin{aligned}
 \vec{F}_2 &amp;= \begin{bmatrix} 1 \\ 0 \end{bmatrix} \\
@@ -276,7 +276,9 @@ F_n &amp;= F_{n-1} + F_{n-2} \\
 \end{aligned} \]</p>
 
 <p>Translating this into Golang we can now implement <code>FibTuple</code>:</p>
-<pre class="chroma"><span class="kd">func</span> <span class="nx">FibSumTuple</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+<pre class="chroma"><span class="c1">// fibonacci.go
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">FibSumTuple</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
   <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">2</span> <span class="p">{</span>
     <span class="k">return</span> <span class="nx">n</span>
   <span class="p">}</span>
