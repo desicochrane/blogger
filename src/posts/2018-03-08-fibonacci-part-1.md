@@ -204,7 +204,11 @@ Knowing that the first item \\( \vec{F}\_2 = \begin{bmatrix} F\_1 \\\ F\_0 \end{
 
 $$ \vec{F}\_n := \begin{bmatrix} 1 \\\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\\ 3 \end{bmatrix}, ... $$
 
-To understand its recursive behaviour we can examine \\( \vec{F}\_{n+1} \\):
+To understand its recursive behaviour we can examine \\( \vec{F}\_n \\) vs \\( \vec{F}\_{n+1} \\):
+
+\\[
+\vec{F}\_n = \begin{bmatrix} F\_{n-1} \\\ F\_{n-2} \end{bmatrix}
+\\]
 
 \\[
 \vec{F}\_{n+1} = \begin{bmatrix} F\_{n} \\\ F\_{n-1} \end{bmatrix} = \begin{bmatrix} F\_{n-2} + F\_{n-1} \\\ F\_{n-1} \end{bmatrix}
