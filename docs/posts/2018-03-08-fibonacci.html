@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>The Fibonacci Problem - Part I</title>
+  <title>The Fibonacci Problem</title>
   <link rel="stylesheet" href="https://blog.des.io/css/blog.css">
   <link rel="icon" href="https://blog.des.io/favicon.ico">
 </head>
@@ -15,13 +15,13 @@
 
 <div class="content">
   <div class="container">
-    <h1>The Fibonacci Problem - Part I</h1>
+    <h1>The Fibonacci Problem</h1>
 
 <h3>Introduction</h3>
 
-<blockquote>
-<p>todo</p>
-</blockquote>
+<p>In this article we will investigate the famous Fibonacci sequence from the perspective of tail-recursion. We will see that the Fibonacci sequence requires more advanced reasoning than the problem we explored in a <a href="2018-02-22-gopher-forth-and-multiply.html">previous article</a> and we will practice new tactics in our pursuit of refactoring to a strict tail-recursive solution.</p>
+
+<p>We will use Golang for its built-in benchmarking, but it should be easy to follow even if you&rsquo;ve never seen Golang before.</p>
 
 <h3>The Problem</h3>
 
@@ -33,7 +33,7 @@
 
 <p>If we then denote the number of fluffies in a given month \(n\) as \(F_n\) then our task is to find \( F_{12} \).</p>
 
-<p>As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of <strong>A</strong>dult fluffies and <strong>B</strong>aby fluffies in month \(n\) as \(A_n\) and \(B_n\) respectively, we have that:</p>
+<p>As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of Adult fluffies and Baby fluffies in month \(n\) as \(A_n\) and \(B_n\) respectively, we have that:</p>
 
 <p>$$ F_n = A_n + B_n $$</p>
 
@@ -76,9 +76,9 @@ F_n &amp;= F_{n-1} + F_{n-2} \text{ where } n &gt; 1
 
 <p>\[ \therefore F_{12} = 144 \]</p>
 
-<p>This famous sequence is known as the <strong>fibonacci sequence</strong> and the \(n^{th}\) number in the sequence is known as the \(n^{th}\) fibonacci number.</p>
+<p>This famous sequence is known as the <strong>Fibonacci sequence</strong> and the \(n^{th}\) number in the sequence is known as the \(n^{th}\) <strong>Fibonacci number</strong>.</p>
 
-<h3>Finding \(F_n\) for arbitrary \(n\)</h3>
+<h3>Finding \(F_n\) for \(n &gt; 12\)</h3>
 
 <p>Suppose then you are tasked with implementing a function to return \(F_n\) for arbitrary \(n\). To compare different implementations we will first define our interface as a function which takes an integer \(n\) and returns an integer:</p>
 <pre class="chroma"><span class="c1">// fibonacci.go
@@ -149,7 +149,7 @@ F_5 &amp;= F_3 + F_4 \\
 
 <h3>Remember what you saw here</h3>
 
-<p>The results of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-used our previous computation. The graph representation for our manual approach is then:</p>
+<p>The results of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the Fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-used our previous computation. The graph representation for our manual approach is then:</p>
 
 <p style="text-align: center; margin: 50px 0;">
 <img style="max-width: 500px;" src="../img/fibonacci-cached.dot.svg">
@@ -235,14 +235,14 @@ F_n &amp;= F_{n-1} + F_{n-2} \\
 \text{ becomes: } F_n &amp;= \sum{\vec{v}} \text{ where } \vec{v} = \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}
 \end{aligned} \]</p>
 
-<p>As a convention we will refer to \( \begin{bmatrix} F_n \\ F_{n-1} \end{bmatrix}\) as the \( n^{th} \) <strong>fibonacci vector</strong> denoted \( \vec{F}_n \). Then the \(n^{th}\) fibonacci <strong>number</strong> can be defined as the vector sum of the \( (n-1)^{th} \) fibonacci <strong>vector</strong>:</p>
+<p>As a convention we will refer to \( \begin{bmatrix} F_n \\ F_{n-1} \end{bmatrix}\) as the \( n^{th} \) <strong>Fibonacci vector</strong> denoted \( \vec{F}_n \). Then the \(n^{th}\) Fibonacci number can be defined as the vector sum of the \( (n-1)^{th} \) Fibonacci vector:</p>
 
 <p>\[
 F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n-1} } \text{ where } n &gt; 1
 \]</p>
 
 <blockquote>
-<p>Notice that \( \vec{F}_1 \) is the smallest fibonacci vector because \( \vec{F}_0 \) would be \( \begin{bmatrix} F_0 \\ F_{(-1)} \end{bmatrix} \) but \( F_{(-1)} \) is undefined.</p>
+<p>Notice that \( \vec{F}_1 \) is the smallest Fibonacci vector because \( \vec{F}_0 \) would be \( \begin{bmatrix} F_0 \\ F_{(-1)} \end{bmatrix} \) but \( F_{(-1)} \) is undefined.</p>
 </blockquote>
 
 <p>We can flesh out the boilerplate for this refactoring from our naive implementation as:</p>
@@ -264,7 +264,7 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 </pre>
 <p>Here we can see our new function <code>FibVecSum</code> works by calling a single function <code>FibVec</code> and summing the two integers it returns. This now begs the question of how to implement <code>FibVec</code>.</p>
 
-<p>Since the first item in the <strong>fibonacci vector sequence</strong> is \( \vec{F}_1 = \begin{bmatrix} F_1 \\ F_0 \end{bmatrix} = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \) we can generate the rest of the sequence:</p>
+<p>Since the first item in the Fibonacci vector sequence is \( \vec{F}_1 = \begin{bmatrix} F_1 \\ F_0 \end{bmatrix} = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \) we can generate the rest of the sequence by hand:</p>
 
 <p>$$ \vec{F}_n := \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\ 3 \end{bmatrix}, &hellip; $$</p>
 
@@ -282,7 +282,7 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 
 <p>$$ \text{if } \vec{F}_n = \begin{bmatrix} a \\ b \end{bmatrix} \text{ then } \vec{F}_{n+1} = \begin{bmatrix} a + b \\ a \end{bmatrix} $$</p>
 
-<p>If we define a transform function \( T\Big(\begin{bmatrix} a \\ b \end{bmatrix}\Big) \mapsto \begin{bmatrix} a + b \\ a \end{bmatrix}  \) we can then define \( \vec{F}_n \) with a recursive relation:</p>
+<p>If we define a transform function \( T\Big(\begin{bmatrix} a \\ b \end{bmatrix}\Big) = \begin{bmatrix} a + b \\ a \end{bmatrix}  \) we can then define \( \vec{F}_n \) with a recursive relation:</p>
 
 <p>\[ \begin{aligned}
 \vec{F}_1 &amp;= \begin{bmatrix} 1 \\ 0 \end{bmatrix} \\
@@ -314,7 +314,7 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
   <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
 <span class="p">}</span>
 </pre>
-<p>At this point our refactored implementation of <code>Fib</code> now contains one recursive call per function. That is we have removed any deferred recursive call operations and we are one step closer to a strict-tail recursive implementation.</p>
+<p>At this point our refactored implementation of <code>Fib</code> now contains one recursive call per function. That is we have removed any deferred recursive call operations and we are one step closer to a strict tail-recursive implementation.</p>
 
 <p>Upon benchmarking this refactored implementation we get quite a performance boost:</p>
 
@@ -333,37 +333,264 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 <td>\( 12 \)</td>
 <td>1,062 ns/op</td>
 <td>1,120 ns/op</td>
-<td>34.6 ns/op</td>
+<td>36.7 ns/op</td>
 </tr>
 
 <tr>
 <td>\( 40 \)</td>
 <td>816,681,704 ns/op</td>
 <td>7,331 ns/op</td>
-<td>137 ns/op</td>
+<td>151 ns/op</td>
 </tr>
 
 <tr>
 <td>\( 90 \)</td>
 <td>way too long</td>
 <td>14,488 ns/op</td>
-<td>357 ns/op</td>
+<td>405 ns/op</td>
 </tr>
 </tbody>
 </table>
 <p>That&rsquo;s a whopping improvement! It seems we are on the right track.</p>
 
-<h3>Strict tail recursion</h3>
+<h3>Strict tail-recursion</h3>
+
+<p>At the moment our recursive function <code>FibVec</code>  has no deferred <strong>recursive calls</strong> but still has a deferred operation, namely applying the <code>FibVecTransform</code>. If we want to refactor our solution to be strict tail-recursive we need to understand how this deferred operation behaves so that we can accumulate it into our recursive call.</p>
+
+<p>If we plug and chug through the case where \(n=5\) we can get a better feeling for how this is behaving:</p>
+
+<p>\[ \begin{aligned}
+\text{FibVec}(4) &amp;= T \circ \text{FibVec}(3) \\
+                  &amp;= T \circ T \circ \text{FibVec}(2) \\
+                  &amp;= T \circ T \circ T \circ \text{FibVec}(1) \\
+                  &amp;= T \circ T \circ T \Big( \begin{bmatrix} 1 \\ 0 \end{bmatrix} \Big) \\
+                  &amp;= T \circ T \Big( \begin{bmatrix} 1 \\ 1 \end{bmatrix} \Big) \\
+                  &amp;= T \Big( \begin{bmatrix} 2 \\ 1 \end{bmatrix} \Big) \\
+                  &amp;= \begin{bmatrix} 3 \\ 2 \end{bmatrix}
+\end{aligned} \]</p>
 
 <blockquote>
-<p>todo</p>
+<p>Note we are using \(T\) to denote <code>FibVecTransform</code> and the notation \(T \circ T(x) \) to denote \(T(T(x))\)</p>
 </blockquote>
+
+<p>Note that that each recursive call results in an additional deferred application of our transform function that we need to perform to our base case of \( \vec{F}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \). Then by the time we reach our base case, we will always have accumulated \( (n-1) \) deferred functions to apply:</p>
+
+<p>\[
+   \text{FibVec}(n) = \underbrace{T \circ T \circ &hellip; T}_{n-1} \Big( \begin{bmatrix} 1 \\ 0 \end{bmatrix} \Big)
+\]</p>
+
+<p>The trick here is that we can create an accumulator argument to act as a count-down for the remaining times we need to apply our deferred operation. Then our desired &ldquo;plug and chug&rdquo; output will look like:</p>
+
+<p>\[ \begin{aligned}
+\text{FibVec}(4) &amp;= \text{FibVec}^{\prime}\Big(4, \begin{bmatrix} 1 \\ 0 \end{bmatrix}\Big) \\
+                  &amp;= \text{FibVec}^{\prime}\Big(3, \begin{bmatrix} 1 \\ 1 \end{bmatrix}\Big) \\
+                  &amp;= \text{FibVec}^{\prime}\Big(2, \begin{bmatrix} 2 \\ 1 \end{bmatrix}\Big) \\
+                  &amp;= \text{FibVec}^{\prime}\Big(1, \begin{bmatrix} 3 \\ 2 \end{bmatrix}\Big) \\
+                  &amp;= \begin{bmatrix} 3 \\ 2 \end{bmatrix}
+\end{aligned} \]</p>
+
+<p>Using this as instructions we can define our new recursive function \( \text{FibVec}^{\prime} \) as:</p>
+
+<p>\[
+\text{FibVec}^{\prime}\Big(\text{acc}, \begin{bmatrix} a \\ b \end{bmatrix} \Big) =
+\begin{cases}
+  \begin{bmatrix} a \\ b \end{bmatrix}                                    &amp; \text{if } \text{acc} = 1 \\
+  \text{FibVec}^{\prime}\Big(\text{acc}-1, \begin{bmatrix} a+b \\ a \end{bmatrix} \Big) &amp; \text{if } \text{acc} &gt; 1 \\
+\end{cases}
+\]</p>
+
+<blockquote>
+<p>Notice this is more flexible than our original definition of \(\vec{F}_n \) because it allows for an arbitrary initial conditions of \(a\) and \(b\) in the base case.</p>
+</blockquote>
+
+<p>We can directly implement this in Golang with strict tail-recursion as:</p>
+<pre class="chroma"><span class="c1">// fibonacci.go
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">FibTailVecSum</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">2</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">n</span>
+  <span class="p">}</span>
+
+  <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">=</span> <span class="nx">FibTailVec</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">FibTailVec</span><span class="p">(</span><span class="nx">acc</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">acc</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span>
+  <span class="p">}</span>
+
+  <span class="nx">acc</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">=</span> <span class="nx">acc</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
+  <span class="k">return</span> <span class="nx">FibTailVec</span><span class="p">(</span><span class="nx">acc</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span>
+<span class="p">}</span>
+</pre>
+<p>Before we refactor this to iterative implementation let&rsquo;s look at our benchmarks for comparison:</p>
+
+<table>
+<thead>
+<tr>
+<th>\( n \)</th>
+<th><code>Naive</code></th>
+<th><code>Cached</code></th>
+<th><code>VecSum</code></th>
+<th><code>TailVecSum</code></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>\( 12 \)</td>
+<td>1,062 ns/op</td>
+<td>1,120 ns/op</td>
+<td>36.7 ns/op</td>
+<td>36.0 ns/op</td>
+</tr>
+
+<tr>
+<td>\( 40 \)</td>
+<td>816,681,704 ns/op</td>
+<td>7,331 ns/op</td>
+<td>151 ns/op</td>
+<td>145 ns/op</td>
+</tr>
+
+<tr>
+<td>\( 90 \)</td>
+<td>way too long</td>
+<td>14,488 ns/op</td>
+<td>405 ns/op</td>
+<td>395 ns/op</td>
+</tr>
+</tbody>
+</table>
+<p>We can see that our refactorings made very little difference, which is a good sign.</p>
+
+<h3>Iteration</h3>
+
+<p>Now that our function for computing \(\vec{F}_n \) is in a strict tail-recursive form, we can directly replacing our  recursive call with <code>for</code> loop without changing any other code:</p>
+<pre class="chroma"><span class="c1">// fibonacci.go
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">FibIterative</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">2</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">n</span>
+  <span class="p">}</span>
+
+  <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="o">:=</span> <span class="nx">FibIterativeVec</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">FibIterativeVec</span><span class="p">(</span><span class="nx">acc</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="p">(</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">acc</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span>
+    <span class="p">}</span>
+
+    <span class="nx">acc</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">=</span> <span class="nx">acc</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+<p>Here we can see that instead of returning \(a\) and \(b\) as a tuple we could simply return their sum thus removing the deferred operation in the main function:</p>
+<pre class="chroma"><span class="c1">// fibonacci.go
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">FibIterative</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">2</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">n</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">FibIterativeVec</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="kd">func</span> <span class="nx">FibIterativeVec</span><span class="p">(</span><span class="nx">acc</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">a</span> <span class="kt">int</span><span class="p">,</span> <span class="nx">b</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">acc</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span> <span class="c1">// return the sum
+</span><span class="c1"></span>    <span class="p">}</span>
+
+    <span class="nx">acc</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">=</span> <span class="nx">acc</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+<p>Now that the main function has no deferred operations and our helper function is iterative, we can inline our logic to a single function, which also means we can use \(n\) as our accumulator. The final, elegant solution is:</p>
+<pre class="chroma"><span class="c1">// fibonacci.go
+</span><span class="c1"></span>
+<span class="kd">func</span> <span class="nx">FibIterative</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
+  <span class="k">if</span> <span class="nx">n</span> <span class="p">&lt;</span> <span class="mi">2</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">n</span>
+  <span class="p">}</span>
+
+  <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="o">:=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span>
+
+  <span class="k">for</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="nx">n</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span>
+    <span class="p">}</span>
+
+    <span class="nx">n</span><span class="p">,</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span> <span class="p">=</span> <span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nx">a</span><span class="o">+</span><span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</pre>
+<p>Looking at the final benchmarks we can give ourselves a pat on the back for our improvements:</p>
+
+<table>
+<thead>
+<tr>
+<th>\( n \)</th>
+<th><code>Naive</code></th>
+<th><code>Cached</code></th>
+<th><code>VecSum</code></th>
+<th><code>TailVecSum</code></th>
+<th><code>Iterative</code></th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>\( 12 \)</td>
+<td>1,062 ns/op</td>
+<td>1,120 ns/op</td>
+<td>36.7 ns/op</td>
+<td>36.0 ns/op</td>
+<td>7.67 ns/op</td>
+</tr>
+
+<tr>
+<td>\( 40 \)</td>
+<td>816,681,704 ns/op</td>
+<td>7,331 ns/op</td>
+<td>151 ns/op</td>
+<td>145 ns/op</td>
+<td>30.2 ns/op</td>
+</tr>
+
+<tr>
+<td>\( 90 \)</td>
+<td>way too long</td>
+<td>14,488 ns/op</td>
+<td>405 ns/op</td>
+<td>395 ns/op</td>
+<td>51.1 ns/op</td>
+</tr>
+</tbody>
+</table>
 
 <h3>Summary</h3>
 
-<blockquote>
-<p>todo</p>
-</blockquote>
+<p>In this article we spent some time reasoning about recursive functions with a deferred recursive operation. We saw how to understand why a recursive function was super slow and how caching intermediate results made our problem tractable.  We saw that a tactic for simplifying recursive functions can be to replace multiple recursive calls with a new recursive function that returns a vector. We saw how the &ldquo;plug and chug method&rdquo; can help us to understand our functions deferred behaviour, and we saw that when our deferred operations are repeated function calls we can treat the final function call count as our accumulator when refactoring to strict tail-recursion.</p>
+
+<p>In terms of performance our final result ended up significantly better than our initial naive implementation. In a future article I would like to explore how various properties of vectors might help us further improve our solution as well as exploring the Fibonacci sequence in a more general context as a linear recurrence.</p>
+
+<h3>Additional resources</h3>
+
+<p>If you&rsquo;re interested in the Fibonacci sequence and linear recurrences, I can highly recommend checking out the following resources:</p>
+
+<ul>
+<li><a href="https://www.youtube.com/watch?v=vzKRV7AoLKQ">Finding Fibonacci - Keith Devlin</a></li>
+<li><a href="https://www.coursera.org/learn/enumerative-combinatorics">Introduction to Enumerative Combinatorics</a></li>
+<li><a href="https://www.coursera.org/learn/enumerative-combinatorics">Mathematics for Computer Science (Weeks 12 - 15)</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci Numbers Wikipedia</a></li>
+</ul>
 
   </div>
 
@@ -373,8 +600,8 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 
   <script>
     var disqus_config = function () {
-      this.page.url = "https:\/\/blog.des.io\/posts\/2018-03-08-fibonacci-part-1.html";
-      this.page.identifier = "\/posts\/2018-03-08-fibonacci-part-1.html";
+      this.page.url = "https:\/\/blog.des.io\/posts\/2018-03-08-fibonacci.html";
+      this.page.identifier = "\/posts\/2018-03-08-fibonacci.html";
     };
     (function() { 
       var d = document, s = d.createElement('script');

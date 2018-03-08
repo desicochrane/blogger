@@ -62,28 +62,29 @@ func FibVecTransform(a int, b int) (int, int) {
 }
 
 // -----------------------------------------------------------------------------
-func FibTupleTailRecursive(n int) int {
+
+func FibTailVecSum(n int) int {
 	if n < 2 {
 		return n
 	}
 
-	a, b := FibTupleTailRecursiveAux(n, 1, 0)
+	a, b := FibTailVec(n-1, 1, 0)
 
 	return a + b
 }
 
-func FibTupleTailRecursiveAux(n int, a int, b int) (int, int) {
-	if n == 2 {
+func FibTailVec(acc int, a int, b int) (int, int) {
+	if acc == 1 {
 		return a, b
 	}
 
-	n = n - 1
+	acc = acc - 1
 	a, b = a+b, a
-	return FibTupleTailRecursiveAux(n, a, b)
+	return FibTailVec(acc, a, b)
 }
 
 // -----------------------------------------------------------------------------
-func FibTupleTailIterative(n int) int {
+func FibIterative(n int) int {
 	if n < 2 {
 		return n
 	}
@@ -95,29 +96,7 @@ func FibTupleTailIterative(n int) int {
 			return a + b
 		}
 
-		n = n - 1
-		a, b = a+b, a
-	}
-}
-
-// -----------------------------------------------------------------------------
-func FibTupleTailIterative2(n int) int {
-	if n < 2 {
-		return n
-	}
-
-	a, b := 1, 0
-	var next int
-	for {
-		next = a + b
-
-		if n == 2 {
-			return next
-		}
-
-		n = n - 1
-		b = a
-		a = next
+		n, a, b = n-1, a+b, a
 	}
 }
 
