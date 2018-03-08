@@ -1,6 +1,6 @@
 ---
 title: The Fibonacci Problem - Part I
-date: 04-Mar-2018
+date: 08-Mar-2018
 ---
 
 # The Fibonacci Problem - Part I
@@ -15,30 +15,30 @@ Over 800 years ago Leonardo of Pisa posed a question that went something like th
 
 If we then denote the number of fluffies in a given month \\(n\\) as \\(F\_n\\) then our task is to find \\( F\_{12} \\).
 
-As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of **a**dult fluffies and **b**aby fluffies in month \\(n\\) as \\(a\_n\\) and \\(b\_n\\) respectively, we have that:
+As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of **A**dult fluffies and **B**aby fluffies in month \\(n\\) as \\(A\_n\\) and \\(B\_n\\) respectively, we have that:
 
-$$ F\_n = a\_n + b\_n $$
+$$ F\_n = A\_n + B\_n $$
 
 Let's first reason about the number of **adult** fluffies in a given month \\(n\\). Since fluffies never die, all the adult fluffies from the previous month \\( (n-1) \\) will still exist this month \\(n\\). Also, fluffies become adults after only one month, this means that all the baby fluffies from the previous month have now become adult fluffies this month. 
 
 Thus we have that the number of adult fluffies in a given month \\(n\\) will be the sum of the adult fluffies and baby fluffies from the previous month \\((n-1)\\):
 
 \\[ \\begin{aligned}
-a\_n &= a\_{n-1} + b\_{n-1} & \\\\
+A\_n &= A\_{n-1} + B\_{n-1} & \\\\
      &= F\_{n-1}            & (\text{above definition of } F\_n)
 \\end{aligned} \\]
 
 Next, let's examine the **baby** fluffies in a given month. Because each adult fluffy from the previous month will produce a single baby fluffy the next month we have that the number of baby fluffies in a any given month must equal to the number of adult fluffies in the previous month:
  
 \\[ \\begin{aligned}
-b\_{n} &= a\_{n-1} \\\\
-       &= F\_{n-2}   & (\text{above definition of } a\_n)
+B\_{n} &= A\_{n-1} \\\\
+       &= F\_{n-2}   & (\text{above definition of } A\_n)
 \\end{aligned} \\]
 
-With this improved understanding of \\(a\_n\\) and \\(b\_n\\) we can re-write our definition of \\(F\_n\\):
+With this improved understanding of \\(A\_n\\) and \\(B\_n\\) we can re-write our definition of \\(F\_n\\):
 
 \\[ \\begin{aligned}
-F\_n &= a\_{n} + b\_{n} \\\\
+F\_n &= A\_{n} + B\_{n} \\\\
      &= F\_{n-1} + F\_{n-2}
 \\end{aligned} \\]
 
@@ -66,11 +66,12 @@ Suppose then you are tasked with implementing a function to return \\(F_n\\) for
 
 ```go
 // fibonacci.go
+package fibonacci
 
 type Fib func(n int) int
 ```
 
-As a first implementation itt is tempting to codify our recursive definition directly as:
+As a first implementation it is tempting to codify our recursive definition directly as:
  
 ```go
 // fibonacci.go
@@ -163,11 +164,100 @@ When I now run the benchmarks I get:
 
 This improved implementation has made calculating `Fib(90)` tractable and the performance appears to be scaling linearly with our input much like our graph suggested, and indeed our algorithm now gone from order \\(O(2^n)\\) to \\(O(n)\\).
 
-> When I first implemented the cached version I used a global variable for the cache and my benchmarks were unreasonably fast. This is because the first time golang executed `Fib` the final value was cached and available for subsequent executions. So calculating `Fib(90)` was as fast as cache lookup! Let that be a lesson to be careful of shared memory when benchmarking.
+> When I first implemented the cached version I used a global variable for the cache and my benchmarks were unreasonably fast. This is because the first time Golang executed `Fib` the final value was cached and available for subsequent executions. So calculating `Fib(90)` was as fast as cache lookup! Let that be a lesson to be careful of shared memory when benchmarking.
 
+### Can we do better? Tail recursion revisited
+In a [previous article](2018-02-22-gopher-forth-and-multiply.html) we saw how refactoring our recursive code to be **strict tail-recursive** resulted in a significant performance boost. However, unlike in that case here our deferred operation is **another** recursive call!
 
-### Can we do better? Tail recursion
-> todo
+One tactic we can employ is "Replace \\(n\\) recursive calls with one". That is, we currently have two recursive calls to a function that returns a single integer and we can refactor this into a single new function that will return two integers. 
+
+We can return two integers from a single function by grouping them into a tuple or a vector. We can describe this refactoring as:
+
+\\[ \\begin{aligned}
+F\_n &= F\_{n-1} + F\_{n-2} \\\\
+\\text{ becomes: } F\_n &= \sum{\vec{F}\_n} \\text{ where } \vec{F}\_n = \\begin{bmatrix} F\_{n-1} \\\\ F\_{n-2} \\end{bmatrix}
+\\end{aligned} \\]
+
+We can flesh out the boilerplate for this refactoring from our naive implementation as:
+
+```go
+// fibonacci.go
+
+func FibSumTuple(n int) int {
+  if n < 2 {
+    return n
+  }
+
+  a, b := FibTuple(n)
+
+  return a + b
+}
+
+func FibTuple(n int) (int, int) {
+  // todo
+}
+```
+
+Here we can see our new function `FibSumTuple` works by calling a single function `FibTuple` and summing the two integers it returns. This now begs the question of how to implement `FibTuple`. 
+
+Knowing that the first item \\( \vec{F}\_2 = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\), we can observe the sequence:
+
+$$ \vec{F}\_n := \begin{bmatrix} 1 \\\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\\ 3 \end{bmatrix}, ... $$
+
+To understand its recursive behaviour we can examine \\( \vec{F}\_{n+1} \\):
+
+\\[
+\vec{F}\_{n+1} = \begin{bmatrix} F\_{n} \\\ F\_{n-1} \end{bmatrix} = \begin{bmatrix} F\_{n-2} + F\_{n-1} \\\ F\_{n-1} \end{bmatrix}
+\\]
+
+Observe that the components of \\( \\vec{F}\_{n+1} \\) are defined in terms of the components of \\( \\vec{F}\_n \\) which means we can define \\( \\vec{F}\_{n+1} \\) as a transformation on \\( \\vec{F}\_n \\), that is:
+
+ $$ \\text{if } \\vec{F}\_n = \begin{bmatrix} a \\\ b \end{bmatrix} \\text{ then } \\vec{F}\_{n+1} = \begin{bmatrix} a + b \\\ a \end{bmatrix} $$ 
+
+If we define a transform function \\( T\Big(\begin{bmatrix} a \\\ b \end{bmatrix}\Big) = \begin{bmatrix} a + b \\\ a \end{bmatrix}  \\) we can then define \\( \vec{F}_n \\) with a recursive relation:
+
+\\[ \\begin{aligned}
+\vec{F}\_2 &= \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\\\
+\vec{F}\_n       &= T(F\_{n-1}) \\text{ where } n > 2
+\\end{aligned} \\]
+
+Translating this into Golang we can now implement `FibTuple`:
+
+```go
+func FibSumTuple(n int) int {
+  if n < 2 {
+    return n
+  }
+
+  a, b := FibTuple(n)
+
+  return a + b
+}
+
+func FibTuple(n int) (int, int) {
+  if n == 2 {
+    return 1, 0
+  }
+
+  return FibTupleTransform(FibTuple(n - 1))
+}
+
+func FibTupleTransform(a int, b int) (int, int) {
+  return a + b, a
+}
+```
+
+At this point our refactored implementation of `Fib` now contains one recursive call per function. That is we have removed any deferred recursive call operations and we are one step closer to a strict-tail recursive implementation. 
+
+Upon benchmarking this refactored implementation we get quite a performance boost:
+
+| \\( n \\)   | `Naive`           | `Cached`     | `SumTuple`    |
+|-------------|-------------------|--------------|-------------|
+| \\( 12 \\)  | 1,062 ns/op       | 1,120 ns/op  |  34.6 ns/op |
+| \\( 40 \\)  | 816,681,704 ns/op | 7,331 ns/op  | 137 ns/op   |
+| \\( 90 \\)  | way too long      | 14,488 ns/op | 357 ns/op   |
+
+That's an improvement of about two orders of magnitude! It seems we are on the right track.
 
 ### Strict tail recursion
 > todo

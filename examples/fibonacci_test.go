@@ -27,7 +27,7 @@ func TestFib(t *testing.T) {
 		{90, 2880067194370816120},
 	}
 
-	fibs := []Fib{FibCached, FibSumOfTuple, FibTupleTailRecursive, FibTupleTailIterative, FibTupleTailIterative2, FibTupleTailIterativeStorage}
+	fibs := []Fib{FibSumTuple, FibCached, FibTupleTailRecursive, FibTupleTailIterative, FibTupleTailIterative2, FibTupleTailIterativeStorage}
 
 	for _, f := range fibs {
 		for _, sample := range samples {
@@ -68,67 +68,12 @@ func BenchmarkFibCached_90(b *testing.B) {
 }
 
 // -----------------------------------------------------------------------------
-func BenchmarkFibBySumOfTuple_12(b *testing.B) {
-	benchmarkFib(b, FibSumOfTuple, 12)
+func BenchmarkFibSumVec_12(b *testing.B) {
+	benchmarkFib(b, FibSumTuple, 12)
 }
-func BenchmarkFibBySumOfTuple_40(b *testing.B) {
-	benchmarkFib(b, FibSumOfTuple, 40)
+func BenchmarkFibSumVec_40(b *testing.B) {
+	benchmarkFib(b, FibSumTuple, 40)
 }
-func BenchmarkFibBySumOfTuple_90(b *testing.B) {
-	benchmarkFib(b, FibSumOfTuple, 90)
-}
-
-// -----------------------------------------------------------------------------
-func BenchmarkFibTupleTailRecursive_12(b *testing.B) {
-	benchmarkFib(b, FibTupleTailRecursive, 12)
-}
-func BenchmarkFibTupleTailRecursive_40(b *testing.B) {
-	benchmarkFib(b, FibTupleTailRecursive, 40)
-}
-func BenchmarkFibTupleTailRecursive_90(b *testing.B) {
-	benchmarkFib(b, FibTupleTailRecursive, 90)
-}
-
-// -----------------------------------------------------------------------------
-func BenchmarkFibTupleTailIterative_12(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterative, 12)
-}
-func BenchmarkFibTupleTailIterative_40(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterative, 40)
-}
-func BenchmarkFibTupleTailIterative_90(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterative, 90)
-}
-
-// -----------------------------------------------------------------------------
-func BenchmarkFibTupleTailIterative2_12(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterative2, 12)
-}
-func BenchmarkFibTupleTailIterative2_40(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterative2, 40)
-}
-func BenchmarkFibTupleTailIterative2_90(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterative2, 90)
-}
-
-// -----------------------------------------------------------------------------
-func BenchmarkFibTupleTailIterativeStorage_12(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterativeStorage, 12)
-}
-func BenchmarkFibTupleTailIterativeStorage_40(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterativeStorage, 40)
-}
-func BenchmarkFibTupleTailIterativeStorage_90(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterativeStorage, 90)
-}
-
-// -----------------------------------------------------------------------------
-func BenchmarkFibTupleTailIterativeStorage2_12(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterativeStorage2, 12)
-}
-func BenchmarkFibTupleTailIterativeStorage2_40(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterativeStorage2, 40)
-}
-func BenchmarkFibTupleTailIterativeStorage2_90(b *testing.B) {
-	benchmarkFib(b, FibTupleTailIterativeStorage2, 90)
+func BenchmarkFibSumVec_90(b *testing.B) {
+	benchmarkFib(b, FibSumTuple, 90)
 }
