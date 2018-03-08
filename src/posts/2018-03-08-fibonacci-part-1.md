@@ -204,6 +204,8 @@ Knowing that the first item \\( \vec{F}\_2 = \begin{bmatrix} F\_1 \\\ F\_0 \end{
 
 $$ \vec{F}\_n := \begin{bmatrix} 1 \\\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\\ 3 \end{bmatrix}, ... $$
 
+> Notice that \\( \\vec{F}\_2 \\) is first item in the sequence because \\( \vec{F}\_1 = \begin{bmatrix} F\_0 \\\ F\_{(-1)} \end{bmatrix} \\) and \\( F\_{(-1)} \\) is undefined.
+
 To understand its recursive behaviour we can examine \\( \vec{F}\_n \\) vs \\( \vec{F}\_{n+1} \\):
 
 \\[
@@ -263,7 +265,7 @@ Upon benchmarking this refactored implementation we get quite a performance boos
 | \\( 40 \\)  | 816,681,704 ns/op | 7,331 ns/op  | 137 ns/op   |
 | \\( 90 \\)  | way too long      | 14,488 ns/op | 357 ns/op   |
 
-That's an improvement of about two orders of magnitude! It seems we are on the right track.
+That's a whopping improvement! It seems we are on the right track.
 
 ### Strict tail recursion
 > todo

@@ -258,6 +258,10 @@ F_n &amp;= F_{n-1} + F_{n-2} \\
 
 <p>$$ \vec{F}_n := \begin{bmatrix} 1 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 \\ 1 \end{bmatrix}, \begin{bmatrix} 2 \\ 1 \end{bmatrix}, \begin{bmatrix} 3 \\ 2 \end{bmatrix}, \begin{bmatrix} 5 \\ 3 \end{bmatrix}, &hellip; $$</p>
 
+<blockquote>
+<p>Notice that \( \vec{F}_2 \) is first item in the sequence because \( \vec{F}_1 = \begin{bmatrix} F_0 \\ F_{(-1)} \end{bmatrix} \) and \( F_{(-1)} \) is undefined.</p>
+</blockquote>
+
 <p>To understand its recursive behaviour we can examine \( \vec{F}_n \) vs \( \vec{F}_{n+1} \):</p>
 
 <p>\[
@@ -341,7 +345,7 @@ F_n &amp;= F_{n-1} + F_{n-2} \\
 </tr>
 </tbody>
 </table>
-<p>That&rsquo;s an improvement of about two orders of magnitude! It seems we are on the right track.</p>
+<p>That&rsquo;s a whopping improvement! It seems we are on the right track.</p>
 
 <h3>Strict tail recursion</h3>
 
