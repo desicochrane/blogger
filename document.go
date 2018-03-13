@@ -19,7 +19,7 @@ var (
 )
 
 const (
-	DocStart = iota
+	DocStart    = iota
 	DocFMStart
 	DocFMKeyVal
 	DocFMEnd
@@ -28,10 +28,11 @@ const (
 )
 
 type FrontMatter struct {
-	Title  string
-	Date   time.Time
-	Layout string
-	Vars   map[string]string
+	Title   string
+	Date    time.Time
+	Layout  string
+	Summary string
+	Vars    map[string]string
 }
 
 func (fm *FrontMatter) set(key string, value string) error {
@@ -75,8 +76,12 @@ func (blog Blog) LoadDocument(path string) (Document, error) {
 		return Document{}, err
 	}
 
+	newExtension := ".html"
+	if ext == ".goxml" {
+		newExtension = ".xml"
+	}
 	return Document{
-		URL:         path[len(blog.Config.SrcDir):len(path)-len(ext)] + ".html",
+		URL:         path[len(blog.Config.SrcDir):len(path)-len(ext)] + newExtension,
 		Path:        path[len(blog.Config.SrcDir):],
 		Ext:         ext,
 		FrontMatter: fm,

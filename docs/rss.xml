@@ -1,0 +1,27 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>des.io</title>
+    <link>https://blog.des.io</link>
+    <description>Explorations of Math, Philosophy, and Computer Science</description>
+    <webMaster>hello@des.io (Desio)</webMaster>
+    <lastBuildDate>Tue, 13 Mar 2018 19:28:14 +0100</lastBuildDate>
+    <atom:link href="https://blog.des.io/rss.xml" rel="self" type="application/rss+xml" />
+  
+    <item>
+      <title>The Fibonacci Problem</title>
+      <link>https://blog.des.io/posts/2018-03-08-fibonacci.html</link>
+      <pubDate>Thu, 08 Mar 2018 00:00:00 +0000</pubDate>
+      <author>hello@des.io (Desio)</author>
+      <guid>https://blog.des.io/posts/2018-03-08-fibonacci.html</guid>
+    </item>
+  
+    <item>
+      <title>Gopher Forth and Multiply</title>
+      <link>https://blog.des.io/posts/2018-02-22-gopher-forth-and-multiply.html</link>
+      <pubDate>Thu, 22 Feb 2018 00:00:00 +0000</pubDate>
+      <author>hello@des.io (Desio)</author>
+      <guid>https://blog.des.io/posts/2018-02-22-gopher-forth-and-multiply.html</guid>
+    </item>
+  
+  </channel>
+</rss>

@@ -1,0 +1,20 @@
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>des.io</title>
+    <link>https://blog.des.io</link>
+    <description>Explorations of Math, Philosophy, and Computer Science</description>
+    <webMaster>hello@des.io (Desio)</webMaster>
+    <lastBuildDate>{{ .Date.Format "Mon, 02 Jan 2006 15:04:05 -0700" | html }}</lastBuildDate>
+    <atom:link href="https://blog.des.io/rss.xml" rel="self" type="application/rss+xml" />
+  {{ range .Blog.Posts }}
+    <item>
+      <title>{{ .FrontMatter.Title }}</title>
+      <link>{{ absurl .URL }}</link>
+      <pubDate>{{ fdate .FrontMatter.Date "Mon, 02 Jan 2006 15:04:05 -0700" | html }}</pubDate>
+      <author>hello@des.io (Desio)</author>
+      <guid>{{ absurl .URL }}</guid>{{ with .FrontMatter.Summary }}
+      <description>{{ .FrontMatter.Summary }}</description>{{end}}
+    </item>
+  {{ end }}
+  </channel>
+</rss>

@@ -67,6 +67,7 @@ func (blog *Blog) LoadPosts(srcDir string) error {
 type TemplateData struct {
 	Blog Blog
 	Doc  Document
+	Date time.Time
 }
 
 func (blog Blog) Build() error {
@@ -90,7 +91,7 @@ func (blog Blog) Build() error {
 
 		fmt.Printf("Seeing file %s\n", info.Name())
 		switch filepath.Ext(path) {
-		case ".gohtml", ".md", ".html":
+		case ".gohtml", ".md", ".html", ".goxml":
 			doc, err := blog.LoadDocument(path)
 			if err != nil {
 				return err
@@ -158,9 +159,14 @@ var templateFuncMap = template.FuncMap{
 }
 
 func (blog Blog) BuildDocument(doc Document) error {
+	newExtension := ".html"
+	if doc.Ext == ".goxml" {
+		newExtension = ".xml"
+	}
+
 	destPath := filepath.Join(
 		config.SiteDir,
-		doc.Path[:len(doc.Path)-len(doc.Ext)]+".html",
+		doc.Path[:len(doc.Path)-len(doc.Ext)]+newExtension,
 	)
 
 	destDir, _ := filepath.Split(destPath)
@@ -188,7 +194,8 @@ func (blog Blog) BuildDocument(doc Document) error {
 			return err
 		}
 
-		if err := t.Execute(dest, TemplateData{blog, doc}); err != nil {
+		now := time.Now()
+		if err := t.Execute(dest, TemplateData{blog, doc, now}); err != nil {
 			return err
 		}
 	} else {
@@ -199,7 +206,7 @@ func (blog Blog) BuildDocument(doc Document) error {
 			return err
 		}
 
-		if err := t.Execute(dest, TemplateData{Blog: blog}); err != nil {
+		if err := t.Execute(dest, TemplateData{Blog: blog, Date: time.Now()}); err != nil {
 			return err
 		}
 	}

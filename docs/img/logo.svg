@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 49 (51002) - http://www.bohemiancoding.com/sketch -->
+    <title>Combined Shape Copy</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-209.000000, -61.000000)" fill="#202020">
+            <path d="M252.39282,125 L253.539823,79.7376117 L244.203358,66 L224,93.270733 L234.820893,125 L212,125 C210.343146,125 209,123.656854 209,122 L209,64 C209,62.3431458 210.343146,61 212,61 L270,61 C271.656854,61 273,62.3431458 273,64 L273,122 C273,123.656854 271.656854,125 270,125 L252.39282,125 Z" id="Combined-Shape-Copy"></path>
+        </g>
+    </g>
+</svg>

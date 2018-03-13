@@ -3,6 +3,8 @@ title: The Fibonacci Problem
 date: 08-Mar-2018
 ---
 
+<div style="margin-top: 40px; text-align: center;"><img style="width: 350px; display: inline-block; margin: 0 auto;" src="../img/fibonacci_months.png" /></div>
+
 # The Fibonacci Problem
 
 ### Introduction
@@ -17,11 +19,11 @@ Over 800 years ago Leonardo of Pisa posed a question that went something like th
 
 If we then denote the number of fluffies in a given month \\(n\\) as \\(F\_n\\) then our task is to find \\( F\_{12} \\).
 
-As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of Adult fluffies and Baby fluffies in month \\(n\\) as \\(A\_n\\) and \\(B\_n\\) respectively, we have that:
+As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of adult fluffies and baby fluffies in month \\(n\\) as \\(A\_n\\) and \\(B\_n\\) respectively, we have that:
 
 $$ F\_n = A\_n + B\_n $$
 
-Let's first reason about the number of **adult** fluffies in a given month \\(n\\). Since fluffies never die, all the adult fluffies from the previous month \\( (n-1) \\) will still exist this month \\(n\\). Also, fluffies become adults after only one month, this means that all the baby fluffies from the previous month have now become adult fluffies this month. 
+Let's first reason about the number of **adult** fluffies in a given month \\(n\\). Since fluffies never die, all the adult fluffies from the previous month \\( (n-1) \\) will still exist in the current month \\(n\\). Also, fluffies become adults after only one month, so all the baby fluffies from the previous month have now also become adult fluffies in the current month. 
 
 Thus we have that the number of adult fluffies in a given month \\(n\\) will be the sum of the adult fluffies and baby fluffies from the previous month \\((n-1)\\):
 
@@ -60,11 +62,11 @@ To solve Fibonacci's problem then we can use simply use the definition to comput
 
 \\[ \therefore F_{12} = 144 \\]
 
-This famous sequence is known as the **Fibonacci sequence** and the \\(n^{th}\\) number in the sequence is known as the \\(n^{th}\\) **Fibonacci number**.
+This is known as the **Fibonacci sequence** and the \\(n^{th}\\) number in the sequence is known as the \\(n^{th}\\) **Fibonacci number**.
 
 ### Finding \\(F\_n\\) for \\(n > 12\\) 
 
-Suppose then you are tasked with implementing a function to return \\(F_n\\) for arbitrary \\(n\\). To compare different implementations we will first define our interface as a function which takes an integer \\(n\\) and returns an integer:
+Suppose then you are tasked with implementing a function to return \\(F_n\\) for arbitrary \\(n\\). To compare different implementations we will first define our interface as a function that takes an integer \\(n\\) and that returns an integer representing the value of the \\(n^{th}\\) Fibonacci number:
 
 ```go
 // fibonacci.go
@@ -73,7 +75,7 @@ package fibonacci
 type Fib func(n int) int
 ```
 
-As a first implementation it is tempting to codify our recursive definition directly as:
+As a first naive attempt let's implement our recursive definition directly as:
  
 ```go
 // fibonacci.go
@@ -87,7 +89,7 @@ func FibNaive(n int) int {
 }
 ```
 
-When I ran some benchmarks for this naive implementation for various values of \\(n\\) and got the following:
+When I ran benchmarks for this naive implementation against various values of \\(n\\) I got the following:
  
 | \\( n \\)   | `Naive`           |
 |-------------|-------------------|
@@ -95,7 +97,7 @@ When I ran some benchmarks for this naive implementation for various values of \
 | \\( 40 \\)  | 816,681,704 ns/op |
 | \\( 90 \\)  | way too long      |
 
-We can see that our solution is not scaling well at all - in fact for \\(n=90\\) my mac ran out of memory. What's going on here? We can "plug and chug" through our solution for \\(n = 5\\) to get a feel for what is happening:
+We can see that our solution is not scaling well at all, in fact for \\(n=90\\) my mac ran out of memory. What's going on here? We can "plug and chug" through our solution for \\(n = 5\\) to get a feel for what is happening:
 
 \\[ \\begin{aligned}
 F\_5 &= F\_3 + F\_4 \\\\
@@ -106,24 +108,26 @@ F\_5 &= F\_3 + F\_4 \\\\
     &= 5
 \\end{aligned} \\]
 
-Here we can see the problem - our solution seems to do a lot of duplicate work. We can see that in the case for \\(n=5\\) we are computing \\(F\_3\\) twice and \\(F\_2\\) three times! This is even more apparent when we visualize our algorithm with a graph:
+Here we can see the problem - our solution seems to do a lot of duplicate work. We can see that in the case for \\(n=5\\) we are computing \\(F\_3\\) twice and \\(F\_2\\) three times! This is even more apparent when we visualize our algorithm as a graph:
 
 <p style="text-align: center; margin: 50px 0;">
-<img style="max-width: 500px;" src="../img/fibonacci-naive.dot.svg">
+<img style="max-width: 90%;" src="../img/fibonacci-naive.dot.svg">
 </p>
 
-Our graph shows our algorithm behaves like a tree and seems to grow in an exponential manner. In fact we can see that as \\(n\\) increases our tree will have a height of approximately \\(n\\), with each layer having approximately double the nodes of the above layer. Since the addition operations happen in the leaves, we can see there will be \\(2^n\\) numbers to add up! Also each node in the entire graph roughly corresponds to another function call added to our call-stack which means we are taking exponential space as well! 
+Our graph shows our algorithm behaves like a tree and seems to grow in an exponential manner. In fact we can see that as \\(n\\) increases our tree will have a height of approximately \\(n\\), with each layer having approximately double the number nodes as the previous layer. Since the addition operations happen in the leaves, we can see there will be \\(2^n\\) numbers to add up! Also each node in the entire graph roughly corresponds to another function call added to our call-stack which means we are taking exponential space as well.
 
-> It's no wonder then that I ran out of memory trying to perform `Fib(90)`. \\(2^{90}\\) is an obscenely large number and too much for my mac to handle.
+> It's no wonder then that I ran out of memory trying to perform `Fib(90)`. \\(2^{90}\\) is an obscenely large number and far beyond what my measly mac can handle.
 
 ### Remember what you saw here
-The results of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the Fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-used our previous computation. The graph representation for our manual approach is then:
+The results of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the Fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-used our previous computation. 
+
+If we represent our manual approach with a graph it would be like this:
 
 <p style="text-align: center; margin: 50px 0;">
-<img style="max-width: 500px;" src="../img/fibonacci-cached.dot.svg">
+<img style="max-width: 90%;" src="../img/fibonacci-cached.dot.svg">
 </p>
 
-To move our implementation more in alignment with this linear graph, we will cache our intermediate results so that we do not have to recompute them:
+Notice there are no duplicate nodes, i.e. no duplicate recursive function calls. To move our implementation more in alignment with this more *linear* graph, we will take the approach from linear programming and cache our intermediate results so that we do not have to recompute them:
 
 ```go
 // fibonacci.go
@@ -154,7 +158,9 @@ func FibCachedHelper(n int, cache map[int]int) int {
 }
 ```
 
-In our implementation you can see that in order to adhere to our interface we used a helper function which takes a cache as an argument. We then check this cache before performing any recursive calls and we cache our results after each addition. 
+In this implementation notice we use a helper function `FibCachedHelper` which takes an additional argument, in this case a map to act as our cache. This is a common pattern when refactoring recursive functions, we create auxiliary helper functions so that our main function can adhere to its original api and not affect its callers. 
+
+The only difference between `FibCachedHelper` and `FibNaive` is that it maintains a cache. Before performing a recursive call it first checks this cache to see if the computation has been done already, and right before returning a value it saves its computation to this cache.
 
 When I now run the benchmarks I get:
 
@@ -164,20 +170,20 @@ When I now run the benchmarks I get:
 | \\( 40 \\)  | 816,681,704 ns/op | 7,331 ns/op  |
 | \\( 90 \\)  | way too long      | 14,488 ns/op |
 
-This improved implementation has made calculating `Fib(90)` tractable and the performance appears to be scaling linearly with our input much like our graph suggested, and indeed our algorithm now gone from order \\(O(2^n)\\) to \\(O(n)\\).
+This improved implementation has made calculating `Fib(90)` tractable and the performance appears to be scaling linearly with our input which aligns with the graph we were implementing, and indeed our algorithm now gone from order \\(O(2^n)\\) to \\(O(n)\\).
 
 > When I first implemented the cached version I used a global variable for the cache and my benchmarks were unreasonably fast. This is because the first time Golang executed `Fib` the final value was cached and available for subsequent executions. So calculating `Fib(90)` was as fast as cache lookup! Let that be a lesson to be careful of shared memory when benchmarking.
 
 ### Can we do better? Tail recursion revisited
-In a [previous article](2018-02-22-gopher-forth-and-multiply.html) we saw how refactoring our recursive code to be **strict tail-recursive** resulted in a significant performance boost. However, unlike in that case here our deferred operation is **another** recursive call!
+In a [previous article](2018-02-22-gopher-forth-and-multiply.html) we gained a significant performance boost by refactoring our recursive function to be **strict tail-recursive**. In that example we used the "plug and chug" tactic to identify how we could accumulate our deferred operations, however in this case our deferred operation is yet *another* recursive call. How to account for this?
 
-One tactic we can employ is "Replace \\(n\\) recursive calls with one". That is, we currently have two recursive calls to a function that returns a single integer and we can refactor this into a single new function that will return two integers. 
+One tactic we can employ is "Replace \\(n\\) recursive calls with one". That is, we currently have **two** recursive calls to a function that returns **one** integer and we will refactor to make **one** recursive call to a function that returns **two** integers. 
 
 We can return two integers from a single function by grouping them into a tuple or vector. We can describe this refactoring as:
 
 \\[ \\begin{aligned}
-F\_n &= F\_{n-1} + F\_{n-2} \\\\
-\\text{ becomes: } F\_n &= \sum{\vec{v}} \\text{ where } \vec{v} = \\begin{bmatrix} F\_{n-1} \\\\ F\_{n-2} \\end{bmatrix}
+\\text{ Original: } F\_n &= F\_{n-1} + F\_{n-2} \\\\
+\\text{ Refactored: } F\_n &= \sum{\vec{v}} \\text{ where } \vec{v} = \\begin{bmatrix} F\_{n-1} \\\\ F\_{n-2} \\end{bmatrix}
 \\end{aligned} \\]
 
 As a convention we will refer to \\( \\begin{bmatrix} F\_n \\\\ F\_{n-1} \\end{bmatrix}\\) as the \\( n^{th} \\) **Fibonacci vector** denoted \\( \\vec{F}_n \\). Then the \\(n^{th}\\) Fibonacci number can be defined as the vector sum of the \\( (n-1)^{th} \\) Fibonacci vector:
@@ -208,7 +214,7 @@ func FibVec(n int) (int, int) {
 }
 ```
 
-Here we can see our new function `FibVecSum` works by calling a single function `FibVec` and summing the two integers it returns. This now begs the question of how to implement `FibVec`. 
+Here our new implementation `FibVecSum` gets the \\( (n-1)^{th} \\) Fibonacci vector from `FibVec` as a tuple and then sums the components. This now begs the question of how to implement `FibVec`, or in other words: how can we compute the \\( n^{th} \\) Fibonacci vector? 
 
 Since the first item in the Fibonacci vector sequence is \\( \vec{F}\_1 = \begin{bmatrix} F\_1 \\\ F\_0 \end{bmatrix} = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\) we can generate the rest of the sequence by hand:
 
@@ -221,10 +227,10 @@ To understand its recursive behaviour we can examine \\( \vec{F}\_n \\) vs \\( \
 \\]
 
 \\[
-\vec{F}\_{n+1} = \begin{bmatrix} F\_{n+1} \\\ F\_{n} \end{bmatrix} = \begin{bmatrix} F\_{n} + F\_{n-1} \\\ F\_{n-1} \end{bmatrix}
+\vec{F}\_{n+1} = \begin{bmatrix} F\_{n+1} \\\ F\_{n} \end{bmatrix} = \begin{bmatrix} F\_{n} + F\_{n-1} \\\ F\_n \end{bmatrix}
 \\]
 
-Notice the components of \\( \\vec{F}\_{n+1} \\) can be computed from the components of \\( \\vec{F}\_n \\) as so:
+Notice the components of \\( \\vec{F}\_{n+1} \\) can be computed from the components of \\( \\vec{F}\_n \\) in the following way:
 
  $$ \\text{if } \\vec{F}\_n = \begin{bmatrix} a \\\ b \end{bmatrix} \\text{ then } \\vec{F}\_{n+1} = \begin{bmatrix} a + b \\\ a \end{bmatrix} $$ 
 
@@ -232,7 +238,7 @@ If we define a transform function \\( T\Big(\begin{bmatrix} a \\\ b \end{bmatrix
 
 \\[ \\begin{aligned}
 \vec{F}\_1 &= \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\\\
-\vec{F}\_n       &= T(F\_{n-1}) \\text{ where } n > 1
+\vec{F}\_n       &= T(\vec{F}\_{n-1}) \\text{ where } n > 1
 \\end{aligned} \\]
 
 Translating this into Golang we can now implement `FibVec`:
@@ -263,7 +269,7 @@ func FibVecTransform(a int, b int) (int, int) {
 }
 ```
 
-At this point our refactored implementation of `Fib` now contains one recursive call per function. That is we have removed any deferred recursive call operations and we are one step closer to a strict tail-recursive implementation. 
+At this point our refactored implementation of `Fib` now involves a maximum of one recursive call per function. That is we have removed any deferred recursive call operations and we are one step closer to a strict tail-recursive implementation. 
 
 Upon benchmarking this refactored implementation we get quite a performance boost:
 
@@ -277,7 +283,7 @@ That's a whopping improvement! It seems we are on the right track.
 
 ### Strict tail-recursion
 
-At the moment our recursive function `FibVec`  has no deferred **recursive calls** but still has a deferred operation, namely applying the `FibVecTransform`. If we want to refactor our solution to be strict tail-recursive we need to understand how this deferred operation behaves so that we can accumulate it into our recursive call.
+At the moment our recursive function `FibVec`  has no deferred recursive calls but still has a deferred operation, namely applying the `FibVecTransform`. If we want to refactor our solution to be strict tail-recursive we need to understand how this deferred operation behaves so that we can accumulate it into our recursive call.
 
 If we plug and chug through the case where \\(n=5\\) we can get a better feeling for how this is behaving:
 
@@ -291,9 +297,9 @@ If we plug and chug through the case where \\(n=5\\) we can get a better feeling
                   &= \begin{bmatrix} 3 \\\ 2 \end{bmatrix}
 \\end{aligned} \\]
 
-> Note we are using \\(T\\) to denote `FibVecTransform` and the notation \\(T \circ T(x) \\) to denote \\(T(T(x))\\)
+> Here we are using \\(T\\) to denote `FibVecTransform` and the notation \\(T \circ T(x) \\) to denote \\(T(T(x))\\)
 
-Note that that each recursive call results in an additional deferred application of our transform function that we need to perform to our base case of \\( \vec{F}\_1 = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\). Then by the time we reach our base case, we will always have accumulated \\( (n-1) \\) deferred functions to apply:
+Note that each recursive call results in an additional application of our transform function \\(T\\) to our base case \\( \vec{F}\_1 = \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \\). Then by the time we reach our base case, we will always have accumulated \\( (n-1) \\) deferred functions to apply:
  
 \\[
    \\text{FibVec}(n) = \underbrace{T \circ T \circ ... T}\_{n-1} \Big( \begin{bmatrix} 1 \\\ 0 \end{bmatrix} \Big)
@@ -321,7 +327,6 @@ Using this as instructions we can define our new recursive function \\( \\text{F
 \\]
 
 > Notice this is more flexible than our original definition of \\(\\vec{F}\_n \\) because it allows for an arbitrary initial conditions of \\(a\\) and \\(b\\) in the base case.
-
 
 We can directly implement this in Golang with strict tail-recursion as:
 

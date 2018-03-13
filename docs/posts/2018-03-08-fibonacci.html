@@ -5,17 +5,33 @@
   <title>The Fibonacci Problem</title>
   <link rel="stylesheet" href="https://blog.des.io/css/blog.css">
   <link rel="icon" href="https://blog.des.io/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115449883-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-115449883-1');
+  </script>
+
 </head>
 <body>
+<div class="AboveTheFold">
+
 <div class="header">
   <div class="container">
-    <a href="https://blog.des.io/">des.io</a>
+    <div style="padding: 0 10px;"><a href="https://blog.des.io/">des.io</a></div>
   </div>
 </div>
 
 <div class="content">
   <div class="container">
-    <h1>The Fibonacci Problem</h1>
+    <div style="padding: 0 10px;"><div style="margin-top: 40px; text-align: center;"><img style="width: 350px; display: inline-block; margin: 0 auto;" src="../img/fibonacci_months.png" /></div>
+
+<h1>The Fibonacci Problem</h1>
 
 <h3>Introduction</h3>
 
@@ -33,11 +49,11 @@
 
 <p>If we then denote the number of fluffies in a given month \(n\) as \(F_n\) then our task is to find \( F_{12} \).</p>
 
-<p>As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of Adult fluffies and Baby fluffies in month \(n\) as \(A_n\) and \(B_n\) respectively, we have that:</p>
+<p>As a start, we make the observation that the number of fluffies in any given month is the sum of the adult fluffies and baby fluffies in that month. If we denote the number of adult fluffies and baby fluffies in month \(n\) as \(A_n\) and \(B_n\) respectively, we have that:</p>
 
 <p>$$ F_n = A_n + B_n $$</p>
 
-<p>Let&rsquo;s first reason about the number of <strong>adult</strong> fluffies in a given month \(n\). Since fluffies never die, all the adult fluffies from the previous month \( (n-1) \) will still exist this month \(n\). Also, fluffies become adults after only one month, this means that all the baby fluffies from the previous month have now become adult fluffies this month.</p>
+<p>Let&rsquo;s first reason about the number of <strong>adult</strong> fluffies in a given month \(n\). Since fluffies never die, all the adult fluffies from the previous month \( (n-1) \) will still exist in the current month \(n\). Also, fluffies become adults after only one month, so all the baby fluffies from the previous month have now also become adult fluffies in the current month.</p>
 
 <p>Thus we have that the number of adult fluffies in a given month \(n\) will be the sum of the adult fluffies and baby fluffies from the previous month \((n-1)\):</p>
 
@@ -76,17 +92,17 @@ F_n &amp;= F_{n-1} + F_{n-2} \text{ where } n &gt; 1
 
 <p>\[ \therefore F_{12} = 144 \]</p>
 
-<p>This famous sequence is known as the <strong>Fibonacci sequence</strong> and the \(n^{th}\) number in the sequence is known as the \(n^{th}\) <strong>Fibonacci number</strong>.</p>
+<p>This is known as the <strong>Fibonacci sequence</strong> and the \(n^{th}\) number in the sequence is known as the \(n^{th}\) <strong>Fibonacci number</strong>.</p>
 
 <h3>Finding \(F_n\) for \(n &gt; 12\)</h3>
 
-<p>Suppose then you are tasked with implementing a function to return \(F_n\) for arbitrary \(n\). To compare different implementations we will first define our interface as a function which takes an integer \(n\) and returns an integer:</p>
+<p>Suppose then you are tasked with implementing a function to return \(F_n\) for arbitrary \(n\). To compare different implementations we will first define our interface as a function that takes an integer \(n\) and that returns an integer representing the value of the \(n^{th}\) Fibonacci number:</p>
 <pre class="chroma"><span class="c1">// fibonacci.go
 </span><span class="c1"></span><span class="kn">package</span> <span class="nx">fibonacci</span>
 
 <span class="kd">type</span> <span class="nx">Fib</span> <span class="kd">func</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span>
 </pre>
-<p>As a first implementation it is tempting to codify our recursive definition directly as:</p>
+<p>As a first naive attempt let&rsquo;s implement our recursive definition directly as:</p>
 <pre class="chroma"><span class="c1">// fibonacci.go
 </span><span class="c1"></span>
 <span class="kd">func</span> <span class="nx">FibNaive</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
@@ -97,7 +113,7 @@ F_n &amp;= F_{n-1} + F_{n-2} \text{ where } n &gt; 1
     <span class="k">return</span> <span class="nx">FibNaive</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="nx">FibNaive</span><span class="p">(</span><span class="nx">n</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
 <span class="p">}</span>
 </pre>
-<p>When I ran some benchmarks for this naive implementation for various values of \(n\) and got the following:</p>
+<p>When I ran benchmarks for this naive implementation against various values of \(n\) I got the following:</p>
 
 <table>
 <thead>
@@ -124,7 +140,7 @@ F_n &amp;= F_{n-1} + F_{n-2} \text{ where } n &gt; 1
 </tr>
 </tbody>
 </table>
-<p>We can see that our solution is not scaling well at all - in fact for \(n=90\) my mac ran out of memory. What&rsquo;s going on here? We can &ldquo;plug and chug&rdquo; through our solution for \(n = 5\) to get a feel for what is happening:</p>
+<p>We can see that our solution is not scaling well at all, in fact for \(n=90\) my mac ran out of memory. What&rsquo;s going on here? We can &ldquo;plug and chug&rdquo; through our solution for \(n = 5\) to get a feel for what is happening:</p>
 
 <p>\[ \begin{aligned}
 F_5 &amp;= F_3 + F_4 \\
@@ -135,27 +151,29 @@ F_5 &amp;= F_3 + F_4 \\
     &amp;= 5
 \end{aligned} \]</p>
 
-<p>Here we can see the problem - our solution seems to do a lot of duplicate work. We can see that in the case for \(n=5\) we are computing \(F_3\) twice and \(F_2\) three times! This is even more apparent when we visualize our algorithm with a graph:</p>
+<p>Here we can see the problem - our solution seems to do a lot of duplicate work. We can see that in the case for \(n=5\) we are computing \(F_3\) twice and \(F_2\) three times! This is even more apparent when we visualize our algorithm as a graph:</p>
 
 <p style="text-align: center; margin: 50px 0;">
-<img style="max-width: 500px;" src="../img/fibonacci-naive.dot.svg">
+<img style="max-width: 90%;" src="../img/fibonacci-naive.dot.svg">
 </p>
 
-<p>Our graph shows our algorithm behaves like a tree and seems to grow in an exponential manner. In fact we can see that as \(n\) increases our tree will have a height of approximately \(n\), with each layer having approximately double the nodes of the above layer. Since the addition operations happen in the leaves, we can see there will be \(2^n\) numbers to add up! Also each node in the entire graph roughly corresponds to another function call added to our call-stack which means we are taking exponential space as well!</p>
+<p>Our graph shows our algorithm behaves like a tree and seems to grow in an exponential manner. In fact we can see that as \(n\) increases our tree will have a height of approximately \(n\), with each layer having approximately double the number nodes as the previous layer. Since the addition operations happen in the leaves, we can see there will be \(2^n\) numbers to add up! Also each node in the entire graph roughly corresponds to another function call added to our call-stack which means we are taking exponential space as well.</p>
 
 <blockquote>
-<p>It&rsquo;s no wonder then that I ran out of memory trying to perform <code>Fib(90)</code>. \(2^{90}\) is an obscenely large number and too much for my mac to handle.</p>
+<p>It&rsquo;s no wonder then that I ran out of memory trying to perform <code>Fib(90)</code>. \(2^{90}\) is an obscenely large number and far beyond what my measly mac can handle.</p>
 </blockquote>
 
 <h3>Remember what you saw here</h3>
 
-<p>The results of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the Fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-used our previous computation. The graph representation for our manual approach is then:</p>
+<p>The results of our first implementation do not seem to coincide with our own experience when we followed the recursive definition to compute the Fibonacci numbers by hand. This is because we did not need to perform duplicate computation, but rather we re-used our previous computation.</p>
+
+<p>If we represent our manual approach with a graph it would be like this:</p>
 
 <p style="text-align: center; margin: 50px 0;">
-<img style="max-width: 500px;" src="../img/fibonacci-cached.dot.svg">
+<img style="max-width: 90%;" src="../img/fibonacci-cached.dot.svg">
 </p>
 
-<p>To move our implementation more in alignment with this linear graph, we will cache our intermediate results so that we do not have to recompute them:</p>
+<p>Notice there are no duplicate nodes, i.e. no duplicate recursive function calls. To move our implementation more in alignment with this more <em>linear</em> graph, we will take the approach from linear programming and cache our intermediate results so that we do not have to recompute them:</p>
 <pre class="chroma"><span class="c1">// fibonacci.go
 </span><span class="c1"></span>
 <span class="kd">func</span> <span class="nx">FibCached</span><span class="p">(</span><span class="nx">n</span> <span class="kt">int</span><span class="p">)</span> <span class="kt">int</span> <span class="p">{</span>
@@ -183,7 +201,9 @@ F_5 &amp;= F_3 + F_4 \\
   <span class="k">return</span> <span class="nx">result</span>
 <span class="p">}</span>
 </pre>
-<p>In our implementation you can see that in order to adhere to our interface we used a helper function which takes a cache as an argument. We then check this cache before performing any recursive calls and we cache our results after each addition.</p>
+<p>In this implementation notice we use a helper function <code>FibCachedHelper</code> which takes an additional argument, in this case a map to act as our cache. This is a common pattern when refactoring recursive functions, we create auxiliary helper functions so that our main function can adhere to its original api and not affect its callers.</p>
+
+<p>The only difference between <code>FibCachedHelper</code> and <code>FibNaive</code> is that it maintains a cache. Before performing a recursive call it first checks this cache to see if the computation has been done already, and right before returning a value it saves its computation to this cache.</p>
 
 <p>When I now run the benchmarks I get:</p>
 
@@ -216,7 +236,7 @@ F_5 &amp;= F_3 + F_4 \\
 </tr>
 </tbody>
 </table>
-<p>This improved implementation has made calculating <code>Fib(90)</code> tractable and the performance appears to be scaling linearly with our input much like our graph suggested, and indeed our algorithm now gone from order \(O(2^n)\) to \(O(n)\).</p>
+<p>This improved implementation has made calculating <code>Fib(90)</code> tractable and the performance appears to be scaling linearly with our input which aligns with the graph we were implementing, and indeed our algorithm now gone from order \(O(2^n)\) to \(O(n)\).</p>
 
 <blockquote>
 <p>When I first implemented the cached version I used a global variable for the cache and my benchmarks were unreasonably fast. This is because the first time Golang executed <code>Fib</code> the final value was cached and available for subsequent executions. So calculating <code>Fib(90)</code> was as fast as cache lookup! Let that be a lesson to be careful of shared memory when benchmarking.</p>
@@ -224,15 +244,15 @@ F_5 &amp;= F_3 + F_4 \\
 
 <h3>Can we do better? Tail recursion revisited</h3>
 
-<p>In a <a href="2018-02-22-gopher-forth-and-multiply.html">previous article</a> we saw how refactoring our recursive code to be <strong>strict tail-recursive</strong> resulted in a significant performance boost. However, unlike in that case here our deferred operation is <strong>another</strong> recursive call!</p>
+<p>In a <a href="2018-02-22-gopher-forth-and-multiply.html">previous article</a> we gained a significant performance boost by refactoring our recursive function to be <strong>strict tail-recursive</strong>. In that example we used the &ldquo;plug and chug&rdquo; tactic to identify how we could accumulate our deferred operations, however in this case our deferred operation is yet <em>another</em> recursive call. How to account for this?</p>
 
-<p>One tactic we can employ is &ldquo;Replace \(n\) recursive calls with one&rdquo;. That is, we currently have two recursive calls to a function that returns a single integer and we can refactor this into a single new function that will return two integers.</p>
+<p>One tactic we can employ is &ldquo;Replace \(n\) recursive calls with one&rdquo;. That is, we currently have <strong>two</strong> recursive calls to a function that returns <strong>one</strong> integer and we will refactor to make <strong>one</strong> recursive call to a function that returns <strong>two</strong> integers.</p>
 
 <p>We can return two integers from a single function by grouping them into a tuple or vector. We can describe this refactoring as:</p>
 
 <p>\[ \begin{aligned}
-F_n &amp;= F_{n-1} + F_{n-2} \\
-\text{ becomes: } F_n &amp;= \sum{\vec{v}} \text{ where } \vec{v} = \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}
+\text{ Original: } F_n &amp;= F_{n-1} + F_{n-2} \\
+\text{ Refactored: } F_n &amp;= \sum{\vec{v}} \text{ where } \vec{v} = \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}
 \end{aligned} \]</p>
 
 <p>As a convention we will refer to \( \begin{bmatrix} F_n \\ F_{n-1} \end{bmatrix}\) as the \( n^{th} \) <strong>Fibonacci vector</strong> denoted \( \vec{F}_n \). Then the \(n^{th}\) Fibonacci number can be defined as the vector sum of the \( (n-1)^{th} \) Fibonacci vector:</p>
@@ -262,7 +282,7 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
   <span class="c1">// todo
 </span><span class="c1"></span><span class="p">}</span>
 </pre>
-<p>Here we can see our new function <code>FibVecSum</code> works by calling a single function <code>FibVec</code> and summing the two integers it returns. This now begs the question of how to implement <code>FibVec</code>.</p>
+<p>Here our new implementation <code>FibVecSum</code> gets the \( (n-1)^{th} \) Fibonacci vector from <code>FibVec</code> as a tuple and then sums the components. This now begs the question of how to implement <code>FibVec</code>, or in other words: how can we compute the \( n^{th} \) Fibonacci vector?</p>
 
 <p>Since the first item in the Fibonacci vector sequence is \( \vec{F}_1 = \begin{bmatrix} F_1 \\ F_0 \end{bmatrix} = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \) we can generate the rest of the sequence by hand:</p>
 
@@ -275,10 +295,10 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 \]</p>
 
 <p>\[
-\vec{F}_{n+1} = \begin{bmatrix} F_{n+1} \\ F_{n} \end{bmatrix} = \begin{bmatrix} F_{n} + F_{n-1} \\ F_{n-1} \end{bmatrix}
+\vec{F}_{n+1} = \begin{bmatrix} F_{n+1} \\ F_{n} \end{bmatrix} = \begin{bmatrix} F_{n} + F_{n-1} \\ F_n \end{bmatrix}
 \]</p>
 
-<p>Notice the components of \( \vec{F}_{n+1} \) can be computed from the components of \( \vec{F}_n \) as so:</p>
+<p>Notice the components of \( \vec{F}_{n+1} \) can be computed from the components of \( \vec{F}_n \) in the following way:</p>
 
 <p>$$ \text{if } \vec{F}_n = \begin{bmatrix} a \\ b \end{bmatrix} \text{ then } \vec{F}_{n+1} = \begin{bmatrix} a + b \\ a \end{bmatrix} $$</p>
 
@@ -286,7 +306,7 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 
 <p>\[ \begin{aligned}
 \vec{F}_1 &amp;= \begin{bmatrix} 1 \\ 0 \end{bmatrix} \\
-\vec{F}_n       &amp;= T(F_{n-1}) \text{ where } n &gt; 1
+\vec{F}_n       &amp;= T(\vec{F}_{n-1}) \text{ where } n &gt; 1
 \end{aligned} \]</p>
 
 <p>Translating this into Golang we can now implement <code>FibVec</code>:</p>
@@ -314,7 +334,7 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
   <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">a</span>
 <span class="p">}</span>
 </pre>
-<p>At this point our refactored implementation of <code>Fib</code> now contains one recursive call per function. That is we have removed any deferred recursive call operations and we are one step closer to a strict tail-recursive implementation.</p>
+<p>At this point our refactored implementation of <code>Fib</code> now involves a maximum of one recursive call per function. That is we have removed any deferred recursive call operations and we are one step closer to a strict tail-recursive implementation.</p>
 
 <p>Upon benchmarking this refactored implementation we get quite a performance boost:</p>
 
@@ -355,7 +375,7 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 
 <h3>Strict tail-recursion</h3>
 
-<p>At the moment our recursive function <code>FibVec</code>  has no deferred <strong>recursive calls</strong> but still has a deferred operation, namely applying the <code>FibVecTransform</code>. If we want to refactor our solution to be strict tail-recursive we need to understand how this deferred operation behaves so that we can accumulate it into our recursive call.</p>
+<p>At the moment our recursive function <code>FibVec</code>  has no deferred recursive calls but still has a deferred operation, namely applying the <code>FibVecTransform</code>. If we want to refactor our solution to be strict tail-recursive we need to understand how this deferred operation behaves so that we can accumulate it into our recursive call.</p>
 
 <p>If we plug and chug through the case where \(n=5\) we can get a better feeling for how this is behaving:</p>
 
@@ -370,10 +390,10 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 \end{aligned} \]</p>
 
 <blockquote>
-<p>Note we are using \(T\) to denote <code>FibVecTransform</code> and the notation \(T \circ T(x) \) to denote \(T(T(x))\)</p>
+<p>Here we are using \(T\) to denote <code>FibVecTransform</code> and the notation \(T \circ T(x) \) to denote \(T(T(x))\)</p>
 </blockquote>
 
-<p>Note that that each recursive call results in an additional deferred application of our transform function that we need to perform to our base case of \( \vec{F}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \). Then by the time we reach our base case, we will always have accumulated \( (n-1) \) deferred functions to apply:</p>
+<p>Note that each recursive call results in an additional application of our transform function \(T\) to our base case \( \vec{F}_1 = \begin{bmatrix} 1 \\ 0 \end{bmatrix} \). Then by the time we reach our base case, we will always have accumulated \( (n-1) \) deferred functions to apply:</p>
 
 <p>\[
    \text{FibVec}(n) = \underbrace{T \circ T \circ &hellip; T}_{n-1} \Big( \begin{bmatrix} 1 \\ 0 \end{bmatrix} \Big)
@@ -589,11 +609,11 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
 <li><a href="https://www.coursera.org/learn/enumerative-combinatorics">Mathematics for Computer Science (Weeks 12 - 15)</a></li>
 <li><a href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci Numbers Wikipedia</a></li>
 </ul>
-
+</div>
   </div>
 
   <div class="container" style="margin-top: 40px;">
-      <div id="disqus_thread"></div>
+    <div style="padding: 0 10px;"><div id="disqus_thread"></div></div>
   </div>
 
   <script>
@@ -609,11 +629,11 @@ F_n = \sum{ \begin{bmatrix} F_{n-1} \\ F_{n-2} \end{bmatrix}} = \sum{ \vec{F}_{n
     })();
   </script>
 </div>
+</div>
 
-<div class="footer">
-  <div class="container">
-    <a href="https://github.com/desicochrane">github</a>
-  </div>
+<div class="SiteCredit">
+  Made with care by
+  <a href="https://github.com/desicochrane" target="_blank">des.io</a>
 </div>
 
 

@@ -1,15 +1,5 @@
 @import "../../node_modules/katex/dist/katex.css";
 
-//@font-face {
-//  font-family: cmunrm;
-//  src: url('../fonts/cmunrm.ttf') format('truetype');
-//}
-
-//@font-face {
-//  font-family: Roboto;
-//  src: url('../fonts/Roboto-Regular.ttf') format('truetype');
-//}
-
 @font-face {
   font-family: "Source Code Pro";
   src: url('../fonts/SourceCodePro-Regular.ttf') format('truetype');
@@ -26,6 +16,12 @@ html, body {
 h1 {
   font-weight: 400;
   text-align: center;
+  margin: 0;
+}
+
+h2 {
+  margin-bottom: 10px;
+  font-weight: 400;
 }
 
 h3 {
@@ -104,11 +100,6 @@ code {
   }
 }
 
-.container {
-  width: 900px;
-  margin: 0 auto;
-}
-
 $table-cell-padding: 0.222em;
 $table-border: 0.5px solid #333;
 table {
@@ -127,7 +118,7 @@ td {
 }
 
 .container {
-  width: 800px;
+  max-width: 800px;
   margin: 0 auto;
 }
 
@@ -139,13 +130,30 @@ td {
   padding-top: 10px;
 }
 
-.footer {
-  background: #2E2E2E;
-  font-size: 14px;
-  padding: 50px 0 100px;
-  color: #acacac;
+.SiteCredit {
+  font-family: Helvetica !important;
+  position: relative;
+  background-color: #191919;
+  background-image: url("../img/pentagon.png");
+  color: #989898;
+  padding: 20px;
+  text-align: center;
+  font-size: 11px;
+}
 
-  a {
-    color: #acacac;
-  }
+.SiteCredit a {
+  color: #989898;
+  border-bottom: 1px dotted;
+  text-decoration: none;
+}
+
+.SiteCredit a:hover, .SiteCredit a:active, .SiteCredit a:focus {
+  color: white;
+  outline: none;
+  text-decoration: none;
+  border-bottom: 1px solid;
+}
+
+.AboveTheFold {
+  min-height: 100vh;
 }

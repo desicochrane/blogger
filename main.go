@@ -46,7 +46,7 @@ func main() {
 	if *serve {
 		http.Handle("/", http.FileServer(http.Dir(config.SiteDir)))
 		fmt.Printf("\nServing on port :%s\n", *port)
-		http.ListenAndServe(":"+*port, nil)
+		http.ListenAndServe(":" + *port, nil)
 	}
 }
 
