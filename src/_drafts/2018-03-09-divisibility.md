@@ -2,6 +2,11 @@
 title: Divisibility
 date: 09-Mar-2018
 ---
+
+thm. using jugs of water:
+for some jug with "a" gallons, and another with "b" gallons, assuming a >= b
+if m|a, and m|b, then m|(any possible jug filling)
+
 # Divisibility 
 What does it mean that a number \\(a\\) is divisible by \\(b\\) ?
 

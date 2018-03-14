@@ -2,7 +2,6 @@ package examples
 
 import (
 	"testing"
-	"fmt"
 )
 
 func TestFib(t *testing.T) {
@@ -27,7 +26,7 @@ func TestFib(t *testing.T) {
 		{80, 23416728348467685},
 		{90, 2880067194370816120},
 	}
-	fmt.Println(FibVecSum(90))
+
 	fibs := []Fib{FibVecSum, FibCached, FibTailVecSum, FibIterative, FibTupleTailIterativeStorage}
 
 	for _, f := range fibs {
