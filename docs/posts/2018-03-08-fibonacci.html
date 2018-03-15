@@ -76,9 +76,9 @@ F_n &amp;= A_{n} + B_{n} \\
      &amp;= F_{n-1} + F_{n-2}
 \end{aligned} \]</p>
 
-<p>This means that the number of fluffies in a given month is determined by the number of fluffies in the previous two months. Thus if we know the number of fluffies in the first two months we can determine the number of fluffies in any subsequent month. We know that in the first month that we start with a single fluffy, that is \(F_1 = 1\), and we can say that before the first month we had no fluffies at all so we know that \(F_0 = 0\).</p>
+<p>This means that the number of fluffies in a given month is determined by the number of fluffies in the previous two months. Thus if we know the number of fluffies in the first two months we can determine the number of fluffies in any subsequent month. We know in the first month we start with a single fluffy, that is \(F_1 = 1\), and we can say that before the first month we had no fluffies at all so we know that \(F_0 = 0\).</p>
 
-<p>This gives us all the pieces we need to define the \(F_n\) with a recursive relation:</p>
+<p>This gives us all the pieces we need to define \(F_n\) with a recursive relation:</p>
 
 <p>\[ \begin{aligned}
 F_0 &amp;= 0 \\
@@ -86,7 +86,7 @@ F_1 &amp;= 1 \\
 F_n &amp;= F_{n-1} + F_{n-2} \text{ where } n &gt; 1
 \end{aligned} \]</p>
 
-<p>To solve Fibonacci&rsquo;s problem then we can use simply use the definition to compute from \(F_0\) to \(F_{12}\):</p>
+<p>To solve Leonardo of Pisa&rsquo;s problem then we can use simply use the definition to compute from \(F_0\) to \(F_{12}\):</p>
 
 <p>\[ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 \]</p>
 
@@ -140,7 +140,7 @@ F_n &amp;= F_{n-1} + F_{n-2} \text{ where } n &gt; 1
 </tr>
 </tbody>
 </table>
-<p>We can see that our solution is not scaling well at all, in fact for \(n=90\) my mac ran out of memory. What&rsquo;s going on here? We can &ldquo;plug and chug&rdquo; through our solution for \(n = 5\) to get a feel for what is happening:</p>
+<p>We can see that our solution is not scaling well at all, in fact for \(n=90\) my mac ran out of memory. What&rsquo;s going on here? We can &ldquo;plug and chug&rdquo; through our solution for \(n = 4\) to get a feel for what is happening:</p>
 
 <p>\[ \begin{aligned}
 F_5 &amp;= F_3 + F_4 \\
