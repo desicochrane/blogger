@@ -7,6 +7,37 @@ thm. using jugs of water:
 for some jug with "a" gallons, and another with "b" gallons, assuming a >= b
 if m|a, and m|b, then m|(any possible jug filling)
 
+//todo: while showing rectangles, bring back point that these are units of units (number theory thinking).
+// divisibility then is arranging units into rectangles
+
+// apples are good example? small apples, big apples, still apples. half apple? either two apple bits or not considered one of the units allowed in the computation.
+
+// > n = qm + r
+   n: dividend
+   m: divisor / modulus
+   q: quotient (normally don't care about it)
+   r: remaider / residue -> 0 <= r < m
+   
+   how to solve modular arithmetic? (khan academy problems)
+
+> lemma gcd(n,p) = 1 i.e. iff p does not divide n
+  
+> prove if a \equiv r mod m and b \equiv r mod m then m|(a-b)
+
+congruence and divisibility are PREDICATES not operators
+mod operator / remainder operator (%) and division are operators
+
+> show how ab \equiv r mod m = a \mod m * b mod m (same for addition)
+
+*division* not defined in modular arithmetic world. 15/3 \equiv 3/3 (mod 6) why not?
+
+how about exponentiation?
+3^14 mod 7 ? = 2 (correct)
+3^{14 mod 7} mod 7 ? 1 (wrong!)
+eulers totient theorem shows we need:
+3^{14 mod phi(7)} mod 7 ? 2 (correct)
+
+why is 6! divisible by 9? because it has a 3 and 6 as factor. (9|(3*6))
 # Divisibility 
 What does it mean that a number \\(a\\) is divisible by \\(b\\) ?
 
@@ -112,7 +143,7 @@ two numbers \\(a\\) and \\(b\\) are **congruent modulo \\(m\\)** if they have th
 
 \\(a \equiv b \mod m\\)
 
-as we discuess, \\(a \equiv b (\bmod m)\\) iff \\(a-b\\) is divisible by \\(m\\)
+as we discuss, \\(a \equiv b (\bmod m)\\) iff \\(a-b\\) is divisible by \\(m\\)
 
 > note: iff can be counterintuitive if you read as a conditional, another way is to treat it as a double sided implication, i.e:
 if \\(a \equiv b (\bmod m)\\) then \\(a-b\\) is divisible by \\(m\\) and vica versa
@@ -156,6 +187,21 @@ the ones! there are no ones (except 1...) unless there are fractions (rational n
 
 modular division... is more complicated... (diaphantine equations...)
 
+
+for division (i.e a = 1 mod m) explain that division is really just... inverse of multiplication. which means, some identy number is the result. reach for identity and inverse definitions as generalized cases. show how this is useful because it allows us to cancel out, when the product is 1.
+
+> proving gcd(a,b) = 1 iff ab is invertable (can be divided) is this ok?
+gcd(a,m) = 1
+- sequence: {0a, 1a, 2a, ... (m-1)a}
+- pick 2 (not congruent mod m)
+- can xa \equiv ya mod m?
+- means m|(x-y)a 
+- means m|(x-y)
+- but -m < (x-y) < m and x-y not zero
+- therefore, they are all different mod m
+- pigeonhole principle: one must be 1.
+otherway around too... https://www.coursera.org/learn/mathematical-foundations-cryptography/lecture/mT0D3/multiplicative-inverses
+
 is it bad? well, if math was about computing things like the problems thus far... yes. but things being hard can be good too (cryptography!)
 
 # Binary (quickie) article
@@ -178,3 +224,68 @@ show how this relates to logarithms (and the shift proof in gopher forth)
 number of bits is \\(\lfloor \log_2{a} \rfloor + 1\\)
 
 (can prove directly, observing that the floor operator is same as "largest integer n that is less than or equal to, pretty cool, gives a new intuition to the floor/round down operator)
+
+
+> lemma: if we take all the multiples of a, from 1a to (p-1)a for some prime p, and if we then express each multiple in the form mp + r, every remainder will be unique. and will be a permutation of {1,...,p-1} [1,p-1]:
+example:  (if 0 < a < p)
+  p = 7, a = 4
+  4 \times {1,2,3,4,5,6} = {4,8,12,16,20,24}
+  {4,8,12,16,20,24} mod p = {4,1,5,2,6,3} which is a permutation of {1,2,3,4,5,6}
+
+(proof) suppose two elements from remainder set r1,r2 are equal.
+then:
+ai - aj  &= (sp + r1) - (tp + r2) 
+a(i - j) &= (s - t)p
+
+since i and j are less than p (i-j) is less than p. let (i-j) = b, then:
+ ab = (s-t)p
+or
+p|ab
+which cannot be true.
+therefore the remainders cannot be the same.
+
+
+another proof view:
+1. pick a prime                                         e.g. p = 7
+2. consider set S = 1,2,...,(p-1)                       e.g. S = {1,2,3,4,5,6}
+3. pick any a, such that p does not divide a            e.g. a = 4
+4. notice that a and p are therefore co-prime           e.g. gcd(a,p) = 1
+5. therefore there exists x,y such that ax + py = 1
+5. therefore ax = 1 mod p
+5. x exists and is the multiplicative inverse of a mod p 
+5. multiplication by a is invertible mod p
+5. multiply each element in S by "a" mod p              e.g S' = {4,8,12,16,20,24} mod 7 = {4,1,5,2,6,3}
+6. (??) need to show that no NEW elements possible, because mod p, only "new" element possible would be zero
+ -> need to show that because p does not divide a, cannot be zero. not sure yet how tho...
+6. because invertible, function must be one-to-one and onto
+7. show repeated applications of a and show MUST be cycle. r -> ar -> a2r -> a3r -> ... -> r
+  -> because maximum unique entries is p-1
+  -> because cannot be not a cycle, or a node would have more than one edge inward, making it not invertible.
+8. therefore there is some c such that a^c * r = r mod p 
+  -> if r was 0, then a^c * 0 = 0 mod p for ANY a,c,p
+  -> we know that r is not zero (??? damn, need this fact twice now!) how can product of two things be zero? means cannot escape, because any future prodyct would also be zero??
+  -> which means p | (a^c*r - r)
+  -> which means p | (a^c - 1)r
+  -> which means p divides (a^c - 1) OR p | r
+  -> because r < p and r > 0, p does NOT divide r
+  -> which means p | (a^c - 1)
+  -> which means pk = a^c - 1
+  -> which means a^c - pk = 1
+  -> which means a^c = 1 mod p (phewwww! we needed a lot of stuff to get here...
+1. notice c is the length of the cycle
+1. choose another r, and repeat. we know that a^c = 1 mod p, so it will take a^c to complete a cycle.
+1. so we know, that these two cycles cannot contain shared elements, and are the same length.
+1. if we repeat for all elements of r, we must have some number of cycles n.
+1. then c*n = p-1
+drumroll....
+1. a^(p-1) = a^(cn) = (a^c)^n = 1^n mod p = 1 mod p.
+
+
+
+p | n^p - n
+pk = n^p - n
+n^p - pk = n
+n^p = n mod p 
+n^{p-1} = 1 mod p <can divide by n iff gcd(n,p) = 1 i.e. if p does not divide n>
+
+> merry go round question. how many different trains make a colored merry go round?
