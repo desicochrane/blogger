@@ -1062,11 +1062,11 @@ code {
   padding: 0 20px 0px 10px;
 }
 
-.chroma .kd, .chroma .k, .chroma .kn {
+.chroma .kd, .chroma .k, .chroma .kn, .chroma .bp {
   color: #AB0D8F;
 }
 
-.chroma .nx, .chroma .nb {
+.chroma .nx, .chroma .nb, .chroma .nf, .chroma .n {
   color: #1A1BA8;
 }
 
@@ -1082,7 +1082,7 @@ code {
   color: #6A737C;
 }
 
-.chroma .o {
+.chroma .o, .chroma .ow {
   color: #984500;
 }
 

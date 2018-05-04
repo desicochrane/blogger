@@ -1,0 +1,104 @@
+digraph {
+  node [fontname="Fira Code"]
+
+  code_RSA [label="<RSA>" style=filled fillcolor="#FF9AFF"]
+
+  # To find and verify P and Q. Need fast way to find and verify primes.
+  # this article should go over primality test and search. So will need to
+  # cover the density of primes as well as probabilistic primality testing.
+  # Should contrast this with **factoring** primes.
+  # looking for BIG primes, how many will need to check? 600digit prime? 1 in 1400 is prime...
+  # but can eve "undo" the n = pq?
+  # contrast with "trial division" how slow would it be even with all the tricks? https://www.coursera.org/learn/mathematical-foundations-cryptography/lecture/5CLrq/trial-division
+  # sieve of eratosthenes / general number field sieve
+  #     Fermats lil theorem, carmicheal numbers, Prime number theorem,
+  #     Chebyshev's Bound (Miller-Rabin?, BigInts
+  code_Primality [label="<Primality>" style=filled fillcolor="#FF9AFF"]
+
+  # To find "e" from phi(pq) we need to find verify it is indeed coprime and find its inverse.
+  #     Bezouts lemma, "All positive solutions", multiplicative inverse,
+  #     Euclids Alg (GCD), Diophantine Equations, Water Bucket problem
+  code_Pulveriser [label="<Pulveriser>" style=filled fillcolor="#FF9AFF"]
+
+  # to encrypt/decrypt the message, need to raise to high power. Should also
+  # discuss discrete log problem.
+  code_ModExponentiation [label="<ModExponentiation>" style=filled fillcolor="#FF9AFF"]
+
+  # Understanding why reversing the encryption is hard
+  idea_DiscreteLog [label="!DiscreteLog" style=filled fillcolor="#4A89DC"]
+
+  idea_EulersTheorem [label="!idea_EulersTheorem" style=filled fillcolor="#4A89DC"]
+  idea_EulersTotientFn [label="!EulersTotientThm" style=filled fillcolor="#4A89DC"]
+
+  code_RSA -> code_Primality
+  code_RSA -> code_Pulveriser
+  code_RSA -> code_ModExponentiation -> idea_DiscreteLog
+  code_RSA -> idea_EulersTheorem
+
+  # Euclids Algorithm, GCD, LCM
+  code_SimplifyFraction [label="<SimplifyFraction>" style=filled fillcolor="#FF9AFF"]
+
+  code_Pulveriser -> code_SimplifyFraction
+
+  # to show that a^k \equiv a^m mod n if k \equiv m mod phi(n)
+  idea_DiscreteLog -> idea_EulersTheorem -> idea_EulersTotientFn
+
+}
+
+# digraph {
+# node [fontname="Fira Code"]
+#
+# eg_SimplifyFractions [label="AddFractions" style=filled fillcolor="#FF9AFF"]
+# eg_FindInverseModP [label="FindInverseModP" style=filled fillcolor="#FCC261"]
+# eg_PrimalityTest [label="PrimalityTest" style=filled fillcolor="#17A966"]
+#
+#
+#
+# topic_Divisibility [label="Divisibility"]
+# topic_ModArithmetic [label="ModArithmetic"]
+# topic_PrimeNumbers [label="PrimeNumbers"]
+# topic_EuclidsAlgorithm [label="EuclidsAlgorithm"]
+# topic_GCD [label="GCD"]
+# topic_LCM [label="LCM"]
+# topic_FermatsLilTheorem [label="FermatsLilTheorem"]
+# topic_ModExponentiation [label="ModExponentiation"]
+# topic_DiophantineEquations [label="DiophantineEquations"]
+# topic_BezoutsLemma [label="BezoutsLemma"]
+# topic_BinomialCoefficient [label="BinomCoeff"]
+# topic_BinomialCoefficient [label="BinomCoeff"]
+# eg_SimplifyFractions -> topic_EuclidsAlgorithm
+#
+# topic_ModDivision [label="ModDivision"]
+#
+# eg_SimplifyFractions   -> topic_LCM
+# topic_EuclidsAlgorithm -> topic_GCD
+# topic_GCD              -> topic_Divisibility
+# topic_LCM              -> topic_GCD
+# topic_ModArithmetic    -> topic_Divisibility
+# topic_PrimeNumbers     -> topic_Divisibility
+#
+# eg_FindInverseModP      -> topic_FermatsLilTheorem
+# eg_PrimalityTest        -> topic_FermatsLilTheorem
+# topic_FermatsLilTheorem -> topic_ModDivision
+# topic_FermatsLilTheorem -> topic_ModExponentiation
+#
+## later: can show some combinatoric proofs of fermats thm:
+# proof_FermatsThm_MerryGoRound -> topic_FermatsLilTheorem
+# proof_FermatsThm_MerryGoRound -> topic_BinomialCoefficient
+# proof_FermatsThm_BinomialCoefficient -> topic_FermatsLilTheorem
+# proof_FermatsThm_BinomialCoefficient -> topic_BinomialCoefficient
+# topic_BinomialCoefficient -> topic_Permutations
+#
+# topic_DiophantineEquations -> topic_BezoutsLemma
+#
+#"Co-primality" -> topic_GCD
+#"Co-primality" -> topic_PrimeNumbers
+#"Pulveriser" -> topic_BezoutsLemma
+#"Pulveriser" -> topic_EuclidsAlgorithm
+# topic_ModDivision -> topic_BezoutsLemma
+# topic_ModDivision -> topic_ModArithmetic
+# topic_ModDivision -> "Co-primality"
+# topic_FermatsLilTheorem -> "Permutations of remainder mod p"
+# topic_ModExponentiation -> topic_ModArithmetic
+#"Permutatations of remainder mod p" -> "Bijection for invertibility"
+#}

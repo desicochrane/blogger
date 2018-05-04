@@ -12,7 +12,7 @@ func TestModExp(t *testing.T) {
 		{7, 13, 11, 2},
 	}
 
-	for _, mod := range []ModExp{ModExpRecursive, ModExpRecursivePow2, ModExpRecursivePow2R} {
+	for _, mod := range []ModExp{ModExpRecursive, ModExpRecursivePow2, ModExpIterative} {
 		for _, s := range samples {
 			result := mod(s[0], s[1], s[2])
 			if result != s[3] {

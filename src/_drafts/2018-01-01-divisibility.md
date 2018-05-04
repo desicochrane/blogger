@@ -1,11 +1,32 @@
 ---
-title: Divisibility
-date: 09-Mar-2018
+title: []wip divisibility
+date: 01-Jan-2018
 ---
 
+https://ocw.mit.edu/courses/mathematics/18-781-theory-of-numbers-spring-2012/lecture-notes/
+http://www.math.uconn.edu/~kconrad/blurbs/ugradnumthy/modarith.pdf
+
+# Divisibility
 thm. using jugs of water:
 for some jug with "a" gallons, and another with "b" gallons, assuming a >= b
 if m|a, and m|b, then m|(any possible jug filling)
+
+## Number theory
+- what is it? what is a number?
+
+**Successor Operation** - Fundamental operation for natural numbers:
+$$s(n) = n + 1$$
+Addition then becomes repeated applications of successor, multiplication is repeated addition
+
+
+**Principle of Mathematical Induction (PMI)** - For property \\(p(n)\\) true or
+  false, if 1. \\(P(1)\\) true and 2. \\(P(n) ⇒ P(n + 1) \\), then \\(P(n)\\) true for all natural
+  numbers
+  
+**Well Ordering Principle (WOP)** - Every nonempty subset of natural numbers has a smallest element. PMI and WOP are equivalent - each follows from the other
+
+
+**Divisibility** - Say a|b if b = ax for a, b, x ∈ Z and a = 0
 
 //todo: while showing rectangles, bring back point that these are units of units (number theory thinking).
 // divisibility then is arranging units into rectangles
@@ -289,3 +310,28 @@ n^p = n mod p
 n^{p-1} = 1 mod p <can divide by n iff gcd(n,p) = 1 i.e. if p does not divide n>
 
 > merry go round question. how many different trains make a colored merry go round?
+
+
+
+
+# goals:
+
+1. understand number as mathematical structure
+1. understand n = mq+r
+1. understand (mod) congruence
+1. convert between n = mq+r and n = r (mod m)
+1. intuition for associativity, commutivity
+1. intuition for preservation of congruence over addition, subtraction, multiplication
+1. explain that division is not always defined
+1. convert between ax + by = c to ax = c (mod b)
+
+
+# GCD
+> need to discuss gcd(a,b) = 1 (factors are disjoint) this is so important going forward
+> Every common divisor of a and b divides gcd(a, b).
+> If gcd(a, b) = 1 and gcd(a, c) = 1, then gcd(a, bc) = 1.
+> If a | bc and gcd(a, b) = 1, then a | c
+> gcd(0,1) = 1 implies 0 is co-prime with 1.
+> gcd is an essential operation for computing inverses modulo: find an integer k such that n \\(ak \equiv 1 \bmod n\\)
+> gcd(0,0) would be infinitely large, because all integers satisfy, so is undefined - better, infinity is not in the set, so it is not "infitely large" it is undefined, because for any integer, you can always find a greater one. contrast with well ordering principle as "the set of positive integers has no largest element"
+> todo: use shortest side of rectangle for intuition for difference algorithm

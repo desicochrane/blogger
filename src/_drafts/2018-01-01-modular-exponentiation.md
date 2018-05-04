@@ -7,9 +7,13 @@ date: 01-Jan-2018
 
 can do fast modular exponentiation code.
 
+> discrete log
+> explain how not being monotonic means cannot perform binary search
+> explain how log identities do not hold
+> explain how not necessarily present or unique
 
 ## fermat's little theorem:
-if prime p does not divide a, then
+if prime p does not divide a, then 
 a^{p-1} equiv 1 mod p
 n^p - n | p
 n^{p-1} - 1 | p
