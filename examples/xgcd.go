@@ -76,21 +76,21 @@ func GCDModIter(a int, b int) int {
 }
 
 // -----------------------------------------------------------------------------
-func GCDShiftRec(a int, b int) int {
-	if b > a {
-		a, b = b, a
-	}
-
-	// gcd(2a, 2b) = 2 \times gcd(a, b)
-	if a&1 == 0 && b&1 == 0 {
-		return 2 * GCDShiftRec(a>>1, b>>1)
-	}
-
-	// gcd(2a, 2b+1) = 2 \times gcd(a, 2b+1)
-	if a&1 == 0 && b&1 == 1 {
-		return 2 * GCDShiftRec(a>>1, b)
-	}
-}
+//func GCDShiftRec(a int, b int) int {
+//	if b > a {
+//		a, b = b, a
+//	}
+//
+//	// gcd(2a, 2b) = 2 \times gcd(a, b)
+//	if a&1 == 0 && b&1 == 0 {
+//		return 2 * GCDShiftRec(a>>1, b>>1)
+//	}
+//
+//	// gcd(2a, 2b+1) = 2 \times gcd(a, 2b+1)
+//	if a&1 == 0 && b&1 == 1 {
+//		return 2 * GCDShiftRec(a>>1, b)
+//	}
+//}
 
 //type XGCD func(a int, b int) (int, int)
 //

@@ -4,8 +4,16 @@
     <link>https://blog.des.io</link>
     <description>Explorations of Math, Philosophy, and Computer Science</description>
     <webMaster>hello@des.io (Desio)</webMaster>
-    <lastBuildDate>Fri, 04 May 2018 21:11:41 +0200</lastBuildDate>
+    <lastBuildDate>Thu, 02 Aug 2018 10:59:54 +0200</lastBuildDate>
     <atom:link href="https://blog.des.io/rss.xml" rel="self" type="application/rss+xml" />
+  
+    <item>
+      <title>Optimal Seating</title>
+      <link>https://blog.des.io/posts/2018-07-28-seating.html</link>
+      <pubDate>Sat, 28 Jul 2018 00:00:00 +0000</pubDate>
+      <author>hello@des.io (Desio)</author>
+      <guid>https://blog.des.io/posts/2018-07-28-seating.html</guid>
+    </item>
   
     <item>
       <title>The Fibonacci Problem</title>

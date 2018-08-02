@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Optimal Seating</title>
+  <link rel="stylesheet" href="https://blog.des.io/css/blog.css">
+  <link rel="icon" href="https://blog.des.io/favicon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-115449883-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-115449883-1');
+  </script>
+
+</head>
+<body>
+<div class="AboveTheFold">
+
+<div class="header">
+  <div class="container">
+    <div style="padding: 0 10px;"><a href="https://blog.des.io/">des.io</a></div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="container">
+    <div style="padding: 0 10px;"><h1>Optimal Team Seating</h1>
+
+<p>recently we moved to a new office, with two in-house scrum teams and the people starting quabbling over where they wanted to sit. as a lead, I am very sensitive to seating because of managing interruptions and creating serendipitous moments, and making sure that certain individuals that conflict are not seated together. As a human, it is &ldquo;obvious&rdquo; to me that certain seating arrangements are not a good idea, but I was sure I could quantify these intuitions and algorithmically find a seating arrangement. In the twenty odd minutes it took to write up a quick search algorithm in python I realised this would be a great example to explain the beauty of algorithms, combinatorics and graph theory in a visual way.</p>
+
+<p>This article then is an exploration of that seating problem.</p>
+
+<p>One concern I had was in minimizing interuptions.</p>
+
+<h3>The team</h3>
+
+<p>There are two teams in that are in house, each with 6 members. The first idea is how to quantify the team seating intuitions i.e.:
+- The team &ldquo;leader&rdquo; should be near everyone in their team. This is because in my observations, people tend to often as their team lead questions to qualify their task, and the team lead often needs to interrupt members to ask progress.
+- within teams, frontends should be near each other. this is because often frontenders tend to be working on overlapping code bases with overlapping code conventions and paradigms. they tend to interrupt one another often, i.e. when they are blocked, when they are pair programming or when they just want feedback on an approach or PR.
+- within team backenders: see above
+- we practice a buddy system for new employees, and buddies form a lasting relationship with their mentees. interruptions in the early days happen often but this tends to extend into the future for asking questions and getting feedback
+- across teams team leads often interrupt one another for higher level managemement issues, but not often. usually asychronous communication is enough, and chats occur in meetings.
+- across teams frontenders and backenders tend to talk to one another also, though not as much as within a team
+- same true for full-stackers</p>
+
+<p>Based on this we can construct a weighted undirected graph, whereby the nodes are each member of the team and the edges reflect how important it is for the members to &ldquo;be near&rdquo; one another.
+Given we have 12 team members, a fully connected graph then will be 12 choose 2 edges = 12*<sup>11</sup>&frasl;<sub>2</sub> = 66 relationships.</p>
+
+<h3>The Problem</h3>
+
+<div>
+<svg width="10" height="10">
+  <rect x="0" y="0" width="10" height="10" fill="blue" />
+</svg>
+</div>
+</div>
+  </div>
+
+  <div class="container" style="margin-top: 40px;">
+    <div style="padding: 0 10px;"><div id="disqus_thread"></div></div>
+  </div>
+
+  <script>
+    var disqus_config = function () {
+      this.page.url = "https:\/\/blog.des.io\/posts\/2018-07-28-seating.html";
+      this.page.identifier = "\/posts\/2018-07-28-seating.html";
+    };
+    (function() { 
+      var d = document, s = d.createElement('script');
+      s.src = 'https://des-io.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+</div>
+</div>
+
+<div class="SiteCredit">
+  Made with care by
+  <a href="https://github.com/desicochrane" target="_blank">des.io</a>
+</div>
+
+
+<script src="https://blog.des.io/js/blog.js"></script>
+</body>
+</html>
